@@ -69,7 +69,7 @@ GitHub PagesとGitHub Actionsの設定、公開URL、GA4測定IDの設定順は 
 
 GitHub PagesはGitHub Actionsのカスタムワークフローから静的成果物を公開します。公式確認の記録は `docs/verification.md` を参照してください。
 
-現在、公開CSV・計測ID・広告ID・本番ドメイン・運営者情報は未設定です。sitemapは空の雛形で、`prepare:site` が本番URLを生成します。公開先を勝手に作成・デプロイする処理はありません。
+公開URLは [GitHub Pages](https://yutakoike262.github.io/genAI-API-calc-app/) です。現在、公開CSV・計測ID・広告ID・運営者情報は未設定で、同梱の参考データを表示します。運営者名と連絡先が揃うまで `npm run check -- --production` は失敗します。
 
 ## 構成
 
