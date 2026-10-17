@@ -1,0 +1,662 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>API料金メーター</title>
+<!--
+==========================================================================
+ API料金メーター UIモック（単一HTML）
+--------------------------------------------------------------------------
+ このファイルは実装の「見本」です。他のAIや開発者に渡すときの前提:
+
+ - 設計書: api-meter-design.md（v0.2）。シート構成・計算式・GA4イベントはそちらが正
+ - UI: Apple ヒューマンインターフェイスガイドライン準拠
+     システムフォント / グループ化リスト / セグメンテッドコントロール /
+     44pt 以上のタップ領域 / 強調ボタンは「コードを生成」の1つだけ
+ - データ: 下の <script> 内 DATA（providers / models / params / param_map）は
+     本番ではスプレッドシートの公開CSVから読み込む。構造はシートと同じにしてある
+ - フォーム: params から自動生成（ui_type で入力部品が決まる）
+ - コード生成: param_map の path に値を差し込んでリクエストJSONを組み、
+     api_style ×（通常 / バッチ）の外枠テンプレートで Python / curl / JS に整形
+ - 共有URL: params.share_key をクエリに使う。プロンプトはオプトイン（base64url）
+ - GA4: track() がイベントを送る。gtag 未設定のときは画面下のログにだけ出る
+ - 広告: data-ad-slot の3枠（上部 / 見積もり直下 / 最下部）。高さは先に確保済み
+ - 外部依存なし。ビルド不要でそのまま開ける
+==========================================================================
+-->
+<style>
+:root{
+  --bg:#f2f2f7; --cell:#ffffff; --fill:rgba(118,118,128,.12); --sep:rgba(60,60,67,.18);
+  --label:#000000; --label2:rgba(60,60,67,.62); --label3:rgba(60,60,67,.4);
+  --tint:#007aff; --tint-press:#0062cc; --tint-soft:rgba(0,122,255,.12); --tint-ink:#ffffff;
+  --orange:#b35300; --orange-bg:rgba(255,149,0,.14); --green:#248a3d; --switch-on:#34c759;
+  --code:#1c1c1e; --code-fg:#e5e5ea; --code-dim:#8e8e93;
+  --material:rgba(249,249,249,.86); --shadow:0 1px 3px rgba(0,0,0,.12);
+  --seg-on:#ffffff;
+  --font:-apple-system,BlinkMacSystemFont,"SF Pro Text","Hiragino Sans","Hiragino Kaku Gothic ProN","Noto Sans JP",system-ui,sans-serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#000000; --cell:#1c1c1e; --fill:rgba(118,118,128,.24); --sep:rgba(84,84,88,.6);
+  --label:#ffffff; --label2:rgba(235,235,245,.62); --label3:rgba(235,235,245,.36);
+  --tint:#0a84ff; --tint-press:#409cff; --tint-soft:rgba(10,132,255,.18); --tint-ink:#ffffff;
+  --orange:#ff9f0a; --orange-bg:rgba(255,159,10,.16); --green:#30d158; --switch-on:#30d158;
+  --code:#0b0b0d; --material:rgba(28,28,30,.82); --shadow:0 1px 3px rgba(0,0,0,.5); --seg-on:#636366;
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#000000; --cell:#1c1c1e; --fill:rgba(118,118,128,.24); --sep:rgba(84,84,88,.6);
+  --label:#ffffff; --label2:rgba(235,235,245,.62); --label3:rgba(235,235,245,.36);
+  --tint:#0a84ff; --tint-press:#409cff; --tint-soft:rgba(10,132,255,.18); --tint-ink:#ffffff;
+  --orange:#ff9f0a; --orange-bg:rgba(255,159,10,.16); --green:#30d158; --switch-on:#30d158;
+  --code:#0b0b0d; --material:rgba(28,28,30,.82); --shadow:0 1px 3px rgba(0,0,0,.5); --seg-on:#636366;
+  color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{margin:0}
+body{background:var(--bg);color:var(--label);font-family:var(--font);font-size:17px;line-height:1.45;-webkit-font-smoothing:antialiased;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1160px;margin:0 auto;padding-block:24px 64px;display:flex;flex-direction:column;gap:24px}
+h1{margin:0;font-size:34px;font-weight:700;line-height:1.2;letter-spacing:.01em}
+.sub{margin:0;font-size:15px;color:var(--label2)}
+header{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px}
+.chip{display:inline-flex;align-items:center;gap:5px;font-size:12px;padding:3px 9px;border-radius:999px;background:var(--fill);color:var(--label2)}
+.chip.on{background:var(--tint-soft);color:var(--tint)}
+.chip .dot{width:7px;height:7px;border-radius:50%;background:var(--green)}
+.ad{border:1px dashed var(--sep);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:11px;letter-spacing:.14em;color:var(--label3)}
+.ad-banner{min-height:100px}.ad-rect{min-height:250px}
+@media (min-width:760px){.ad-banner{min-height:90px}}
+.cols{display:flex;flex-wrap:wrap;gap:32px;align-items:flex-start}
+.left{flex:1 1 420px;min-width:0;display:flex;flex-direction:column;gap:28px}
+.right{flex:1 1 460px;min-width:0;display:flex;flex-direction:column;gap:20px}
+@media (min-width:940px){.right{position:sticky;top:calc(env(safe-area-inset-top,0px) + 16px)}}
+.section{display:flex;flex-direction:column}
+.hdr{font-size:13px;color:var(--label2);padding:0 16px 6px}
+.ftr{font-size:13px;color:var(--label2);padding:6px 16px 0;line-height:1.4}
+.grp{background:var(--cell);border-radius:10px;overflow:hidden}
+.row{display:flex;align-items:center;gap:12px;min-height:44px;padding:0 16px;position:relative}
+.grp > * + *{border-top:.5px solid var(--sep)}
+.row label,.row .lbl{flex:1 1 auto;min-width:0;font-size:17px}
+.row input[type=number]{width:130px;border:0;background:transparent;text-align:right;font:inherit;color:var(--label2);font-variant-numeric:tabular-nums;padding:10px 0}
+.row select{border:0;background:transparent;font:inherit;color:var(--label2);text-align:right;padding:10px 0;cursor:pointer;max-width:62%}
+.unit{font-size:15px;color:var(--label3);min-width:3.5em}
+.area{display:flex;flex-direction:column;gap:6px;padding:12px 16px}
+.area .lbl{font-size:13px;color:var(--label2)}
+.area textarea{border:0;background:transparent;font:inherit;line-height:1.45;color:var(--label);resize:vertical;min-height:72px;padding:0;width:100%}
+input:focus,select:focus,textarea:focus{outline:none}
+input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-visible,a:focus-visible{outline:2px solid var(--tint);outline-offset:2px;border-radius:6px}
+.seg{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);background:var(--fill);border-radius:9px;padding:2px;gap:2px}
+.seg button{appearance:none;border:0;background:transparent;font:inherit;font-size:13px;font-weight:500;color:var(--label);border-radius:7px;min-height:32px;cursor:pointer}
+.seg button[aria-selected="true"]{background:var(--seg-on);box-shadow:var(--shadow);font-weight:600}
+.sw{appearance:none;border:0;width:51px;height:31px;border-radius:16px;background:var(--fill);position:relative;cursor:pointer;flex:none;transition:background .2s}
+.sw::after{content:"";position:absolute;top:2px;left:2px;width:27px;height:27px;border-radius:50%;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.2);transition:transform .2s}
+.sw[aria-checked="true"]{background:var(--switch-on)}.sw[aria-checked="true"]::after{transform:translateX(20px)}
+.disc{appearance:none;border:0;background:transparent;width:100%;font:inherit;color:inherit;text-align:left;cursor:pointer}
+.disc .val{font-size:15px;color:var(--label2);max-width:60%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.chev{color:var(--label3);transition:transform .2s;display:inline-block}
+.disc[aria-expanded="true"] .chev{transform:rotate(90deg)}
+.btn{appearance:none;border:0;font:inherit;font-size:17px;font-weight:600;border-radius:12px;min-height:50px;padding:0 20px;cursor:pointer;background:var(--tint);color:var(--tint-ink)}
+.btn:active{background:var(--tint-press)}
+.btn.tinted{background:var(--fill);color:var(--tint)}
+.btn.small{font-size:15px;min-height:36px;border-radius:9px;padding:0 14px}
+.card{background:var(--cell);border-radius:10px;padding:20px;display:flex;flex-direction:column;gap:16px}
+.big{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.big .num{font-size:48px;font-weight:700;letter-spacing:-.02em;line-height:1;font-variant-numeric:tabular-nums}
+.big .unit2{font-size:17px;color:var(--label2)}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.stat{background:var(--bg);border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:2px;min-width:0}
+.stat span{font-size:12px;color:var(--label2)}
+.stat b{font-size:17px;font-weight:600;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.bd{display:flex;flex-direction:column}
+.bd div{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-top:.5px solid var(--sep);font-size:15px}
+.bd small{font-size:12px;color:var(--label3)}
+.bd span:last-child{font-variant-numeric:tabular-nums}
+.note{border-radius:10px;padding:10px 12px;font-size:13px}
+.note.warn{background:var(--orange-bg);color:var(--orange)}
+.note.info{background:var(--tint-soft);color:var(--tint)}
+.fine{font-size:12px;color:var(--label3)}
+.url{font:12px/1.5 var(--mono);color:var(--label2);background:var(--bg);border-radius:8px;padding:8px 10px;overflow-wrap:anywhere}
+.codebox{background:var(--code);border-radius:10px;overflow:hidden}
+.codebar{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 12px;border-bottom:.5px solid rgba(255,255,255,.1)}
+.codebar span{font:12px var(--mono);color:var(--code-dim)}
+.codebar button{appearance:none;border:0;background:rgba(255,255,255,.12);color:#fff;font:inherit;font-size:13px;font-weight:600;border-radius:8px;min-height:32px;padding:0 12px;cursor:pointer}
+pre{margin:0;padding:16px;font:13px/1.6 var(--mono);color:var(--code-fg);white-space:pre;overflow-x:auto;min-height:160px}
+.paste{display:flex;gap:8px;flex-wrap:wrap}
+.paste input{flex:1 1 220px;min-width:0;border:.5px solid var(--sep);border-radius:8px;background:var(--bg);color:var(--label);font:13px var(--mono);padding:9px 10px}
+details.log{background:var(--cell);border-radius:10px}
+details.log summary{cursor:pointer;padding:12px 16px;font-size:13px;color:var(--label2)}
+.logbody{font:12px/1.5 var(--mono);color:var(--label2);padding:0 16px 12px;max-height:180px;overflow:auto}
+.logbody div{white-space:nowrap}
+footer{font-size:12px;color:var(--label3);line-height:1.5;max-width:80ch}
+footer a{color:var(--tint)}
+/* スマホ: 画面下に見積もりと主要ボタンを固定（iOSのツールバー風） */
+.bar{display:none}
+@media (max-width:939px){
+  .bar{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:10;align-items:center;justify-content:space-between;gap:12px;
+    padding:10px max(16px,env(safe-area-inset-right,0px)) calc(10px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));
+    background:var(--material);-webkit-backdrop-filter:saturate(180%) blur(20px);backdrop-filter:saturate(180%) blur(20px);border-top:.5px solid var(--sep)}
+  .bar .m{display:flex;flex-direction:column;min-width:0}
+  .bar .m span{font-size:12px;color:var(--label2)}
+  .bar .m b{font-size:24px;font-variant-numeric:tabular-nums}
+  .wrap{padding-bottom:120px}
+  #genBtn{display:none}
+}
+@media (prefers-reduced-motion:reduce){.sw,.sw::after,.chev{transition:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1>API料金メーター</h1>
+      <p class="sub">Claude・ChatGPT・Gemini の月額を見積もり、そのまま動くコードを生成</p>
+    </div>
+    <span class="chip"><span class="dot"></span><span>料金データ確認日 <span id="checked"></span></span></span>
+  </header>
+
+  <div class="ad ad-banner" data-ad-slot="top">広告</div>
+
+  <div class="cols">
+    <section class="left" aria-label="設定">
+      <div class="section">
+        <div class="hdr">モデル</div>
+        <div class="grp">
+          <div class="area"><div class="seg" role="tablist" aria-label="プロバイダー" id="providers"></div></div>
+          <div class="row"><label for="model">モデル</label><select id="model"></select></div>
+        </div>
+        <div class="ftr" id="modelFtr"></div>
+      </div>
+
+      <div class="section">
+        <div class="hdr">プロンプト</div>
+        <div class="grp"><div class="area"><textarea id="p-prompt" aria-label="プロンプト"></textarea></div></div>
+        <div class="ftr" id="tokFtr"></div>
+      </div>
+
+      <div class="section">
+        <div class="hdr">使用量</div>
+        <div class="grp" id="basic"></div>
+        <div class="ftr">出力には思考（推論）トークンも含まれます。出力の値はコードの上限値にも使います。</div>
+      </div>
+
+      <div class="section">
+        <div class="grp" id="adv">
+          <button type="button" class="disc row" id="advBtn" aria-expanded="false" aria-controls="advBody">
+            <span class="lbl">詳細設定</span><span class="val" id="advSum"></span><span class="chev" aria-hidden="true">›</span>
+          </button>
+          <div id="advBody" hidden></div>
+        </div>
+        <div class="ftr">キャッシュと検索は 1 以上でコードに反映されます。</div>
+      </div>
+
+      <button type="button" class="btn" id="genBtn">コードを生成</button>
+    </section>
+
+    <aside class="right" aria-label="結果">
+      <div class="card" aria-live="polite">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap">
+          <span style="font-size:15px;font-weight:600">予想料金（30日）</span><span class="fine" id="mLabel"></span>
+        </div>
+        <div class="big"><span class="num" id="monthly"></span><span class="unit2" id="monthlyJpy"></span></div>
+        <div class="stats">
+          <div class="stat"><span>1リクエスト</span><b id="perReq"></b></div>
+          <div class="stat"><span>1日</span><b id="perDay"></b></div>
+          <div class="stat"><span>1,000回</span><b id="perK"></b></div>
+        </div>
+        <div class="bd" id="breakdown"></div>
+        <div class="note warn" id="future" hidden></div>
+        <div class="note warn" id="longNote" hidden></div>
+        <span class="fine" id="source"></span>
+        <div style="border-top:.5px solid var(--sep);padding-top:14px;display:flex;flex-direction:column;gap:10px">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+            <div style="display:flex;align-items:center;gap:10px">
+              <button type="button" class="sw" role="switch" aria-checked="false" aria-labelledby="optinLbl" id="optin"></button>
+              <span id="optinLbl" style="font-size:15px">プロンプトも含める</span>
+            </div>
+            <button type="button" class="btn small" id="shareBtn">この見積もりを共有</button>
+          </div>
+          <div class="url" id="shareUrl"></div>
+          <span class="fine" id="shareNote"></span>
+        </div>
+      </div>
+
+      <div class="note info" id="restoreNote" hidden></div>
+
+      <div class="ad ad-rect" data-ad-slot="result">広告</div>
+
+      <div class="card" style="padding:16px;gap:12px">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+          <span style="font-size:15px;font-weight:600">コード</span>
+          <div class="seg" role="tablist" aria-label="言語" id="langs" style="min-width:240px"></div>
+        </div>
+        <div class="note warn" id="stale" hidden style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap">
+          <span>設定が変わりました。コードは前の設定のままです。</span>
+          <button type="button" class="btn small tinted" id="regen">再生成</button>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px" id="included"></div>
+        <div class="codebox">
+          <div class="codebar"><span id="codeMeta">未生成</span><button type="button" id="copyBtn" disabled>コピー</button></div>
+          <pre id="code" tabindex="0">「コードを生成」を押すと、今の設定でコードが作られます。</pre>
+        </div>
+      </div>
+
+      <div class="card" style="padding:12px 16px;gap:8px">
+        <label for="pasteIn" style="font-size:13px;color:var(--label2)">共有URLから開く（受け取った側の動きを確認するデモ）</label>
+        <div class="paste">
+          <input id="pasteIn" type="url" placeholder="https://example.com/?m=…">
+          <button type="button" class="btn small tinted" id="pasteBtn">開く</button>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <details class="log"><summary>GA4イベントログ（開発用・本番では削除）</summary><div class="logbody" id="log"><div>操作するとイベントがここに出ます</div></div></details>
+
+  <div class="ad ad-banner" data-ad-slot="bottom">広告</div>
+
+  <footer>料金は各社の公式料金ページを基に更新しています。税、為替手数料、ボリューム割引、データ所在地オプション、キャッシュ書き込み料金、Gemini のキャッシュ保存料は含みません。為替は <span id="fxText"></span> 円/ドルで換算（本番はシートの GOOGLEFINANCE）。<a href="#">プライバシーポリシー</a></footer>
+</div>
+
+<div class="bar" aria-hidden="false">
+  <div class="m"><span>予想料金（30日）</span><b id="barMonthly"></b></div>
+  <button type="button" class="btn" id="barGen">コードを生成</button>
+</div>
+
+<script>
+/* ======================================================================
+   1. データ（本番はスプレッドシートの公開CSVから読み込む。列名はシートと同じ）
+   ====================================================================== */
+const DATA = {
+  meta: { dataset_version: "2026-10-17.1", updated_at: "2026-10-17", fx_usdjpy: 150, site: "https://example.com/" },
+  providers: {
+    anthropic: { name: "Claude", vendor: "Anthropic", api_style: "messages", web_search_per_1k: 10, web_search_free: 0, pricing_url: "https://platform.claude.com/docs/en/about-claude/pricing" },
+    openai:    { name: "ChatGPT", vendor: "OpenAI", api_style: "responses", web_search_per_1k: 10, web_search_free: 0, pricing_url: "https://developers.openai.com/api/docs/pricing" },
+    google:    { name: "Gemini", vendor: "Google", api_style: "interactions", web_search_per_1k: 14, web_search_free: 5000, pricing_url: "https://ai.google.dev/gemini-api/docs/pricing" }
+  },
+  /* tiers = prices シートの今日有効な行。upTo = long_threshold。単価は USD / 100万トークン。
+     future = 適用開始日が未来の行。batch_cache = バッチ時のキャッシュ単価の倍率 */
+  models: [
+    { id: "claude-fable-5-1", p: "anthropic", label: "Claude Fable 5.1", max_output: 128000, batch_cache: 0.5, tiers: [{ upTo: Infinity, input: 10, output: 50, cache: 0.25 }] },
+    { id: "claude-opus-5-5", p: "anthropic", label: "Claude Opus 5.5", max_output: 128000, batch_cache: 0.5, tiers: [{ upTo: Infinity, input: 4, output: 20, cache: 0.20 }] },
+    { id: "claude-sonnet-5-5", p: "anthropic", label: "Claude Sonnet 5.5", max_output: 128000, batch_cache: 0.5, tiers: [{ upTo: Infinity, input: 2, output: 10, cache: 0.10 }] },
+    { id: "claude-haiku-5-5", p: "anthropic", label: "Claude Haiku 5.5", max_output: 128000, batch_cache: 0.5, tiers: [{ upTo: 100000, input: 0.10, output: 0.50, cache: 0.01 }, { upTo: Infinity, input: 0.50, output: 2.50, cache: 0.05 }] },
+    { id: "gpt-6-astra", p: "openai", label: "GPT-6 Astra", max_output: 128000, batch_cache: 0.5, tiers: [{ upTo: 272000, input: 10, output: 50, cache: 1.00 }, { upTo: Infinity, input: 20, output: 75, cache: 2.00 }] },
+    { id: "gpt-6.1-sol", p: "openai", label: "GPT-6.1 Sol", max_output: 128000, batch_cache: 0.5, tiers: [{ upTo: 272000, input: 2, output: 10, cache: 0.10 }, { upTo: Infinity, input: 4, output: 15, cache: 0.20 }] },
+    { id: "gpt-6-luna", p: "openai", label: "GPT-6 Luna", max_output: 128000, batch_cache: 0.5, tiers: [{ upTo: 272000, input: 0.10, output: 0.50, cache: 0.01 }, { upTo: Infinity, input: 0.20, output: 0.75, cache: 0.02 }] },
+    { id: "gemini-4-argon", p: "google", label: "Gemini 4 Argon", max_output: 65536, batch_cache: 0.5, tiers: [{ upTo: Infinity, input: 2, output: 10, cache: 0.10 }], future: { from: "2026-12-01", tiers: [{ upTo: Infinity, input: 4, output: 20, cache: 0.20 }] } },
+    { id: "gemini-3.8-flash", p: "google", label: "Gemini 3.8 Flash", max_output: 65536, batch_cache: 0.5, tiers: [{ upTo: Infinity, input: 0.75, output: 3.75, cache: 0.075 }], future: { from: "2027-01-01", tiers: [{ upTo: Infinity, input: 1.50, output: 7.50, cache: 0.15 }] } },
+    { id: "gemini-3.5-flash-lite", p: "google", label: "Gemini 3.5 Flash-Lite", max_output: 65536, batch_cache: 0.02 / 0.03, tiers: [{ upTo: Infinity, input: 0.30, output: 2.50, cache: 0.03 }] },
+    { id: "gemini-3.1-pro-preview", p: "google", label: "Gemini 3.1 Pro Preview", max_output: 65536, batch_cache: 1, tiers: [{ upTo: 200000, input: 2, output: 12, cache: 0.20 }, { upTo: Infinity, input: 4, output: 18, cache: 0.40 }] }
+  ],
+  default_model: "claude-sonnet-5-5",
+  default_prompt: "この商品レビューを3行で要約してください。",
+  /* params シート（prompt は専用欄のため group: "prompt"） */
+  params: [
+    { id: "prompt", label: "プロンプト", ui: "textarea", group: "prompt", def: null, share_key: "p", share_optin: true },
+    { id: "max_output", label: "出力トークン / 回", ui: "number", group: "basic", unit: "トークン", def: 800, max: 1000000, share_key: "out" },
+    { id: "requests_per_day", label: "1日のリクエスト数", ui: "number", group: "basic", unit: "回", def: 500, max: 100000000, share_key: "rpd" },
+    { id: "system", label: "システムプロンプト", ui: "textarea", group: "advanced", def: "", share_key: "sys", share_optin: true, placeholder: "例: あなたはECサイトのレビュー要約アシスタントです。" },
+    { id: "effort", label: "推論の強さ", ui: "select", group: "advanced", def: null, share_key: "effort" },
+    { id: "extra_input", label: "その他の入力", ui: "number", group: "advanced", unit: "トークン", def: 2000, max: 2000000, share_key: "ctx" },
+    { id: "cache", label: "キャッシュヒット率", ui: "number", group: "advanced", unit: "%", def: 0, max: 100, share_key: "cache" },
+    { id: "web_search", label: "Web検索 / 回", ui: "number", group: "advanced", unit: "回", def: 0, max: 100, share_key: "ws" },
+    { id: "batch", label: "バッチ処理（半額）", ui: "toggle", group: "advanced", def: false, share_key: "batch" }
+  ],
+  /* param_map シート。model: の行が provider: の行を上書き。path が空なら note だけをコメントに出す */
+  param_map: [
+    { scope: "provider:anthropic", param: "max_output", path: "max_tokens", emit: "always", transform: "round_up_256_cap" },
+    { scope: "provider:anthropic", param: "system", path: "system", emit: "if_set" },
+    { scope: "provider:anthropic", param: "effort", path: "output_config.effort", values: "low|medium|high|xhigh|max", def: "high", emit: "always" },
+    { scope: "model:claude-opus-5-5", param: "effort", path: "output_config.effort", values: "low|medium|high|xhigh|max", def: "medium", emit: "always" },
+    { scope: "model:claude-haiku-5-5", param: "effort", path: "output_config.effort", values: "low|medium|high|xhigh|max", def: "medium", emit: "always" },
+    { scope: "provider:anthropic", param: "cache", path: "cache_control", template: "{\"type\":\"ephemeral\"}", emit: "if_positive" },
+    { scope: "provider:anthropic", param: "web_search", path: "tools[]", template: "{\"type\":\"web_search_20260318\",\"name\":\"web_search\",\"max_uses\":{value}}", emit: "if_positive" },
+    { scope: "provider:anthropic", param: "prompt", path: "messages[]", template: "{\"role\":\"user\",\"content\":{value}}", emit: "always" },
+    { scope: "provider:openai", param: "system", path: "instructions", emit: "if_set" },
+    { scope: "provider:openai", param: "prompt", path: "input", emit: "always" },
+    { scope: "provider:openai", param: "effort", path: "reasoning.effort", values: "low|medium|high|xhigh|max", def: "medium", emit: "always" },
+    { scope: "model:gpt-6-luna", param: "effort", path: "reasoning.effort", values: "none|low|medium|high", def: "low", emit: "always" },
+    { scope: "provider:openai", param: "max_output", path: "max_output_tokens", emit: "always", transform: "round_up_256_cap" },
+    { scope: "provider:openai", param: "web_search", path: "tools[]", template: "{\"type\":\"web_search\"}", emit: "if_positive" },
+    { scope: "provider:openai", param: "cache", path: "", note: "プロンプトキャッシュは自動で効きます。共通部分を先頭に固定すると当たりやすくなります", emit: "if_positive" },
+    { scope: "provider:google", param: "prompt", path: "input", emit: "always" },
+    { scope: "provider:google", param: "system", path: "system_instruction", emit: "if_set" },
+    { scope: "provider:google", param: "effort", path: "generation_config.thinking_level", values: "low|medium|high", def: "medium", emit: "always" },
+    { scope: "model:gemini-3.5-flash-lite", param: "effort", path: "generation_config.thinking_level", values: "minimal|low|medium|high", def: "minimal", emit: "always" },
+    { scope: "model:gemini-3.1-pro-preview", param: "effort", path: "generation_config.thinking_level", values: "low|medium|high", def: "high", emit: "always" },
+    { scope: "provider:google", param: "max_output", path: "generation_config.max_output_tokens", emit: "always", transform: "round_up_256_cap" },
+    { scope: "provider:google", param: "web_search", path: "tools[]", template: "{\"type\":\"google_search\"}", emit: "if_positive" },
+    { scope: "provider:google", param: "cache", path: "", note: "暗黙キャッシュは自動。明示キャッシュは公式の Context caching ガイドを参照", emit: "if_positive" }
+  ]
+};
+
+/* ======================================================================
+   2. GA4（gtag があれば送る。page_location から p と sys を除く）
+   ====================================================================== */
+function cleanLocation() {
+  const u = new URL(location.href); u.searchParams.delete("p"); u.searchParams.delete("sys"); return u.toString();
+}
+function track(name, params) {
+  const payload = Object.assign({ dataset_version: DATA.meta.dataset_version, page_location: cleanLocation() }, params);
+  try { if (typeof window.gtag === "function") window.gtag("event", name, payload); } catch (e) {}
+  const log = document.getElementById("log");
+  if (!track.started) { log.textContent = ""; track.started = true; }
+  const d = document.createElement("div");
+  d.textContent = new Date().toLocaleTimeString("ja-JP") + "  " + name + "  " + JSON.stringify(params);
+  log.prepend(d);
+}
+
+/* ======================================================================
+   3. 状態とユーティリティ
+   ====================================================================== */
+const $ = id => document.getElementById(id);
+const P = id => DATA.params.find(p => p.id === id);
+const modelById = id => DATA.models.find(m => m.id === id);
+const state = { model: modelById(DATA.default_model), vals: {}, lang: "python", generated: null, withPrompt: false };
+
+function rowsFor(m) { // param_map をモデル向けに解決
+  const out = [], idx = {};
+  DATA.param_map.forEach(r => { if (r.scope === "provider:" + m.p) { idx[r.param] = out.length; out.push(r); } });
+  DATA.param_map.forEach(r => { if (r.scope === "model:" + m.id) { if (idx[r.param] != null) out[idx[r.param]] = r; else out.push(r); } });
+  return out;
+}
+const effortRow = m => rowsFor(m).find(r => r.param === "effort");
+function defaults(m) {
+  const v = {};
+  DATA.params.forEach(p => { v[p.id] = p.def; });
+  v.prompt = DATA.default_prompt; v.effort = effortRow(m).def;
+  return v;
+}
+function estTokens(s) { let a = 0, o = 0; for (const ch of s || "") { if (ch.charCodeAt(0) < 128) a++; else o++; } return Math.round(a / 4 + o); }
+const num = v => { const n = Number(v); return isFinite(n) && n > 0 ? n : 0; };
+const usd = v => v === 0 ? "$0" : v < 0.01 ? "$" + v.toPrecision(2) : v < 100 ? "$" + v.toFixed(2) : "$" + Math.round(v).toLocaleString("en-US");
+const yen = v => "約" + Math.round(v * DATA.meta.fx_usdjpy).toLocaleString("ja-JP") + "円 / 月";
+const maxOut = (m, v) => Math.min(Math.max(Math.ceil(num(v.max_output) / 256) * 256, 256), m.max_output);
+
+/* ======================================================================
+   4. 料金計算（設計書5章の式）
+   ====================================================================== */
+function calc(m, v, tiers) {
+  const pv = DATA.providers[m.p];
+  const inTok = estTokens(v.prompt) + estTokens(v.system) + num(v.extra_input);
+  const t = tiers.find(x => inTok <= x.upTo) || tiers[tiers.length - 1];
+  const batch = !!v.batch, mult = batch ? 0.5 : 1, hit = Math.min(num(v.cache), 100) / 100;
+  const cached = inTok * hit, unc = inTok - cached;
+  const monthReq = num(v.requests_per_day) * 30;
+  const cIn = unc * t.input * mult / 1e6 * monthReq;
+  const cCache = cached * t.cache * (batch ? m.batch_cache : 1) / 1e6 * monthReq;
+  const cOut = num(v.max_output) * t.output * mult / 1e6 * monthReq;
+  const cSearch = Math.max(0, Math.floor(num(v.web_search)) * monthReq - pv.web_search_free) * pv.web_search_per_1k / 1000;
+  const monthly = cIn + cCache + cOut + cSearch;
+  return { inTok, t, cIn, cCache, cOut, cSearch, monthly, perReq: monthReq ? monthly / monthReq : 0, long: t !== tiers[0] };
+}
+
+/* ======================================================================
+   5. コード生成（設計書4章）
+   ====================================================================== */
+function setPath(obj, path, val) {
+  const arr = path.endsWith("[]"), keys = path.replace(/\[\]$/, "").split(".");
+  let o = obj;
+  for (let i = 0; i < keys.length - 1; i++) o = o[keys.at(i)] = o[keys.at(i)] || {};
+  const k = keys.at(-1);
+  if (arr) (o[k] = o[k] || []).push(val); else o[k] = val;
+}
+function buildRequest(m, v) {
+  const body = { model: m.id }, notes = [];
+  rowsFor(m).forEach(r => {
+    let val = v[r.param];
+    if (r.emit === "if_set" && !String(val || "").trim()) return;
+    if (r.emit === "if_positive" && !(num(val) > 0)) return;
+    if (r.transform === "round_up_256_cap") val = maxOut(m, v);
+    if (r.param === "web_search") val = Math.floor(num(val));
+    if (r.param === "system") val = String(val).trim();
+    if (r.note) notes.push(r.note);
+    if (!r.path) return;
+    setPath(body, r.path, r.template ? JSON.parse(r.template.replace("{value}", JSON.stringify(val))) : val);
+  });
+  return { body, notes };
+}
+const J = x => JSON.stringify(x);
+const sq = s => s.replace(/'/g, "'\\''");
+function py(v, ind) {
+  const pad = " ".repeat(ind);
+  if (Array.isArray(v)) return "[\n" + v.map(x => pad + "    " + py(x, ind + 4)).join(",\n") + ",\n" + pad + "]";
+  if (v && typeof v === "object") return "{" + Object.keys(v).map(k => J(k) + ": " + py(v[k], ind)).join(", ") + "}";
+  if (v === true) return "True"; if (v === false) return "False"; if (v === null) return "None";
+  return J(v);
+}
+function kw(obj, ind, style) {
+  const pad = " ".repeat(ind);
+  return Object.keys(obj).map(k => style === "py" ? `${pad}${k}=${py(obj[k], ind)},` : `${pad}${k}: ${JSON.stringify(obj[k], null, 2).replace(/\n/g, "\n" + pad)},`).join("\n");
+}
+/* 外枠テンプレート: api_style × 通常/バッチ × 言語 */
+function genCode(lang, m, v) {
+  const { body: p, notes } = buildRequest(m, v), batch = !!v.batch, style = DATA.providers[m.p].api_style;
+  const cm = lang === "js" ? "//" : "#";
+  const c = notes.map(n => `${cm} ${n}\n`).join("");
+  if (style === "messages") {
+    if (!batch) {
+      if (lang === "python") return `import anthropic\n\nclient = anthropic.Anthropic()  # 環境変数 ANTHROPIC_API_KEY\n${c}\nresponse = client.messages.create(\n${kw(p, 4, "py")}\n)\n\nfor block in response.content:\n    if block.type == "text":\n        print(block.text)\nprint(response.usage)`;
+      if (lang === "curl") return `${c}curl https://api.anthropic.com/v1/messages \\\n  -H "x-api-key: $ANTHROPIC_API_KEY" \\\n  -H "anthropic-version: 2023-06-01" \\\n  -H "content-type: application/json" \\\n  -d '${sq(JSON.stringify(p, null, 2))}'`;
+      return `import Anthropic from "@anthropic-ai/sdk";\n\nconst client = new Anthropic(); // 環境変数 ANTHROPIC_API_KEY\n${c}\nconst response = await client.messages.create({\n${kw(p, 2, "js")}\n});\n\nfor (const block of response.content) {\n  if (block.type === "text") console.log(block.text);\n}\nconsole.log(response.usage);`;
+    }
+    const req = { custom_id: "request-1", params: p };
+    if (lang === "python") return `import anthropic\n\nclient = anthropic.Anthropic()  # 環境変数 ANTHROPIC_API_KEY\n${c}\n# バッチ: 入力・出力とも50%割引。結果は非同期で返ります\nbatch = client.messages.batches.create(\n    requests=[\n        {"custom_id": "request-1", "params": ${py(p, 8)}},\n    ],\n)\nprint(batch.id, batch.processing_status)`;
+    if (lang === "curl") return `${c}curl https://api.anthropic.com/v1/messages/batches \\\n  -H "x-api-key: $ANTHROPIC_API_KEY" \\\n  -H "anthropic-version: 2023-06-01" \\\n  -H "content-type: application/json" \\\n  -d '${sq(JSON.stringify({ requests: [req] }, null, 2))}'`;
+    return `import Anthropic from "@anthropic-ai/sdk";\n\nconst client = new Anthropic(); // 環境変数 ANTHROPIC_API_KEY\n${c}\n// バッチ: 入力・出力とも50%割引。結果は非同期で返ります\nconst batch = await client.messages.batches.create({\n  requests: ${JSON.stringify([req], null, 2).replace(/\n/g, "\n  ")},\n});\nconsole.log(batch.id, batch.processing_status);`;
+  }
+  if (style === "responses") {
+    if (!batch) {
+      if (lang === "python") return `from openai import OpenAI\n\nclient = OpenAI()  # 環境変数 OPENAI_API_KEY\n${c}\nresponse = client.responses.create(\n${kw(p, 4, "py")}\n)\n\nprint(response.output_text)\nprint(response.usage)`;
+      if (lang === "curl") return `${c}curl https://api.openai.com/v1/responses \\\n  -H "Authorization: Bearer $OPENAI_API_KEY" \\\n  -H "Content-Type: application/json" \\\n  -d '${sq(JSON.stringify(p, null, 2))}'`;
+      return `import OpenAI from "openai";\n\nconst client = new OpenAI(); // 環境変数 OPENAI_API_KEY\n${c}\nconst response = await client.responses.create({\n${kw(p, 2, "js")}\n});\n\nconsole.log(response.output_text);\nconsole.log(response.usage);`;
+    }
+    const line = { custom_id: "request-1", method: "POST", url: "/v1/responses", body: p };
+    if (lang === "python") return `import json\nfrom openai import OpenAI\n\nclient = OpenAI()  # 環境変数 OPENAI_API_KEY\n${c}\n# 1. リクエストをJSONLに書き出す（1行1リクエスト）\nrequests = [\n    ${py(line, 4)},\n]\nwith open("batchinput.jsonl", "w") as f:\n    for r in requests:\n        f.write(json.dumps(r, ensure_ascii=False) + "\\n")\n\n# 2. アップロードしてバッチを作成（50%割引、24時間以内に完了）\nbatch_file = client.files.create(file=open("batchinput.jsonl", "rb"), purpose="batch")\nbatch = client.batches.create(\n    input_file_id=batch_file.id,\n    endpoint="/v1/responses",\n    completion_window="24h",\n)\nprint(batch.id, batch.status)`;
+    if (lang === "curl") return `${c}# 1. JSONLを作成（1行1リクエスト）\ncat > batchinput.jsonl <<'EOF'\n${JSON.stringify(line)}\nEOF\n\n# 2. ファイルをアップロード\ncurl https://api.openai.com/v1/files \\\n  -H "Authorization: Bearer $OPENAI_API_KEY" \\\n  -F purpose="batch" \\\n  -F file="@batchinput.jsonl"\n\n# 3. 返ってきた file ID でバッチを作成（50%割引）\ncurl https://api.openai.com/v1/batches \\\n  -H "Authorization: Bearer $OPENAI_API_KEY" \\\n  -H "Content-Type: application/json" \\\n  -d '{"input_file_id": "file-XXXX", "endpoint": "/v1/responses", "completion_window": "24h"}'`;
+    return `import fs from "fs";\nimport OpenAI from "openai";\n\nconst client = new OpenAI(); // 環境変数 OPENAI_API_KEY\n${c}\n// 1. JSONLを作成（1行1リクエスト）\nconst requests = [\n  ${JSON.stringify(line, null, 2).replace(/\n/g, "\n  ")},\n];\nfs.writeFileSync("batchinput.jsonl", requests.map((r) => JSON.stringify(r)).join("\\n") + "\\n");\n\n// 2. アップロードしてバッチを作成（50%割引、24時間以内に完了）\nconst batchFile = await client.files.create({ file: fs.createReadStream("batchinput.jsonl"), purpose: "batch" });\nconst batch = await client.batches.create({\n  input_file_id: batchFile.id,\n  endpoint: "/v1/responses",\n  completion_window: "24h",\n});\nconsole.log(batch.id, batch.status);`;
+  }
+  /* interactions（Gemini） */
+  if (!batch) {
+    if (lang === "python") return `from google import genai\n\nclient = genai.Client()  # 環境変数 GEMINI_API_KEY\n${c}\ninteraction = client.interactions.create(\n${kw(p, 4, "py")}\n)\n\nprint(interaction.output_text)\nprint(interaction.usage)`;
+    if (lang === "curl") return `${c}curl -X POST "https://generativelanguage.googleapis.com/v1beta/interactions" \\\n  -H "x-goog-api-key: $GEMINI_API_KEY" \\\n  -H "Content-Type: application/json" \\\n  -d '${sq(JSON.stringify(p, null, 2))}'`;
+    return `import { GoogleGenAI } from "@google/genai";\n\nconst client = new GoogleGenAI({}); // 環境変数 GEMINI_API_KEY\n${c}\nconst interaction = await client.interactions.create({\n${kw(p, 2, "js")}\n});\n\nconsole.log(interaction.output_text);\nconsole.log(interaction.usage);`;
+  }
+  if (lang === "python") return `from google import genai\n\nclient = genai.Client()  # 環境変数 GEMINI_API_KEY\n\n# Gemini のバッチは generateContent 形式（contents）で送ります。\n# 思考レベル・システム指示・検索ツールの指定方法は公式 Batch API ガイドを参照してください。\ninline_requests = [\n    {"contents": ${py([{ parts: [{ text: v.prompt }], role: "user" }], 4)}},\n]\n\njob = client.batches.create(\n    model="${m.id}",\n    src=inline_requests,\n    config={"display_name": "api-meter-batch"},\n)\nprint(job.name)`;
+  return `${cm} Gemini のバッチはこの言語の公式サンプルを確認できていないため、生成していません。\n${cm} Python タブ、または公式 Batch API ガイドを参照してください:\n${cm} https://ai.google.dev/gemini-api/docs/batch-api`;
+}
+
+/* ======================================================================
+   6. 共有URL（設計書9章）
+   ====================================================================== */
+const b64e = s => btoa(unescape(encodeURIComponent(s))).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+function b64d(s) { s = s.replace(/-/g, "+").replace(/_/g, "/"); while (s.length % 4) s += "="; return decodeURIComponent(escape(atob(s))); }
+function shareUrl(m, v, withPrompt) {
+  const d = defaults(m), q = new URLSearchParams({ m: m.id });
+  DATA.params.forEach(p => {
+    const val = v[p.id];
+    if (p.share_optin) { if (withPrompt && String(val || "").trim() && val !== d[p.id] && val.length <= 1000) q.set(p.share_key, b64e(val)); return; }
+    if (p.ui === "toggle") { if (!!val !== !!d[p.id]) q.set(p.share_key, val ? "1" : "0"); return; }
+    if (String(val) !== String(d[p.id])) q.set(p.share_key, String(val));
+  });
+  q.set("v", DATA.meta.dataset_version); q.set("utm_source", "share"); q.set("utm_medium", "referral");
+  return DATA.meta.site + "?" + q.toString();
+}
+function parseShare(url) {
+  let sp; try { sp = new URL(url, DATA.meta.site).searchParams; } catch (e) { return null; }
+  let ok = 0, bad = 0;
+  let m = modelById(sp.get("m"));
+  if (m) ok++; else { if (sp.get("m")) bad++; m = modelById(DATA.default_model); }
+  const vals = defaults(m), er = effortRow(m);
+  DATA.params.forEach(p => {
+    if (!sp.has(p.share_key)) return;
+    const raw = sp.get(p.share_key); let good = false, val;
+    if (p.share_optin) { try { val = b64d(raw); good = val.length <= 1000; } catch (e) {} }
+    else if (p.ui === "toggle") { good = raw === "1" || raw === "0"; val = raw === "1"; }
+    else if (p.ui === "select") { good = er.values.split("|").includes(raw); val = raw; }
+    else { val = Number(raw); good = isFinite(val) && val >= 0 && val <= p.max; }
+    if (good) { vals[p.id] = val; ok++; } else bad++;
+  });
+  return { m, vals, ok, bad, stale: sp.has("v") && sp.get("v") !== DATA.meta.dataset_version };
+}
+
+/* ======================================================================
+   7. 描画
+   ====================================================================== */
+function el(tag, attrs, ...kids) {
+  const e = document.createElement(tag);
+  Object.entries(attrs || {}).forEach(([k, v]) => { if (k === "on") Object.entries(v).forEach(([ev, fn]) => e.addEventListener(ev, fn)); else if (v !== null && v !== undefined) e.setAttribute(k, v); });
+  kids.forEach(k => e.append(k));
+  return e;
+}
+function fieldFor(p) { // params の ui_type から入力部品を作る
+  const id = "p-" + p.id, v = state.vals[p.id];
+  if (p.ui === "number") {
+    const input = el("input", { id, type: "number", min: "0", max: p.max, inputmode: "numeric" });
+    input.value = v;
+    input.addEventListener("input", () => { state.vals[p.id] = input.value; update(); });
+    input.addEventListener("change", () => track("change_param", { param: p.id, value: num(input.value) }));
+    return el("div", { class: "row" }, el("label", { for: id }, p.label), input, el("span", { class: "unit" }, p.unit || ""));
+  }
+  if (p.ui === "select") {
+    const er = effortRow(state.model), sel = el("select", { id });
+    er.values.split("|").forEach(x => { const o = el("option", { value: x }, x + (x === er.def ? "（初期値）" : "")); sel.append(o); });
+    sel.value = v;
+    sel.addEventListener("change", () => { state.vals[p.id] = sel.value; update(); track("change_param", { param: p.id, value: sel.value }); });
+    return el("div", { class: "row" }, el("label", { for: id }, p.label), sel);
+  }
+  if (p.ui === "textarea") {
+    const ta = el("textarea", { id, placeholder: p.placeholder || "" }); ta.value = v || "";
+    ta.addEventListener("input", () => { state.vals[p.id] = ta.value; update(); });
+    return el("div", { class: "area" }, el("label", { class: "lbl", for: id }, p.label), ta);
+  }
+  if (p.ui === "toggle") {
+    const sw = el("button", { type: "button", class: "sw", role: "switch", "aria-checked": String(!!v), "aria-labelledby": "l-" + p.id });
+    sw.addEventListener("click", () => { state.vals[p.id] = !state.vals[p.id]; sw.setAttribute("aria-checked", String(state.vals[p.id])); update(); track("change_param", { param: p.id, value: state.vals[p.id] }); });
+    return el("div", { class: "row" }, el("span", { class: "lbl", id: "l-" + p.id }, p.label), sw);
+  }
+}
+function renderForm() {
+  const prov = $("providers"); prov.textContent = "";
+  Object.entries(DATA.providers).forEach(([k, pv]) => {
+    const b = el("button", { type: "button", role: "tab", "aria-selected": String(state.model.p === k) }, pv.name);
+    b.addEventListener("click", () => { selectModel(DATA.models.find(m => m.p === k)); track("select_provider", { provider: k }); });
+    prov.append(b);
+  });
+  const sel = $("model"); sel.textContent = "";
+  DATA.models.filter(m => m.p === state.model.p).forEach(m => sel.append(el("option", { value: m.id }, `${m.label}　$${m.tiers[0].input} / $${m.tiers[0].output}`)));
+  sel.value = state.model.id;
+  const m = state.model;
+  $("modelFtr").textContent = m.id + "・単価は入力 / 出力、USD / 100万トークン" + (m.tiers.length > 1 ? "・入力 " + m.tiers[0].upTo.toLocaleString() + " トークン超は高料金" : "") + (m.future ? "・" + m.future.from + " から値上げ予定" : "");
+  $("p-prompt").value = state.vals.prompt;
+  const basic = $("basic"); basic.textContent = "";
+  DATA.params.filter(p => p.group === "basic").forEach(p => basic.append(fieldFor(p)));
+  const adv = $("advBody"); adv.textContent = "";
+  DATA.params.filter(p => p.group === "advanced").forEach(p => adv.append(fieldFor(p)));
+}
+function selectModel(m) {
+  const er = effortRow(m);
+  if (!er.values.split("|").includes(state.vals.effort)) state.vals.effort = er.def;
+  state.model = m; renderForm(); update();
+}
+
+function update() {
+  const m = state.model, v = state.vals, pv = DATA.providers[m.p], r = calc(m, v, m.tiers);
+  $("mLabel").textContent = m.label;
+  $("monthly").textContent = $("barMonthly").textContent = usd(r.monthly);
+  $("monthlyJpy").textContent = yen(r.monthly);
+  $("perReq").textContent = usd(r.perReq); $("perDay").textContent = usd(r.monthly / 30); $("perK").textContent = usd(r.perReq * 1000);
+  const rows = [["入力", `$${r.t.input} / 100万`, r.cIn], ["キャッシュ読み出し", `$${r.t.cache} / 100万`, r.cCache], ["出力（思考込み）", `$${r.t.output} / 100万`, r.cOut],
+    ["Web検索", `$${pv.web_search_per_1k} / 1,000回` + (pv.web_search_free ? `・月${pv.web_search_free.toLocaleString()}回無料` : ""), r.cSearch]];
+  $("breakdown").replaceChildren(...rows.map(([k, rate, val]) => el("div", {}, el("span", {}, k + " ", el("small", {}, rate)), el("span", {}, usd(val)))));
+  $("future").hidden = !m.future;
+  if (m.future) { const r2 = calc(m, v, m.future.tiers); $("future").textContent = `${m.future.from} 以降の公表価格では月額 ${usd(r2.monthly)}（${yen(r2.monthly)}）`; }
+  $("longNote").hidden = !r.long;
+  if (r.long) $("longNote").textContent = `入力が ${m.tiers[0].upTo.toLocaleString()} トークンを超えるため、長い入力向けの料金で計算しています。`;
+  $("source").textContent = `出典: ${pv.vendor} 公式料金ページ（${DATA.meta.updated_at} 確認）` + (v.batch ? "・バッチ割引適用" : "");
+  $("tokFtr").textContent = `入力は約 ${r.inTok.toLocaleString()} トークン / 回（プロンプト・システム・その他の合計、目安）`;
+  const bits = [v.effort]; if (String(v.system || "").trim()) bits.push("システム"); if (num(v.cache)) bits.push(`キャッシュ ${v.cache}%`); if (num(v.web_search)) bits.push(`検索 ×${Math.floor(num(v.web_search))}`); if (v.batch) bits.push("バッチ");
+  $("advSum").textContent = bits.join("・");
+  $("shareUrl").textContent = shareUrl(m, v, state.withPrompt);
+  $("shareNote").textContent = state.withPrompt ? "プロンプトもURLに入ります。社内情報や個人情報が含まれていないか確認してください。" : "URLには設定値だけが入ります。金額は開いた時点の料金で計算し直されます。";
+  const g = state.generated;
+  $("stale").hidden = !g || g.snap === snapshot();
+  update.monthly = r.monthly;
+  clearTimeout(update.t); update.t = setTimeout(() => track("view_estimate", { model: m.id, monthly_usd: Math.round(r.monthly * 100) / 100, mode: v.batch ? "batch" : "standard" }), 1200);
+}
+const snapshot = () => JSON.stringify({ m: state.model.id, v: state.vals });
+
+function renderLangs() {
+  $("langs").replaceChildren(...[["python", "Python"], ["curl", "curl"], ["js", "JS"]].map(([k, n]) => {
+    const b = el("button", { type: "button", role: "tab", "aria-selected": String(state.lang === k) }, n);
+    b.addEventListener("click", () => { state.lang = k; renderLangs(); renderCode(); track("switch_lang", { lang: k, model: state.model.id }); });
+    return b;
+  }));
+}
+function renderCode() {
+  const g = state.generated; if (!g) return;
+  const m = modelById(g.m);
+  $("code").textContent = genCode(state.lang, m, g.v);
+  $("codeMeta").textContent = `${m.id}・${g.at} 生成`;
+  const on = (b, t) => el("span", { class: b ? "chip on" : "chip" }, t);
+  $("included").replaceChildren(on(true, "推論 " + g.v.effort), on(true, "上限 " + maxOut(m, g.v).toLocaleString() + " トークン"), on(!!String(g.v.system || "").trim(), "システムプロンプト"),
+    on(num(g.v.cache) > 0, "キャッシュ"), on(num(g.v.web_search) > 0, "Web検索"), on(!!g.v.batch, "バッチ"));
+  $("copyBtn").disabled = false;
+}
+function generate(source) {
+  state.generated = { m: state.model.id, v: JSON.parse(JSON.stringify(state.vals)), at: new Date().toLocaleTimeString("ja-JP", { hour: "2-digit", minute: "2-digit" }), snap: snapshot() };
+  renderCode(); update();
+  const v = state.vals;
+  track("generate_code", { provider: state.model.p, model: state.model.id, lang: state.lang, mode: v.batch ? "batch" : "standard", system: !!String(v.system || "").trim(), cache: num(v.cache) > 0, search: num(v.web_search) > 0, source });
+  if (source === "bar") $("code").scrollIntoView({ behavior: "smooth", block: "center" });
+}
+async function copyText(text, btn, done) {
+  try { await navigator.clipboard.writeText(text); const o = btn.textContent; btn.textContent = done; setTimeout(() => btn.textContent = o, 1800); return true; } catch (e) { return false; }
+}
+function applyShare(url, source) {
+  const r = parseShare(url);
+  if (!r) { $("restoreNote").hidden = false; $("restoreNote").textContent = "URLを読み取れませんでした。"; return; }
+  state.model = r.m; state.vals = r.vals; renderForm(); update();
+  $("restoreNote").hidden = false;
+  $("restoreNote").textContent = `共有された見積もりを表示しています（復元 ${r.ok} 件` + (r.bad ? `、無効な値 ${r.bad} 件は初期値に戻しました` : "") + "）。" + (r.stale ? "料金データが更新されたため、共有時と金額が異なる場合があります。" : "");
+  track("open_shared", { model: r.m.id, restored_count: r.ok, ignored_count: r.bad, source });
+}
+
+/* ======================================================================
+   8. イベント
+   ====================================================================== */
+$("checked").textContent = DATA.meta.updated_at;
+$("fxText").textContent = DATA.meta.fx_usdjpy;
+$("model").addEventListener("change", e => { selectModel(modelById(e.target.value)); track("select_model", { provider: state.model.p, model: state.model.id }); });
+$("p-prompt").addEventListener("input", e => { state.vals.prompt = e.target.value; update(); });
+$("advBtn").addEventListener("click", () => {
+  const open = $("advBtn").getAttribute("aria-expanded") !== "true";
+  $("advBtn").setAttribute("aria-expanded", String(open)); $("advBody").hidden = !open;
+  if (open) track("open_advanced", { model: state.model.id });
+});
+$("genBtn").addEventListener("click", () => generate("main"));
+$("barGen").addEventListener("click", () => generate("bar"));
+$("regen").addEventListener("click", () => generate("stale_banner"));
+$("copyBtn").addEventListener("click", () => {
+  const g = state.generated; if (!g) return;
+  copyText($("code").textContent, $("copyBtn"), "コピー済み");
+  track("copy_snippet", { provider: modelById(g.m).p, model: g.m, lang: state.lang, mode: g.v.batch ? "batch" : "standard" });
+});
+$("optin").addEventListener("click", () => { state.withPrompt = !state.withPrompt; $("optin").setAttribute("aria-checked", String(state.withPrompt)); update(); });
+$("shareBtn").addEventListener("click", async () => {
+  const url = shareUrl(state.model, state.vals, state.withPrompt);
+  let shared = false;
+  if (navigator.share && matchMedia("(max-width: 939px)").matches) { try { await navigator.share({ title: "API料金の見積もり", url }); shared = true; } catch (e) {} }
+  if (!shared) await copyText(url, $("shareBtn"), "コピーしました");
+  track("share_estimate", { model: state.model.id, monthly_usd: Math.round(update.monthly * 100) / 100, with_prompt: state.withPrompt });
+});
+$("pasteBtn").addEventListener("click", () => applyShare($("pasteIn").value || shareUrl(state.model, state.vals, state.withPrompt), "demo"));
+
+/* 初期化: URLに m= があれば共有された見積もりとして復元 */
+state.vals = defaults(state.model);
+renderForm(); renderLangs(); update();
+if (new URLSearchParams(location.search).has("m")) applyShare(location.href, "url");
+</script>
+</body>
+</html>

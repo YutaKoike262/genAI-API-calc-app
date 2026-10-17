@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://yutakoike262.github.io/genAI-API-calc-app/sitemap.xml

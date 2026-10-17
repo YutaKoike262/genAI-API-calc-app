@@ -1,0 +1,4 @@
+"provider_id","feature","unit","price","free_per_month","effective_from","effective_to","checked_at","source_url"
+"anthropic","web_search","per_1k_calls","10","0","","","2026-10-17","https://platform.claude.com/docs/en/about-claude/pricing"
+"openai","web_search","per_1k_calls","10","0","","","2026-10-17","https://developers.openai.com/api/docs/pricing"
+"google","web_search","per_1k_calls","14","5000","","","2026-10-17","https://ai.google.dev/gemini-api/docs/pricing"
