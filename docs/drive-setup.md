@@ -15,6 +15,8 @@
 
 どちらもGoogleスプレッドシート形式で、タイムゾーンは `Asia/Tokyo` です。計測IDなどの実値は未提供のため未入力です。公開料金データはモック由来の参考値で、公式情報による照合が済んでいません。
 
+公開サイトURL: https://yutakoike262.github.io/genAI-API-calc-app/ （GitHub Pages）
+
 ## 公開CSVを接続する
 
 公開データシートの各タブをGoogle Sheetsの「ファイル → 共有 → ウェブに公開」で個別にCSV公開し、URLを運用設定シートの「公開CSV」タブに記録してください。各URLをサイトの `public/config.js` の `csv` に転記すると、アプリが読み込みます。データを確認・更新してから公開してください。

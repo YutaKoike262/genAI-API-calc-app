@@ -2,6 +2,8 @@
 
 このアプリは静的サイトなので、GitHub PagesとGitHub Actionsで公開します。`main` に反映すると、テスト後に `public/` をデプロイします。サイトURLは `https://yutakoike262.github.io/genAI-API-calc-app/` です。
 
+初回デプロイは完了し、トップページ、各案内ページ、JS、フォールバックデータ、robots.txt、sitemap.xmlがHTTP 200を返すことを確認済みです。
+
 ## GitHub側の初期設定
 
 1. リポジトリの **Settings → Pages** を開きます。
