@@ -7,8 +7,8 @@
 1. Cloudflareアカウントのメール確認を済ませます。独自ドメイン `zinsei-lab.com` はCloudflareのドメイン一覧に表示されています。Pagesの静的ファイル配信は無料枠で利用できます。
 2. Cloudflareの **Workers & Pages → Create application → Pages → Upload assets** からPagesプロジェクト `zinsei-lab` を作ります。GitHub Actionsからデプロイするための入れ物です。
 3. CloudflareのAccount IDと、Pagesにデプロイできる権限のAPIトークンを用意します。
-4. GitHubリポジトリの **Settings → Secrets and variables → Actions → Secrets** に `CLOUDFLARE_ACCOUNT_ID` と `CLOUDFLARE_API_TOKEN` を登録します。
-5. 同じ画面の **Variables** に `PUBLISHED_SHEETS_URL` を登録します。値はGoogle Sheetsの公開ページ (`https://docs.google.com/spreadsheets/d/e/.../pubhtml`) です。これは公開URLなのでSecretにはしません。デプロイ時に7タブ分のCSV URLへ変換して `config.js` に反映します。
+4. GitHubリポジトリの **Settings → Secrets and variables → Actions → Secrets** に `CLOUDFLARE_API_TOKEN` を登録します。
+5. 同じ画面の **Variables** に `CLOUDFLARE_ACCOUNT_ID` と `PUBLISHED_SHEETS_URL` を登録します。Account IDは秘密情報ではありません。公開シートURLも誰でも閲覧できるためSecretにはしません。デプロイ時に7タブ分のCSV URLへ変換して `config.js` に反映します。
 6. GitHubの **Actions → Deploy Cloudflare Pages → Run workflow** を実行します。初回実行でPagesプロジェクトを作成し、その後も同じ操作で手動デプロイできます。
 
 ## 独自ドメイン
