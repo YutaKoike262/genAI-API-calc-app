@@ -56,10 +56,14 @@ function calc(m, v, tiers = m.tiers, batchTiers = m.batch_tiers) {
   const cIn = (inTok - cached) * t.input / 1e6 * monthReq;
   const cCache = cached * t.cache / 1e6 * monthReq;
   const cOut = num(v.max_output) * t.output / 1e6 * monthReq;
+  const imageRate = m.image_prices?.find(r => r.mode === (v.batch ? 'batch' : 'standard') && r.image_size === v.image_size);
+  const imageCount = imageRate ? num(v.image_count) : 0;
+  const imagePerReq = (imageRate?.price || 0) * imageCount;
+  const cImage = imagePerReq * monthReq;
   const cSearch = Math.max(0, Math.floor(num(v.web_search)) * monthReq - pv.web_search_free) * pv.web_search_per_1k / 1000;
-  const monthly = cIn + cCache + cOut + cSearch;
-  const perReq = ((inTok - cached) * t.input + cached * t.cache + num(v.max_output) * t.output) / 1e6 + Math.floor(num(v.web_search)) * pv.web_search_per_1k / 1000;
-  return { inTok, t, cIn, cCache, cOut, cSearch, monthly, perReq, monthReq, long: t.tier === 'long' };
+  const monthly = cIn + cCache + cOut + cImage + cSearch;
+  const perReq = ((inTok - cached) * t.input + cached * t.cache + num(v.max_output) * t.output) / 1e6 + imagePerReq + Math.floor(num(v.web_search)) * pv.web_search_per_1k / 1000;
+  return { inTok, t, cIn, cCache, cOut, cImage, imageCount, imageRate, cSearch, monthly, perReq, monthReq, long: t.tier === 'long' };
 }
 
 /* ======================================================================

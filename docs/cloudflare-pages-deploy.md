@@ -8,7 +8,7 @@
 2. Cloudflareの **Workers & Pages → Create application → Pages → Upload assets** からPagesプロジェクト `zinsei-lab` を作ります。GitHub Actionsからデプロイするための入れ物です。
 3. CloudflareのAccount IDと、Pagesにデプロイできる権限のAPIトークンを用意します。
 4. GitHubリポジトリの **Settings → Secrets and variables → Actions → Secrets** に `CLOUDFLARE_API_TOKEN` を登録します。
-5. 同じ画面の **Variables** に `CLOUDFLARE_ACCOUNT_ID`、`PUBLISHED_SHEETS_URL`、`GA4_MEASUREMENT_ID` を登録します。Account ID、公開シートURL、GA4測定IDはいずれも公開情報なのでSecretではなくRepository variableにします。測定IDは `G-` で始まる形式で、未設定なら計測しません。デプロイ時に公開用 `config.js` に反映されます。公開シートURLは7タブ分のCSV URLに変換します。
+5. 同じ画面の **Variables** に `CLOUDFLARE_ACCOUNT_ID`、`PUBLISHED_SHEETS_URL`、`GA4_MEASUREMENT_ID` を登録します。Account ID、公開シートURL、GA4測定IDはいずれも公開情報なのでSecretではなくRepository variableにします。測定IDは `G-` で始まる形式で、未設定なら計測しません。デプロイ時に公開用 `config.js` に反映されます。公開シートURLは8タブ分のCSV URLに変換します。
 6. GitHubの **Actions → Deploy Cloudflare Pages → Run workflow** を実行します。初回実行でPagesプロジェクトを作成し、その後も同じ操作で手動デプロイできます。
 
 ## 独自ドメイン

@@ -1,6 +1,6 @@
 "key","value"
-"dataset_version","2026-10-17.1"
-"updated_at","2026-10-17"
+"dataset_version","2026-10-28-nanobanana"
+"updated_at","2026-10-28"
 "fx_usdjpy","150"
 "default_model","claude-sonnet-5-5"
 "default_prompt","この商品レビューを3行で要約してください。"

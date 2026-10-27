@@ -1,0 +1,7 @@
+"model_id","image_size","mode","unit","price","effective_from","effective_to","checked_at","source_url"
+"gemini-nano-banana-2.1","1K","standard","per_image","0.0336","","","2026-10-28","https://ai.google.dev/gemini-api/docs/pricing"
+"gemini-nano-banana-2.1","2K","standard","per_image","0.0504","","","2026-10-28","https://ai.google.dev/gemini-api/docs/pricing"
+"gemini-nano-banana-2.1","4K","standard","per_image","0.113","","","2026-10-28","https://ai.google.dev/gemini-api/docs/pricing"
+"gemini-nano-banana-2.1","1K","batch","per_image","0.0168","","","2026-10-28","https://ai.google.dev/gemini-api/docs/pricing"
+"gemini-nano-banana-2.1","2K","batch","per_image","0.0252","","","2026-10-28","https://ai.google.dev/gemini-api/docs/pricing"
+"gemini-nano-banana-2.1","4K","batch","per_image","0.0567","","","2026-10-28","https://ai.google.dev/gemini-api/docs/pricing"

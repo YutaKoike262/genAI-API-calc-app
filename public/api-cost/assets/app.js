@@ -63,12 +63,12 @@ function renderForm() {
   DATA.models.filter(m => m.p === state.model.p).forEach(m => sel.append(el("option", { value: m.id }, `${m.label}${m.needs_review ? "（要確認）" : ""}　$${m.tiers[0].input} / $${m.tiers[0].output}`)));
   sel.value = state.model.id;
   const m = state.model;
-  $("modelFtr").textContent = m.id + "・単価は入力 / 出力、USD / 100万トークン" + (m.tiers.length > 1 ? "・入力 " + m.tiers[0].upTo.toLocaleString() + " トークン超は高料金" : "") + (m.future ? "・" + m.future.from + " から料金変更予定" : "");
+  $("modelFtr").textContent = m.id + "・単価は入力 / 出力、USD / 100万トークン" + (m.image_prices?.length ? "・画像生成はサイズ別の1枚単価を加算" : "") + (m.tiers.length > 1 ? "・入力 " + m.tiers[0].upTo.toLocaleString() + " トークン超は高料金" : "") + (m.future ? "・" + m.future.from + " から料金変更予定" : "");
   $("p-prompt").value = state.vals.prompt;
   const basic = $("basic"); basic.textContent = "";
-  DATA.params.filter(p => p.group === "basic").forEach(p => basic.append(fieldFor(p), ...(p.help ? [el("div",{class:"ftr"},p.help)] : [])));
+  DATA.params.filter(p => p.group === "basic" && (!['image_count','image_size'].includes(p.id) || rowsFor(state.model).some(r => r.param === p.id))).forEach(p => basic.append(fieldFor(p), ...(p.help ? [el("div",{class:"ftr"},p.help)] : [])));
   const adv = $("advBody"); adv.textContent = "";
-  DATA.params.filter(p => p.group === "advanced").forEach(p => adv.append(fieldFor(p), ...(p.help ? [el("div",{class:"ftr"},p.help)] : [])));
+  DATA.params.filter(p => p.group === "advanced" && (!['image_count','image_size'].includes(p.id) || rowsFor(state.model).some(r => r.param === p.id)) && !(state.model.image_prices?.length && p.id === 'cache')).forEach(p => adv.append(fieldFor(p), ...(p.help ? [el("div",{class:"ftr"},p.help)] : [])));
 }
 function selectModel(m) {
   state.vals = normalizeValues(m, state.vals);
@@ -84,6 +84,7 @@ function update() {
   $("requestCount").textContent = r.monthReq.toLocaleString('ja-JP') + ' 回'; $("perK").textContent = usd(r.perReq * 1000);
   const rows = [["入力", `$${r.t.input} / 100万`, r.cIn], ["キャッシュ読み出し", `$${r.t.cache} / 100万`, r.cCache], ["出力（思考込み）", `$${r.t.output} / 100万`, r.cOut],
     ["Web検索", `$${pv.web_search_per_1k} / 1,000回` + (pv.web_search_free ? `・月${pv.web_search_free.toLocaleString()}回無料` : ""), r.cSearch]];
+  if (r.imageRate) rows.splice(3, 0, [`画像生成（${r.imageRate.image_size} × ${r.imageCount}枚）`, `$${r.imageRate.price} / 枚`, r.cImage]);
   $("breakdown").replaceChildren(...rows.map(([k, rate, val]) => el("div", {}, el("span", {}, k + " ", el("small", {}, rate)), el("span", {}, usd(val)))));
   const showFuture = m.future && (!v.batch || m.future.batch_tiers.length);
   $("future").hidden = !showFuture;
@@ -92,7 +93,7 @@ function update() {
   if (r.long) $("longNote").textContent = `入力が ${m.tiers[0].upTo.toLocaleString()} トークンを超えるため、長い入力向けの料金で計算しています。`;
   const source = el('a',{href:r.t.source_url || pv.pricing_url,target:'_blank',rel:'noopener noreferrer'},pv.vendor + ' 公式料金ページ');
   $('source').replaceChildren('出典: ', source, `（${m.checked_at || '確認日未登録'} 確認）` + (m.needs_review ? '・要確認（30日以上経過または確認日未登録）' : '') + (v.batch ? '・バッチ料金適用' : ''));
-  $("tokFtr").textContent = `入力トークン概算 / 回: プロンプト ${estTokens(v.prompt).toLocaleString()} + システム ${estTokens(v.system).toLocaleString()} + その他 ${num(v.extra_input).toLocaleString()} = ${r.inTok.toLocaleString()}（目安）`;
+  $("tokFtr").textContent = `入力トークン概算 / 回: プロンプト ${estTokens(v.prompt).toLocaleString()} + システム ${estTokens(v.system).toLocaleString()} + その他 ${num(v.extra_input).toLocaleString()} = ${r.inTok.toLocaleString()}（目安）` + (r.imageRate ? `。画像生成: ${r.imageCount}枚 / ${r.imageRate.image_size}` : "");
   const bits = [v.effort]; if (String(v.system || "").trim()) bits.push("システム"); if (num(v.cache)) bits.push(`キャッシュ ${v.cache}%`); if (num(v.web_search)) bits.push(`検索 ×${Math.floor(num(v.web_search))}`); if (v.batch) bits.push("バッチ");
   $("advSum").textContent = bits.join("・");
   $("shareUrl").textContent = shareUrl(m, v, state.withPrompt);

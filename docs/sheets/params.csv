@@ -8,3 +8,5 @@
 "cache","キャッシュヒット率","number","advanced","7","%","none","","cache","false"
 "web_search","Web検索 / 回","number","advanced","8","回","none","","ws","false"
 "batch","バッチ処理","toggle","advanced","9","","none","","batch","false"
+"image_count","生成画像数 / 回","number","basic","10","枚","none","1回のAPIリクエストで生成する画像の枚数です。画像生成モデルでのみ表示します。","imgn","FALSE"
+"image_size","生成画像のサイズ","select","basic","11","","none","公式料金表に記載された画像サイズごとの単価を適用します。","imgsz","FALSE"

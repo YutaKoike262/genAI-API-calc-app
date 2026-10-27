@@ -1,4 +1,4 @@
-export const SHEETS = ['providers', 'models', 'prices', 'features', 'params', 'param_map', 'meta'];
+export const SHEETS = ['providers', 'models', 'prices', 'image_prices', 'features', 'params', 'param_map', 'meta'];
 const BASE = {
   prompt: { def: null }, max_output: { def: 800, min: 1, max: 1000000 },
   requests_per_day: { def: 500, min: 0, max: 100000000 }, system: { def: '' },
@@ -14,8 +14,16 @@ const number = (value, name, fallback) => {
 const date = value => {
   if (!value) return '';
   const s = String(value);
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(s) || !Number.isFinite(Date.parse(s)) || new Date(s).toISOString().slice(0, 10) !== s) throw Error(`日付が不正です: ${s}`);
-  return s;
+  const iso = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s);
+  // Google Sheets CSV exports date-formatted cells using the spreadsheet locale,
+  // which currently renders checked_at as M/D/YYYY even when the editor shows ISO.
+  const localized = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/.exec(s);
+  const parts = iso ? [Number(iso[1]), Number(iso[2]), Number(iso[3])] : localized ? [Number(localized[3]), Number(localized[1]), Number(localized[2])] : null;
+  if (!parts) throw Error(`日付が不正です: ${s}`);
+  const [year, month, day] = parts;
+  const parsed = new Date(Date.UTC(year, month - 1, day));
+  if (parsed.getUTCFullYear() !== year || parsed.getUTCMonth() + 1 !== month || parsed.getUTCDate() !== day) throw Error(`日付が不正です: ${s}`);
+  return parsed.toISOString().slice(0, 10);
 };
 export const todayJST = (now = new Date()) => new Date(now.getTime() + 9 * 3600000).toISOString().slice(0, 10);
 const active = (row, day) => (!row.effective_from || row.effective_from <= day) && (!row.effective_to || row.effective_to >= day);
@@ -81,6 +89,12 @@ export function normalizeTables(tables, { day = todayJST(), siteUrl = 'http://lo
     if (!tables.models.some(m => m.model_id === r.model_id) || !['base', 'long'].includes(r.tier) || !['standard', 'batch'].includes(r.mode)) throw Error('prices の参照または区分が不正です');
     return { ...r, input: number(r.input, 'input'), output: number(r.output, 'output'), cache: number(r.cache_read, 'cache_read'), source_url: validUrl(r.source_url) };
   });
+  const image_prices = scheduled(tables.image_prices).map(r => {
+    if (!tables.models.some(m => m.model_id === r.model_id) || !['1K','2K','4K'].includes(r.image_size) || !['standard','batch'].includes(r.mode) || r.unit !== 'per_image') throw Error('image_prices の参照または区分が不正です');
+    return { ...r, price:number(r.price, 'image.price'), source_url:validUrl(r.source_url) };
+  });
+  const imagePriceKey = r => [r.model_id,r.image_size,r.mode].join(':');
+  if (new Set(image_prices.filter(r => active(r, day)).map(imagePriceKey)).size !== image_prices.filter(r => active(r, day)).length) throw Error('画像料金の適用期間が重複しています');
   function tiersAt(m, mode, at) {
     const rows = prices.filter(r => r.model_id === m.model_id && r.mode === mode && active(r, at));
     if (!rows.length) return [];
@@ -98,7 +112,11 @@ export function normalizeTables(tables, { day = todayJST(), siteUrl = 'http://lo
     const dates = [...new Set(prices.filter(r => r.model_id === m.model_id && r.effective_from > day).map(r => r.effective_from))].sort();
     const next = dates.find(at => tiersAt(m, 'standard', at).length);
     const checked = [...tiers, ...batch_tiers].map(t => t.checked_at || '').sort()[0];
+    const active_image_prices = image_prices.filter(r => r.model_id === m.model_id && active(r,day));
+    const ratesByMode = mode => active_image_prices.filter(r => r.mode === mode);
+    if (active_image_prices.length && !['1K','2K','4K'].every(size => ratesByMode('standard').some(r => r.image_size === size))) throw Error('画像料金にstandardの1K/2K/4K単価が必要です');
     return [{ ...m, id: m.model_id, p: m.provider_id, label: required(m.label, 'label'), max_output: number(m.max_output, 'max_output'), tiers, batch_tiers,
+      image_prices:active_image_prices,
       checked_at: checked, needs_review: !checked || Date.parse(day) - Date.parse(checked) >= 30 * 86400000,
       future: next ? { from: next, tiers: tiersAt(m, 'standard', next), batch_tiers: tiersAt(m, 'batch', next) } : null }];
   });
@@ -143,6 +161,7 @@ export function normalizeTables(tables, { day = todayJST(), siteUrl = 'http://lo
     }
     for (const p of params.filter(p => p.ui === 'select')) {
       const r = relevant.findLast(r => r.param === p.id && r.scope.startsWith('model:')) || relevant.find(r => r.param === p.id);
+      if (!r && p.id === 'image_size' && !m.image_prices.length) continue;
       if (!r?.values || (r.def !== undefined && !r.values.split('|').includes(r.def))) throw Error('選択肢の初期値が不正です');
     }
     for (const id of ['prompt', 'max_output']) if (!relevant.some(r => r.param === id && r.path && r.emit !== 'never')) throw Error('コード生成に必要なマッピングがありません');

@@ -22,3 +22,7 @@
 "provider:google","max_output","generation_config.max_output_tokens","","","","","always","","round_up_256,cap_model_max","","2026-10-17","https://ai.google.dev/api/interactions-api"
 "provider:google","web_search","tools[]","","","","","if_positive","{""type"":""google_search""}","none","","",""
 "provider:google","cache","—","","","","","if_positive","","none","暗黙キャッシュは自動。明示キャッシュは公式の Context caching ガイドを参照","",""
+"model:gemini-nano-banana-2.1","image_count","","","1","1","100","never","","none","","2026-10-28","https://ai.google.dev/gemini-api/docs/image-generation"
+"model:gemini-nano-banana-2.1","image_size","","1K|2K|4K","1K","","","never","","none","","2026-10-28","https://ai.google.dev/gemini-api/docs/image-generation"
+"model:gemini-nano-banana-2.1","cache","","","0","0","0","never","","none","このモデルではキャッシュ料金・機能を計上しません。","2026-10-28","https://ai.google.dev/gemini-api/docs/models/gemini-nano-banana-2.1"
+"model:gemini-nano-banana-2.1","effort","generation_config.thinking_level","minimal|medium|high","medium","","","always","","none","","2026-10-28","https://ai.google.dev/gemini-api/docs/models/gemini-nano-banana-2.1"

@@ -161,6 +161,17 @@
       "long_threshold": 200000,
       "sort": 11,
       "doc_url": ""
+    },
+    {
+      "model_id": "gemini-nano-banana-2.1",
+      "provider_id": "google",
+      "label": "Nano Banana 2.1",
+      "status": "current",
+      "context_window": 131072,
+      "max_output": 32768,
+      "long_threshold": "",
+      "sort": 12,
+      "doc_url": "https://ai.google.dev/gemini-api/docs/models/gemini-nano-banana-2.1"
     }
   ],
   "prices": [
@@ -631,6 +642,32 @@
       "effective_to": "",
       "checked_at": "2026-10-17",
       "source_url": "https://ai.google.dev/gemini-api/docs/pricing"
+    },
+    {
+      "model_id": "gemini-nano-banana-2.1",
+      "tier": "base",
+      "mode": "standard",
+      "input": 1.5,
+      "output": 7.5,
+      "cache_read": 0,
+      "cache_write": "",
+      "effective_from": "",
+      "effective_to": "",
+      "checked_at": "2026-10-28",
+      "source_url": "https://ai.google.dev/gemini-api/docs/pricing"
+    },
+    {
+      "model_id": "gemini-nano-banana-2.1",
+      "tier": "base",
+      "mode": "batch",
+      "input": 0.75,
+      "output": 3.75,
+      "cache_read": 0,
+      "cache_write": "",
+      "effective_from": "",
+      "effective_to": "",
+      "checked_at": "2026-10-28",
+      "source_url": "https://ai.google.dev/gemini-api/docs/pricing"
     }
   ],
   "features": [
@@ -776,6 +813,30 @@
       "help": "",
       "share_key": "batch",
       "share_optin": false
+    },
+    {
+      "param_id": "image_count",
+      "label": "生成画像数 / 回",
+      "ui_type": "number",
+      "group": "basic",
+      "sort": 10,
+      "unit": "枚",
+      "affects_cost": "none",
+      "help": "1回のAPIリクエストで生成する画像の枚数です。画像生成モデルでのみ表示します。",
+      "share_key": "imgn",
+      "share_optin": "FALSE"
+    },
+    {
+      "param_id": "image_size",
+      "label": "生成画像のサイズ",
+      "ui_type": "select",
+      "group": "basic",
+      "sort": 11,
+      "unit": "",
+      "affects_cost": "none",
+      "help": "公式料金表に記載された画像サイズごとの単価を適用します。",
+      "share_key": "imgsz",
+      "share_optin": "FALSE"
     }
   ],
   "param_map": [
@@ -1123,16 +1184,76 @@
       "note": "暗黙キャッシュは自動。明示キャッシュは公式の Context caching ガイドを参照",
       "verified_at": "",
       "doc_url": ""
+    },
+    {
+      "scope": "model:gemini-nano-banana-2.1",
+      "param_id": "image_count",
+      "path": "",
+      "values": "",
+      "default": "1",
+      "min": "1",
+      "max": "100",
+      "emit": "never",
+      "template": "",
+      "transform": "none",
+      "note": "",
+      "verified_at": "2026-10-28",
+      "doc_url": "https://ai.google.dev/gemini-api/docs/image-generation"
+    },
+    {
+      "scope": "model:gemini-nano-banana-2.1",
+      "param_id": "image_size",
+      "path": "",
+      "values": "1K|2K|4K",
+      "default": "1K",
+      "min": "",
+      "max": "",
+      "emit": "never",
+      "template": "",
+      "transform": "none",
+      "note": "",
+      "verified_at": "2026-10-28",
+      "doc_url": "https://ai.google.dev/gemini-api/docs/image-generation"
+    },
+    {
+      "scope": "model:gemini-nano-banana-2.1",
+      "param_id": "cache",
+      "path": "",
+      "values": "",
+      "default": "0",
+      "min": "0",
+      "max": "0",
+      "emit": "never",
+      "template": "",
+      "transform": "none",
+      "note": "このモデルではキャッシュ料金・機能を計上しません。",
+      "verified_at": "2026-10-28",
+      "doc_url": "https://ai.google.dev/gemini-api/docs/models/gemini-nano-banana-2.1"
+    },
+    {
+      "scope": "model:gemini-nano-banana-2.1",
+      "param_id": "effort",
+      "path": "generation_config.thinking_level",
+      "values": "minimal|medium|high",
+      "default": "medium",
+      "min": "",
+      "max": "",
+      "emit": "always",
+      "template": "",
+      "transform": "none",
+      "note": "",
+      "verified_at": "2026-10-28",
+      "doc_url": "https://ai.google.dev/gemini-api/docs/models/gemini-nano-banana-2.1"
     }
   ],
   "meta": [
     {
       "key": "dataset_version",
-      "value": "2026-10-17.1"
+      "value": "2026-10-28-nanobanana"
     },
     {
       "key": "updated_at",
-      "value": "2026-10-17"
+      "value": "2026-10-28"
     },
     {
       "key": "fx_usdjpy",
@@ -1153,6 +1274,74 @@
     {
       "key": "fx_updated_at",
       "value": "2026-10-17"
+    }
+  ],
+  "image_prices": [
+    {
+      "model_id": "gemini-nano-banana-2.1",
+      "image_size": "1K",
+      "mode": "standard",
+      "unit": "per_image",
+      "price": 0.0336,
+      "effective_from": "",
+      "effective_to": "",
+      "checked_at": "2026-10-28",
+      "source_url": "https://ai.google.dev/gemini-api/docs/pricing"
+    },
+    {
+      "model_id": "gemini-nano-banana-2.1",
+      "image_size": "2K",
+      "mode": "standard",
+      "unit": "per_image",
+      "price": 0.0504,
+      "effective_from": "",
+      "effective_to": "",
+      "checked_at": "2026-10-28",
+      "source_url": "https://ai.google.dev/gemini-api/docs/pricing"
+    },
+    {
+      "model_id": "gemini-nano-banana-2.1",
+      "image_size": "4K",
+      "mode": "standard",
+      "unit": "per_image",
+      "price": 0.113,
+      "effective_from": "",
+      "effective_to": "",
+      "checked_at": "2026-10-28",
+      "source_url": "https://ai.google.dev/gemini-api/docs/pricing"
+    },
+    {
+      "model_id": "gemini-nano-banana-2.1",
+      "image_size": "1K",
+      "mode": "batch",
+      "unit": "per_image",
+      "price": 0.0168,
+      "effective_from": "",
+      "effective_to": "",
+      "checked_at": "2026-10-28",
+      "source_url": "https://ai.google.dev/gemini-api/docs/pricing"
+    },
+    {
+      "model_id": "gemini-nano-banana-2.1",
+      "image_size": "2K",
+      "mode": "batch",
+      "unit": "per_image",
+      "price": 0.0252,
+      "effective_from": "",
+      "effective_to": "",
+      "checked_at": "2026-10-28",
+      "source_url": "https://ai.google.dev/gemini-api/docs/pricing"
+    },
+    {
+      "model_id": "gemini-nano-banana-2.1",
+      "image_size": "4K",
+      "mode": "batch",
+      "unit": "per_image",
+      "price": 0.0567,
+      "effective_from": "",
+      "effective_to": "",
+      "checked_at": "2026-10-28",
+      "source_url": "https://ai.google.dev/gemini-api/docs/pricing"
     }
   ]
 }

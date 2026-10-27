@@ -16,6 +16,11 @@ test('CSV: BOM, CRLF, escaped quotes, comma and multiline field',()=>{
  for(const text of ['x,x\n1,2','x,y\n1','x\n"unclosed','__proto__\nhello'])assert.throws(()=>parseCSV(text));
 });
 test('JST date boundary',()=>assert.equal(todayJST(new Date('2026-11-30T15:00:00Z')),'2026-12-01'));
+test('Google Sheets locale dates normalize to ISO and reject impossible dates',()=>{
+ const t=structuredClone(raw);t.image_prices[0].checked_at='10/28/2026';
+ assert.equal(make(t,'2026-10-28').models.find(m=>m.id==='gemini-nano-banana-2.1').needs_review,false);
+ t.image_prices[0].checked_at='2/30/2026';assert.throws(()=>make(t,'2026-10-28'));
+});
 test('one-request cost stays stable while monthly estimate follows daily request count',()=>{
  const base=engine.defaults(model), r=engine.calc(model,base), fewer=engine.calc(model,{...base,requests_per_day:250});
  assert.equal(base.extra_input,2000);assert.equal(base.requests_per_day,500);assert.equal(r.inTok,2020);approx(r.cIn,60.6);approx(r.cOut,120);approx(r.monthly,180.6);approx(r.perReq,.01204);
@@ -25,6 +30,14 @@ test('cache and search free allowance with zero requests',()=>{
  const m=data.models.find(m=>m.id==='gemini-4-argon');let v={...engine.defaults(m),prompt:'',extra_input:1000,cache:50,max_output:1000,requests_per_day:100,web_search:2};
  const r=engine.calc(m,v);approx(r.cIn,3);approx(r.cCache,.15);approx(r.cOut,30);approx(r.cSearch,14);approx(r.monthly,47.15);approx(r.perReq,.03905);
  assert.equal(engine.calc(m,{...v,requests_per_day:0}).monthly,0);
+});
+test('Nano Banana image pricing uses per-image size and batch rates',()=>{
+ const m=data.models.find(m=>m.id==='gemini-nano-banana-2.1');
+ const v={...engine.defaults(m),prompt:'',system:'',extra_input:0,max_output:0,requests_per_day:10,image_count:2,image_size:'1K'};
+ const standard=engine.calc(m,v), batch=engine.calc(m,{...v,batch:true,image_size:'4K'});
+ approx(standard.perReq,.0672);approx(standard.monthly,20.16);approx(standard.cImage,20.16);
+ approx(batch.perReq,.1134);approx(batch.monthly,34.02);
+ assert.equal(standard.imageRate.image_size,'1K');assert.equal(batch.imageRate.image_size,'4K');
 });
 test('long threshold is strictly greater and batch uses explicit rates',()=>{
  const tables=structuredClone(raw); const id='claude-haiku-5-5';
