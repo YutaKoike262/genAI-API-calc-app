@@ -1,8 +1,8 @@
-import { loadData } from './data.js';
-import { createEngine } from './core.js';
-import { initTelemetry, sendEvent } from './telemetry.js';
-import { CONFIG } from '../config.js';
-import { setupTheme } from './theme.js';
+import { loadData } from './data.js?v=20261028-omni';
+import { createEngine } from './core.js?v=20261028-omni';
+import { initTelemetry, sendEvent } from './telemetry.js?v=20261028-omni';
+import { CONFIG } from '../config.js?v=20261028-omni';
+import { setupTheme } from './theme.js?v=20261028-omni';
 setupTheme();
 const $ = id => document.getElementById(id);
 async function main() {
