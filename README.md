@@ -32,12 +32,12 @@ Google Driveに作成した管理フォルダ・スプレッドシートの場�
 1. `docs/sheets/` の9ファイルをGoogleスプレッドシートにインポートし、シート名をファイル名に合わせます。
 2. 同梱データはモック由来の参考値です。価格・対応モデル・機能の組み合わせを公式情報と照合し、各行の `checked_at` / `verified_at` を更新します。`meta.data_note` はデータ品質に応じて更新してください。
 3. 各シートを「ファイル → 共有 → ウェブに公開」でCSVとして公開します。ファイル全体の編集URLや、ログインが必要なURLは使いません。
-4. GitHubリポジトリの **Settings → Secrets and variables → Actions → Variables** に `PUBLISHED_SHEETS_URL` を作成し、公開ページの `.../pubhtml` URLを設定します。これは公開URLなのでSecretではなくRepository variableを使います。デプロイ時に8タブのCSV URLへ変換し、公開用 `config.js` を生成します。
+4. GitHubリポジトリの **Settings → Secrets and variables → Actions → Variables** に `PUBLISHED_SHEETS_URL` を作成し、公開ページの `.../pubhtml` URLを設定します。これは公開URLなのでSecretではなくRepository variableを使います。`CONTACT_EMAIL` は問い合わせ先として各ページに表示します。デプロイ時に9タブのCSV URLと問い合わせリンクを公開サイトへ反映します。
 5. サイトを再読み込みし、公開CSVから読み込んだ表示を確認します。料金または `param_map` を変更して再読み込みし、反映を確認してください。Google側の公開CSV反映には遅延が生じる場合があります。
 
 データの適用日は日本時間の当日、開始・終了日は両端を含みます。期限切れで通常料金のないモデルは選択肢に出しません。重複期間・長文料金の欠落・無効なデータは全シートを予備データに切り替え、混在する版で計算しません。
 
-`data/fallback.json` は8シートを配列で保持した同じ正規化前スキーマです。オンラインデータを自動で端末に保存する仕様ではありません。運営者が確認済みのスナップショットに置き換え、公開時に同梱してください。CSV雛形は `node scripts/export-csv.mjs` で再出力できます。
+`data/fallback.json` は9シートを配列で保持した同じ正規化前スキーマです。オンラインデータを自動で端末に保存する仕様ではありません。運営者が確認済みのスナップショットに置き換え、公開時に同梱してください。CSV雛形は `node scripts/export-csv.mjs` で再出力できます。
 
 パラメーターの初期数値は `assets/data.js` の `BASE` にあります。コードに出すパラメーターは `param_map.default` / `min` / `max` で上書きできます。`transform` は `round_up_256,cap_model_max` のようなカンマ区切りです。新しいUI項目は `params` から生成されますが、新しい種類の課金機能・APIの外枠を追加する場合は計算／テンプレートの拡張が必要です。
 

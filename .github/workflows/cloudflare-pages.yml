@@ -29,6 +29,7 @@ jobs:
         env:
           PUBLISHED_SHEETS_URL: ${{ vars.PUBLISHED_SHEETS_URL }}
           GA4_MEASUREMENT_ID: ${{ vars.GA4_MEASUREMENT_ID }}
+          CONTACT_EMAIL: ${{ vars.CONTACT_EMAIL }}
       - name: Deploy Cloudflare Pages
         run: npx --yes wrangler@4 pages deploy public --project-name zinsei-lab --branch main
         env:

@@ -12,7 +12,7 @@
 
 GitHub Pagesのサイトはインターネットで公開されます。リポジトリも現在Publicです。秘密情報をコミットしないでください。GA4などの計測IDは公開情報なので `public/api-cost/config.js` に設定できますが、APIキーは置きません。
 
-料金データは、リポジトリの **Settings → Secrets and variables → Actions → Variables** に作成した `PUBLISHED_SHEETS_URL` からデプロイ時に設定します。値はスプレッドシートの `.../pubhtml` URLです。公開URLなのでRepository variableを使い、Secretにはしません。デプロイ時に各タブのCSV URLへ変換して公開用 `config.js` を生成します。
+料金データと問い合わせ先は、リポジトリの **Settings → Secrets and variables → Actions → Variables** に作成した `PUBLISHED_SHEETS_URL` と `CONTACT_EMAIL` からデプロイ時に設定します。値はスプレッドシートの `.../pubhtml` URLです。公開URLなのでRepository variableを使い、Secretにはしません。デプロイ時に各タブのCSV URLへ変換して公開用 `config.js` を生成します。
 
 ## ローカル検証
 
@@ -22,7 +22,7 @@ npm run prepare:site
 npm run check -- --production
 ```
 
-`prepare:site` は公開ルートURLからホームとアプリのcanonical、OGP URL、robots.txt、sitemap.xmlを作成し、アプリの共有リンク用URLも合わせます。GitHub Pagesのワークフローは現在のプロジェクトサイトURLを渡し、Cloudflare Pagesのワークフローは `zinsei-lab.com` を使います。運営者名と問い合わせ先が未設定の間は `npm run check -- --production` が失敗します。料金CSVはRepository variableから設定済みですが、GA4測定IDは未設定です。運営者情報を整えてから本番利用してください。
+`prepare:site` は公開ルートURLからホームとアプリのcanonical、OGP URL、robots.txt、sitemap.xmlを作成し、アプリの共有リンク用URLも合わせます。GitHub Pagesのワークフローは現在のプロジェクトサイトURLを渡し、Cloudflare Pagesのワークフローは `zinsei-lab.com` を使います。問い合わせ先メールアドレスは `CONTACT_EMAIL` から各ページへ差し込みます。
 
 ## GA4を設定する
 

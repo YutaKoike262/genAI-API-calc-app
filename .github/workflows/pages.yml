@@ -36,6 +36,7 @@ jobs:
         env:
           PUBLISHED_SHEETS_URL: ${{ vars.PUBLISHED_SHEETS_URL }}
           GA4_MEASUREMENT_ID: ${{ vars.GA4_MEASUREMENT_ID }}
+          CONTACT_EMAIL: ${{ vars.CONTACT_EMAIL }}
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
       - name: Upload site artifact

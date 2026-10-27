@@ -33,6 +33,8 @@ if (process.env.PUBLISHED_SHEETS_URL) {
 }
 const measurementId=process.env.GA4_MEASUREMENT_ID?.trim() || '';
 if (measurementId && !/^G-[A-Z0-9]+$/.test(measurementId)) throw Error('GA4_MEASUREMENT_ID は G- で始まる測定IDにしてください');
+const contactEmail=process.env.CONTACT_EMAIL?.trim() || '';
+if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(contactEmail)) throw Error('CONTACT_EMAIL に公開用の問い合わせメールアドレスを設定してください');
 configText=configText.replace(/(ga4MeasurementId:\s*)'[^']*'/,`$1${JSON.stringify(measurementId)}`);
 await writeFile(configPath,configText);
 const escape=s=>s.replaceAll('&','&amp;').replaceAll('"','&quot;').replaceAll('<','&lt;');
@@ -44,6 +46,7 @@ const pages=[
 for(const page of pages) {
  const canonical=new URL(page.url,base).href;
  let html=await readFile('public/'+page.file,'utf8');
+ html=html.replaceAll('<span data-contact></span>',`<a href="mailto:${escape(contactEmail)}">${escape(contactEmail)}</a>`);
  html=html.replace(/\s*<link rel="canonical"[^>]*>/g,'').replace(/\s*<meta property="og:url"[^>]*>/g,'');
  html=html.replace(/<meta property="og:image"[^>]*>/,`<meta property="og:image" content="${escape(new URL(page.image,base).href)}">`);
  html=html.replace('</head>',`<link rel="canonical" href="${escape(canonical)}"><meta property="og:url" content="${escape(canonical)}"></head>`);
