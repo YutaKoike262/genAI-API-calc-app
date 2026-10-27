@@ -11,7 +11,7 @@ npm test
 npm run check
 ```
 
-テストには Node.js 22以上、Python 3、bash を使います。サイト自体はES Modules・fetch対応のブラウザで動作します。ファイルを直接開く `file://` ではなくHTTPでプレビューしてください。
+テストには Node.js 24以上、Python 3、bash を使います。Node.jsのメジャーバージョンは `.nvmrc` とGitHub Actionsで24に揃えています。サイト自体はES Modules・fetch対応のブラウザで動作します。ファイルを直接開く `file://` ではなくHTTPでプレビューしてください。
 
 ## 実装済み
 
