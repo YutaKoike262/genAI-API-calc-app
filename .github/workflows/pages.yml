@@ -35,6 +35,7 @@ jobs:
         run: npm run prepare:site -- https://yutakoike262.github.io/genAI-API-calc-app/
         env:
           PUBLISHED_SHEETS_URL: ${{ vars.PUBLISHED_SHEETS_URL }}
+          GA4_MEASUREMENT_ID: ${{ vars.GA4_MEASUREMENT_ID }}
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
       - name: Upload site artifact

@@ -43,7 +43,7 @@ Google Driveに作成した管理フォルダ・スプレッドシートの場�
 
 ## GA4・広告
 
-- `api-cost/config.js` に `ga4MeasurementId` を設定します。空欄ではGA4へ通信しません。
+- GitHub Actionsの **Settings → Secrets and variables → Actions → Variables** に `GA4_MEASUREMENT_ID` を設定します。デプロイ時に公開用 `config.js` へ反映されます。これは公開IDなのでSecretではなくRepository variableを使います。未設定ならGA4へ通信しません。
 - GA4管理画面の拡張計測機能をOFFにし、このアプリの手動イベントで計測します。Googleシグナルと広告パーソナライズはGA4側で無効にしています。
 - 利用者が分析に同意するまでGoogleタグは読み込みません。本文を含む `change_param.value` は送信しません。`p` / `sys` は復元後のアドレスと計測URLから除外し、参照元も同様に処理します。同意前の操作は後から送信しません。
 - `?debug=1` で開くと画面内ログが現れ、同意後のイベントには `debug_mode` が付きます。計測IDを設定し、同意した状態で設計書8章の10イベントをDebugViewで確認してください。コピー／共有イベントは成功時のみ送ります。
@@ -55,7 +55,7 @@ Google Driveに作成した管理フォルダ・スプレッドシートの場�
 
 Cloudflare Pagesへの公開手順は [`docs/cloudflare-pages-deploy.md`](docs/cloudflare-pages-deploy.md) に記録しています。
 
-1. 公開CSVは `PUBLISHED_SHEETS_URL` Repository variableからデプロイ時に設定します。GA4は測定IDを `public/api-cost/config.js` に設定後、利用者の同意を得て計測します。
+1. 公開CSVは `PUBLISHED_SHEETS_URL`、GA4測定IDは `GA4_MEASUREMENT_ID` のRepository variableからデプロイ時に設定します。GA4は測定ID設定後、利用者の同意を得て計測します。
 2. 次を実行します。SEOのURLを書き込む準備であり、アプリのビルドはありません。
 
    ```sh
