@@ -22,7 +22,7 @@ npm run check
 - 共有URLのオプトイン、UTF-8 base64url、1,000文字制限、範囲検証、データ版の比較
 - 明示的な生成と、設定変更時の再生成案内。言語切替は最後に生成した設定を維持
 - GA4イベント、同意の既定拒否、入力本文の除去、デバッグ表示
-- AdSenseの3枠、プライバシー・運営者・使い方、ライト／ダーク、390pxの固定サマリーバー
+- AdSenseの3枠、プライバシー・ツール概要・使い方、ライト／ダーク、390pxの固定サマリーバー
 - OGP画像、robots、sitemapとcanonicalの準備スクリプト
 
 ## データを接続する
@@ -53,9 +53,9 @@ Google Driveに作成した管理フォルダ・スプレッドシートの場�
 
 ## 公開する
 
-GitHub Pagesへの現行公開手順は [`docs/github-pages-deploy.md`](docs/github-pages-deploy.md)、Cloudflare Pagesへの移行手順は [`docs/cloudflare-pages-deploy.md`](docs/cloudflare-pages-deploy.md) に記録しています。
+Cloudflare Pagesへの公開手順は [`docs/cloudflare-pages-deploy.md`](docs/cloudflare-pages-deploy.md) に記録しています。
 
-1. 公開CSVは `PUBLISHED_SHEETS_URL` Repository variableからデプロイ時に設定します。運営者情報 (`operator.name` / `operator.contactUrl`) は `public/api-cost/config.js` で設定します。
+1. 公開CSVは `PUBLISHED_SHEETS_URL` Repository variableからデプロイ時に設定します。GA4は測定IDを `public/api-cost/config.js` に設定後、利用者の同意を得て計測します。
 2. 次を実行します。SEOのURLを書き込む準備であり、アプリのビルドはありません。
 
    ```sh
@@ -64,12 +64,12 @@ GitHub Pagesへの現行公開手順は [`docs/github-pages-deploy.md`](docs/git
    npm test
    ```
 
-3. GitHub Pagesの現行公開先、またはCloudflare Pagesの移行手順に従って `public` をデプロイします。
+3. Cloudflare Pagesの手順に従って `public` をデプロイします。
 4. 公開後、実際のCSV、GA4 DebugView、AdSense、共有URL、OGPを確認します。
 
-GitHub PagesはGitHub Actionsのカスタムワークフローから静的成果物を公開します。公式確認の記録は `docs/verification.md` を参照してください。
+Cloudflare PagesへのデプロイはGitHub Actionsから行います。
 
-現行公開URLは [GitHub Pages](https://yutakoike262.github.io/genAI-API-calc-app/) です。独自ドメインを取得後、Cloudflare Pagesを本番公開先に切り替える予定です。現在、公開CSV・計測ID・広告ID・運営者情報は未設定で、同梱の参考データを表示します。運営者名と連絡先が揃うまで `npm run check -- --production` は失敗します。
+本番公開先は [https://zinsei-lab.com/](https://zinsei-lab.com/) です。計測ID・広告IDは未設定の場合、各機能は読み込まれません。
 
 ## 構成
 

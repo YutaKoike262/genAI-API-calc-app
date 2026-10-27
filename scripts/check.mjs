@@ -17,7 +17,6 @@ for(const file of ['api-cost/config.js',...(await readdir('public/api-cost/asset
 normalizeTables(JSON.parse(await readFile('public/api-cost/data/fallback.json','utf8')));
 if(process.argv.includes('--production')) {
  if(!CONFIG.siteUrl.startsWith('https://'))throw Error('本番siteUrl未設定');
- if(!CONFIG.operator.name || !CONFIG.operator.contactUrl)throw Error('運営者情報未設定');
  if(Object.values(CONFIG.csv).some(v=>!v.startsWith('https://docs.google.com/')))throw Error('公開CSVが未設定');
  if(!(await readFile('public/sitemap.xml','utf8')).includes('<loc>'))throw Error('npm run prepare:site が必要です');
 }

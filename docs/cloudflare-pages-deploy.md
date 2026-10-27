@@ -27,4 +27,4 @@ npm run check
 PUBLISHED_SHEETS_URL='https://docs.google.com/spreadsheets/d/e/.../pubhtml' npm run prepare:site -- https://your-domain/
 ```
 
-運営者情報と公開CSVが揃うまで `npm run check -- --production` は成功しません。料金表は公式情報を照合するまで参考値として扱ってください。
+公開CSVが設定済みかを `npm run check -- --production` で確認します。料金表は公式情報を照合するまで参考値として扱ってください。

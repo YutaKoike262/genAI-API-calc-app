@@ -8,5 +8,4 @@ export const CONFIG = {
   fetchTimeoutMs: 8000,
   ga4MeasurementId: '', // G-XXXXXXXXXX。空欄ならGoogleへ通信しません。
   adsense: { client: '', slots: { top: '', result: '', bottom: '' } },
-  operator: { name: '', contactUrl: '' },
 };
