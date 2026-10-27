@@ -4,8 +4,8 @@
 
 ## 初回設定
 
-1. Cloudflareアカウントのメール確認と支払い方法の登録を済ませます。Pagesの静的ファイル配信は無料枠で利用できますが、独自ドメインの登録料・更新料は別途かかります。
-2. CloudflareでPagesプロジェクト `jinsei-lab` を作り、直接アップロードを選びます。GitHub Actionsが初回デプロイします。
+1. Cloudflareアカウントのメール確認を済ませます。独自ドメイン `zinsei-lab.com` はCloudflareのドメイン一覧に表示されています。Pagesの静的ファイル配信は無料枠で利用できます。
+2. Cloudflareの **Workers & Pages → Create application → Pages → Upload assets** からPagesプロジェクト `jinsei-lab` を作ります。GitHub Actionsからデプロイするための入れ物です。
 3. CloudflareのAccount IDと、Pagesにデプロイできる権限のAPIトークンを用意します。
 4. GitHubリポジトリの **Settings → Secrets and variables → Actions → Secrets** に `CLOUDFLARE_ACCOUNT_ID` と `CLOUDFLARE_API_TOKEN` を登録します。
 5. 同じ画面の **Variables** に `PUBLISHED_SHEETS_URL` を登録します。値はGoogle Sheetsの公開ページ (`https://docs.google.com/spreadsheets/d/e/.../pubhtml`) です。これは公開URLなのでSecretにはしません。デプロイ時に7タブ分のCSV URLへ変換して `config.js` に反映します。
@@ -13,7 +13,7 @@
 
 ## 独自ドメイン
 
-`jinsei-lab.com` をCloudflare Registrarで取得後、Cloudflare Pagesのプロジェクトで **Custom domains → Set up a custom domain** を開き、`jinsei-lab.com` を追加します。GitHub ActionsのCloudflareデプロイは `siteRootUrl` の `https://jinsei-lab.com/` を使い、ホームとアプリのcanonical、OGP URL、robots.txt、sitemap.xml、アプリ内の共有URLを作ります。GitHub Pages用ビルドは別のプロジェクトURLを生成するので、既存の確認用サイトもそのまま動作します。
+Pagesプロジェクト作成後、**Custom domains → Set up a custom domain** を開き、`zinsei-lab.com` を追加します。GitHub ActionsのCloudflareデプロイは `siteRootUrl` の `https://zinsei-lab.com/` を使い、ホームとアプリのcanonical、OGP URL、robots.txt、sitemap.xml、アプリ内の共有URLを作ります。GitHub Pages用ビルドは別のプロジェクトURLを生成するので、既存の確認用サイトもそのまま動作します。
 
 ## 自動デプロイ
 

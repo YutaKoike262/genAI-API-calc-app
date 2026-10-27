@@ -1,8 +1,8 @@
 <!doctype html>
 <html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="referrer" content="no-referrer">
 <title>使い方 | API料金メーター</title><meta name="description" content="API月額料金の計算、キャッシュ・検索・バッチ設定、コード生成、共有URLの使い方。">
-<meta property="og:type" content="website"><meta property="og:locale" content="ja_JP"><meta property="og:title" content="使い方 | API料金メーター"><meta property="og:description" content="API月額料金の計算、キャッシュ・検索・バッチ設定、コード生成、共有URLの使い方。"><meta property="og:image" content="https://jinsei-lab.com/api-cost/assets/og.png"><meta name="twitter:card" content="summary_large_image">
-<link rel="stylesheet" href="assets/app.css"><link rel="icon" href="assets/icon.svg" type="image/svg+xml"><link rel="canonical" href="https://jinsei-lab.com/api-cost/guide.html"><meta property="og:url" content="https://jinsei-lab.com/api-cost/guide.html"></head><body>
+<meta property="og:type" content="website"><meta property="og:locale" content="ja_JP"><meta property="og:title" content="使い方 | API料金メーター"><meta property="og:description" content="API月額料金の計算、キャッシュ・検索・バッチ設定、コード生成、共有URLの使い方。"><meta property="og:image" content="https://zinsei-lab.com/api-cost/assets/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="stylesheet" href="assets/app.css"><link rel="icon" href="assets/icon.svg" type="image/svg+xml"><link rel="canonical" href="https://zinsei-lab.com/api-cost/guide.html"><meta property="og:url" content="https://zinsei-lab.com/api-cost/guide.html"></head><body>
 <main class="wrap article"><nav><a href="./">← API料金メーター</a></nav><h1>使い方</h1>
 <section><h2>1. モデルと使用量を選ぶ</h2><p>会社とモデルを選び、プロンプト、1回の出力トークン数、1日のリクエスト数を入力します。月額は30日分として計算します。</p><p>入力トークンはASCII約4文字で1トークン、それ以外は約1文字で1トークンという目安です。厳密なトークナイザーによる計算ではありません。</p></section>
 <section><h2>2. 詳細設定で条件を合わせる</h2><p>システムプロンプト、推論の強さ、その他の入力トークン、キャッシュヒット率、検索回数、バッチ処理を設定できます。キャッシュ書き込みや保存の料金は含みません。バッチ料金が登録されていないモデルではバッチを選択できません。</p><p>推論の強さだけでは出力トークン数を自動補正しません。出力の値には思考トークンも含めて設定してください。検索回数は見積もりの想定値で、モデルが実際に呼び出す回数とは異なる場合があります。</p><p>各社のAPIやモデルにより、バッチ・検索・推論設定の組み合わせに制限があります。利用時には公式仕様も確認してください。</p></section>

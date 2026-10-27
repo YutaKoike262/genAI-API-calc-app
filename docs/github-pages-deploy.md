@@ -1,6 +1,6 @@
 # GitHub Pages 公開手順
 
-この静的サイトはGitHub PagesとGitHub Actionsで公開します。`main` に反映すると、テスト後に `public/` をデプロイします。ホームは `https://yutakoike262.github.io/genAI-API-calc-app/`、API料金メーターはその下の `api-cost/` にあります。Cloudflare Pagesへ移行後は `https://jinsei-lab.com/` をホーム、`https://jinsei-lab.com/api-cost/` をアプリにする予定です。
+この静的サイトはGitHub PagesとGitHub Actionsで公開します。`main` に反映すると、テスト後に `public/` をデプロイします。ホームは `https://yutakoike262.github.io/genAI-API-calc-app/`、API料金メーターはその下の `api-cost/` にあります。Cloudflare Pagesへ移行後は `https://zinsei-lab.com/` をホーム、`https://zinsei-lab.com/api-cost/` をアプリにする予定です。
 
 初回デプロイは完了し、トップページ、各案内ページ、JS、フォールバックデータ、robots.txt、sitemap.xmlがHTTP 200を返すことを確認済みです。
 
@@ -22,7 +22,7 @@ npm run prepare:site
 npm run check -- --production
 ```
 
-`prepare:site` は公開ルートURLからホームとアプリのcanonical、OGP URL、robots.txt、sitemap.xmlを作成し、アプリの共有リンク用URLも合わせます。GitHub Pagesのワークフローは現在のプロジェクトサイトURLを渡し、Cloudflare Pagesのワークフローは `jinsei-lab.com` を使います。運営者名と問い合わせ先が未設定の間は `npm run check -- --production` が失敗します。GA4測定IDと料金CSVも現在未設定なので、運営者情報とデータを整えてから本番利用してください。
+`prepare:site` は公開ルートURLからホームとアプリのcanonical、OGP URL、robots.txt、sitemap.xmlを作成し、アプリの共有リンク用URLも合わせます。GitHub Pagesのワークフローは現在のプロジェクトサイトURLを渡し、Cloudflare Pagesのワークフローは `zinsei-lab.com` を使います。運営者名と問い合わせ先が未設定の間は `npm run check -- --production` が失敗します。料金CSVはRepository variableから設定済みですが、GA4測定IDは未設定です。運営者情報を整えてから本番利用してください。
 
 ## GA4を設定する
 
