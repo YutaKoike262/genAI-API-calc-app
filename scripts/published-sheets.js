@@ -3,6 +3,7 @@ const gids = {
   models: '310809832',
   prices: '1840063554',
   image_prices: '978297325',
+  video_prices: '1965804420',
   features: '249243574',
   params: '1380295079',
   param_map: '918052018',

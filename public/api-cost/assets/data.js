@@ -1,4 +1,4 @@
-export const SHEETS = ['providers', 'models', 'prices', 'image_prices', 'features', 'params', 'param_map', 'meta'];
+export const SHEETS = ['providers', 'models', 'prices', 'image_prices', 'video_prices', 'features', 'params', 'param_map', 'meta'];
 const BASE = {
   prompt: { def: null }, max_output: { def: 800, min: 1, max: 1000000 },
   requests_per_day: { def: 500, min: 0, max: 100000000 }, system: { def: '' },
@@ -76,7 +76,7 @@ export function normalizeTables(tables, { day = todayJST(), siteUrl = 'http://lo
   const scheduled = rows => rows.map(r => {
     const from = date(r.effective_from), to = date(r.effective_to); date(r.checked_at);
     if (from && to && from > to) throw Error('適用期間が不正です');
-    return { ...r, effective_from: from, effective_to: to };
+    return { ...r, effective_from: from, effective_to: to, checked_at:date(r.checked_at) };
   });
   const features = scheduled(tables.features);
   for (const r of features.filter(r => active(r, day))) {
@@ -95,6 +95,12 @@ export function normalizeTables(tables, { day = todayJST(), siteUrl = 'http://lo
   });
   const imagePriceKey = r => [r.model_id,r.image_size,r.mode].join(':');
   if (new Set(image_prices.filter(r => active(r, day)).map(imagePriceKey)).size !== image_prices.filter(r => active(r, day)).length) throw Error('画像料金の適用期間が重複しています');
+  const video_prices = scheduled(tables.video_prices).map(r => {
+    if (!tables.models.some(m => m.model_id === r.model_id) || !['720p','1080p','4k'].includes(r.resolution) || r.mode !== 'standard' || r.unit !== 'per_second') throw Error('video_prices の参照または区分が不正です');
+    return { ...r, price:number(r.price, 'video.price'), input_text_per_million:number(r.input_text_per_million, 'video.input_text_per_million'), source_url:validUrl(r.source_url) };
+  });
+  const activeVideoPrices = video_prices.filter(r => active(r, day));
+  if (new Set(activeVideoPrices.map(r => `${r.model_id}:${r.resolution}`)).size !== activeVideoPrices.length) throw Error('動画料金の適用期間が重複しています');
   function tiersAt(m, mode, at) {
     const rows = prices.filter(r => r.model_id === m.model_id && r.mode === mode && active(r, at));
     if (!rows.length) return [];
@@ -107,20 +113,28 @@ export function normalizeTables(tables, { day = todayJST(), siteUrl = 'http://lo
   const models = [...tables.models].sort((a, b) => Number(a.sort || 0) - Number(b.sort || 0)).flatMap(m => {
     if (!providers[m.provider_id] || !['current', 'legacy', 'preview', 'hidden'].includes(m.status)) throw Error('models が不正です');
     if (m.status === 'hidden') return [];
-    const tiers = tiersAt(m, 'standard', day); if (!tiers.length) return [];
+    const kind = m.media_kind || 'text';
+    if (!['text','image','video','speech'].includes(kind)) throw Error('media_kind が不正です');
+    const tiers = kind === 'video' ? [] : tiersAt(m, 'standard', day);
+    if (kind !== 'video' && !tiers.length) return [];
     const batch_tiers = tiersAt(m, 'batch', day);
     const dates = [...new Set(prices.filter(r => r.model_id === m.model_id && r.effective_from > day).map(r => r.effective_from))].sort();
     const next = dates.find(at => tiersAt(m, 'standard', at).length);
-    const checked = [...tiers, ...batch_tiers].map(t => t.checked_at || '').sort()[0];
+    const active_video_prices = activeVideoPrices.filter(r => r.model_id === m.model_id);
+    const checked = [...tiers, ...batch_tiers, ...active_video_prices].map(t => t.checked_at || '').sort()[0];
     const active_image_prices = image_prices.filter(r => r.model_id === m.model_id && active(r,day));
     const ratesByMode = mode => active_image_prices.filter(r => r.mode === mode);
     if (active_image_prices.length && !['1K','2K','4K'].every(size => ratesByMode('standard').some(r => r.image_size === size))) throw Error('画像料金にstandardの1K/2K/4K単価が必要です');
-    return [{ ...m, id: m.model_id, p: m.provider_id, label: required(m.label, 'label'), max_output: number(m.max_output, 'max_output'), tiers, batch_tiers,
-      image_prices:active_image_prices,
+    if (kind === 'image' && !active_image_prices.length) throw Error('画像モデルに画像料金がありません');
+    if (kind === 'video' && !active_video_prices.some(r => r.resolution === '720p')) throw Error('動画モデルに720p料金がありません');
+    const audio_tokens_per_second = number(m.audio_tokens_per_second, 'audio_tokens_per_second', 0);
+    if (kind === 'speech' && !audio_tokens_per_second) throw Error('音声トークン換算値がありません');
+    return [{ ...m, id: m.model_id, p: m.provider_id, kind, label: required(m.label, 'label'), max_output: number(m.max_output, 'max_output', 0), audio_tokens_per_second, tiers, batch_tiers,
+      image_prices:active_image_prices, video_prices:active_video_prices,
       checked_at: checked, needs_review: !checked || Date.parse(day) - Date.parse(checked) >= 30 * 86400000,
       future: next ? { from: next, tiers: tiersAt(m, 'standard', next), batch_tiers: tiersAt(m, 'batch', next) } : null }];
   });
-  if (!models.length || models.some(m => !m.max_output)) throw Error('有効なモデルがありません');
+  if (!models.length || models.some(m => ['text','image'].includes(m.kind) && !m.max_output)) throw Error('有効なモデルがありません');
   const params = [...tables.params].sort((a,b) => Number(a.sort || 0) - Number(b.sort || 0)).map(r => {
     if (!['select','number','text','textarea','toggle'].includes(r.ui_type) || !['basic','advanced'].includes(r.group)) throw Error('params が不正です');
     if (r.share_key && !safeKey(r.share_key)) throw Error('share_key が不正です');
@@ -155,16 +169,16 @@ export function normalizeTables(tables, { day = todayJST(), siteUrl = 'http://lo
     const relevant = param_map.filter(r => r.scope === 'provider:' + m.p || r.scope === 'model:' + m.id);
     for (const p of params.filter(p => p.ui === 'number')) {
       const r = relevant.findLast(r => r.param === p.id && r.scope.startsWith('model:')) || relevant.find(r => r.param === p.id);
-      const min = Math.max(p.min ?? 0, r?.min ?? 0);
+      const min = p.id === 'max_output' && m.kind !== 'text' ? 0 : Math.max(p.min ?? 0, r?.min ?? 0);
       const max = Math.min(p.max ?? 1000000, r?.max ?? Infinity, p.id === 'max_output' ? m.max_output : Infinity);
       if (min > max) throw Error('モデルに対する数値範囲が不正です');
     }
     for (const p of params.filter(p => p.ui === 'select')) {
       const r = relevant.findLast(r => r.param === p.id && r.scope.startsWith('model:')) || relevant.find(r => r.param === p.id);
-      if (!r && p.id === 'image_size' && !m.image_prices.length) continue;
+      if (!r && ['image_size','video_resolution','video_duration'].includes(p.id)) continue;
       if (!r?.values || (r.def !== undefined && !r.values.split('|').includes(r.def))) throw Error('選択肢の初期値が不正です');
     }
-    for (const id of ['prompt', 'max_output']) if (!relevant.some(r => r.param === id && r.path && r.emit !== 'never')) throw Error('コード生成に必要なマッピングがありません');
+    if (m.kind === 'text') for (const id of ['prompt', 'max_output']) if (!relevant.some(r => r.param === id && r.path && r.emit !== 'never')) throw Error('コード生成に必要なマッピングがありません');
   }
   const default_model = models.some(m => m.id === meta.default_model) ? meta.default_model : models[0].id;
   return { meta, providers, models, params, param_map, default_model, default_prompt:meta.default_prompt || 'この商品レビューを3行で要約してください。' };

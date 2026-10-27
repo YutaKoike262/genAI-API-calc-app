@@ -39,6 +39,21 @@ test('Nano Banana image pricing uses per-image size and batch rates',()=>{
  approx(batch.perReq,.1134);approx(batch.monthly,34.02);
  assert.equal(standard.imageRate.image_size,'1K');assert.equal(batch.imageRate.image_size,'4K');
 });
+test('Gemini Omni video cost follows generated seconds and text input',()=>{
+ const m=data.models.find(m=>m.id==='gemini-omni-1.1-flash');
+ const v={...engine.defaults(m),requests_per_day:2,video_duration:'8',prompt:''};
+ const r=engine.calc(m,v);approx(r.perReq,.81088);approx(r.monthly,48.6528);
+ const short=engine.calc(m,{...v,video_duration:'3',prompt:'hello'});approx(short.perReq,.30408 + .0000015);
+ assert.throws(()=>engine.calc(m,{...v,video_duration:'2'}));
+ assert.equal(engine.normalizeValues(m,{...v,video_duration:'11'}).video_duration,'8');
+});
+test('Gemini speech cost uses text and generated audio tokens, including scheduled rate',()=>{
+ const current=make(raw,'2026-10-28'),e=createEngine(current),m=current.models.find(m=>m.id==='gemini-3.8-flash-lite-tts');
+ const v={...e.defaults(m),prompt:'',speech_seconds:10,requests_per_day:2};
+ approx(e.calc(m,v).perReq,.0015);approx(e.calc(m,{...v,batch:true}).perReq,.00075);
+ const future=make(raw,'2027-01-01'),f=createEngine(future),fm=future.models.find(x=>x.id===m.id);
+ approx(f.calc(fm,v).perReq,.003);
+});
 test('long threshold is strictly greater and batch uses explicit rates',()=>{
  const tables=structuredClone(raw); const id='claude-haiku-5-5';
  const price=tables.prices.find(p=>p.model_id===id && p.tier==='base' && p.mode==='batch');price.input=7;price.output=11;price.cache_read=3;

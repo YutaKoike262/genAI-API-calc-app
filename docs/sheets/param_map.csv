@@ -26,3 +26,5 @@
 "model:gemini-nano-banana-2.1","image_size","","1K|2K|4K","1K","","","never","","none","","2026-10-28","https://ai.google.dev/gemini-api/docs/image-generation"
 "model:gemini-nano-banana-2.1","cache","","","0","0","0","never","","none","このモデルではキャッシュ料金・機能を計上しません。","2026-10-28","https://ai.google.dev/gemini-api/docs/models/gemini-nano-banana-2.1"
 "model:gemini-nano-banana-2.1","effort","generation_config.thinking_level","minimal|medium|high","medium","","","always","","none","","2026-10-28","https://ai.google.dev/gemini-api/docs/models/gemini-nano-banana-2.1"
+"model:gemini-3.8-flash-lite-tts","speech_seconds","","","30","1","3600","never","","none","","2026-10-28","https://ai.google.dev/gemini-api/docs/speech-generation"
+"model:gemini-omni-1.1-flash","video_duration","","3|4|5|6|7|8|9|10","8","","","never","","none","","2026-10-28","https://ai.google.dev/gemini-api/docs/models/gemini-omni-flash"

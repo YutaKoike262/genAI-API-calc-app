@@ -1,12 +1,15 @@
-"param_id","label","ui_type","group","sort","unit","affects_cost","help","share_key","share_optin"
-"prompt","プロンプト","textarea","basic","1","","none","","p","true"
-"max_output","出力トークン / 回","number","basic","2","トークン","none","","out","false"
-"requests_per_day","1日のリクエスト数","number","basic","3","回","none","","rpd","false"
-"system","システムプロンプト","textarea","advanced","4","","none","","sys","true"
-"effort","推論の強さ","select","advanced","5","","none","","effort","false"
-"extra_input","その他の入力","number","advanced","6","トークン","none","","ctx","false"
-"cache","キャッシュヒット率","number","advanced","7","%","none","","cache","false"
-"web_search","Web検索 / 回","number","advanced","8","回","none","","ws","false"
-"batch","バッチ処理","toggle","advanced","9","","none","","batch","false"
-"image_count","生成画像数 / 回","number","basic","10","枚","none","1回のAPIリクエストで生成する画像の枚数です。画像生成モデルでのみ表示します。","imgn","FALSE"
-"image_size","生成画像のサイズ","select","basic","11","","none","公式料金表に記載された画像サイズごとの単価を適用します。","imgsz","FALSE"
+param_id,label,ui_type,group,sort,unit,affects_cost,help,share_key,share_optin
+prompt,プロンプト,textarea,basic,1,,none,,p,TRUE
+max_output,出力トークン / 回,number,basic,2,トークン,none,,out,FALSE
+requests_per_day,1日のリクエスト数,number,basic,3,回,none,,rpd,FALSE
+system,システムプロンプト,textarea,advanced,4,,none,,sys,TRUE
+effort,推論の強さ,select,advanced,5,,none,,effort,FALSE
+extra_input,その他の入力,number,advanced,6,トークン,none,,ctx,FALSE
+cache,キャッシュヒット率,number,advanced,7,%,none,,cache,FALSE
+web_search,Web検索 / 回,number,advanced,8,回,none,,ws,FALSE
+batch,バッチ処理,toggle,advanced,9,,none,,batch,FALSE
+image_count,生成画像数 / 回,number,basic,10,枚,none,1回のAPIリクエストで生成する画像の枚数です。画像生成モデルでのみ表示します。,imgn,FALSE
+image_size,生成画像のサイズ,select,basic,11,,none,公式料金表に記載された画像サイズごとの単価を適用します。,imgsz,FALSE
+video_duration,動画の長さ,select,basic,12,秒,none,Gemini Omni Flashの生成動画は3〜10秒を指定できます。,vdur,FALSE
+video_resolution,動画の解像度,select,basic,13,,none,Veo 3.1の解像度別の秒単価を使います。,vres,FALSE
+speech_seconds,生成音声の長さ,number,basic,14,秒,none,音声出力は1秒あたり25トークンとして概算します。,ssec,FALSE

@@ -30,13 +30,13 @@ function fieldFor(p) { // params の ui_type から入力部品を作る
     input.value = v;
     input.addEventListener("input", () => { state.vals = normalizeValues(state.model, {...state.vals, [p.id]: input.value}); update(); });
     input.addEventListener("change", () => { input.value = state.vals[p.id]; track("change_param", { param: p.id, value: state.vals[p.id] }); });
-    return el("div", { class: "row" }, el("label", { for: id }, p.label), input, el("span", { class: "unit" }, p.unit || ""));
+    return el("div", { class: "row" }, el("label", { for: id }, p.id === 'max_output' && state.model.kind === 'image' ? '追加のテキスト・思考トークン / 回' : p.label), input, el("span", { class: "unit" }, p.unit || ""));
   }
   if (p.ui === "select") {
     const er = rowsFor(state.model).find(r => r.param === p.id), sel = el("select", { id });
     er.values.split("|").forEach(x => { const o = el("option", { value: x }, x + (x === er.def ? "（初期値）" : "")); sel.append(o); });
     sel.value = v;
-    sel.addEventListener("change", () => { state.vals[p.id] = sel.value; update(); track("change_param", { param: p.id, value: sel.value }); });
+    sel.addEventListener("change", () => { state.vals = normalizeValues(state.model, {...state.vals,[p.id]:sel.value}); update(); track("change_param", { param: p.id, value: sel.value }); });
     return el("div", { class: "row" }, el("label", { for: id }, p.label), sel);
   }
   if (p.ui === "textarea" || p.ui === "text") {
@@ -52,6 +52,12 @@ function fieldFor(p) { // params の ui_type から入力部品を作る
     return el("div", { class: "row" }, el("span", { class: "lbl", id: "l-" + p.id }, p.label), sw);
   }
 }
+function visibleParams(m) {
+  if (m.kind === 'image') return ['image_count','image_size','requests_per_day','max_output','batch'];
+  if (m.kind === 'video') return ['video_duration','requests_per_day'];
+  if (m.kind === 'speech') return ['speech_seconds','requests_per_day','batch'];
+  return DATA.params.filter(p => !['image_count','image_size','video_duration','video_resolution','speech_seconds'].includes(p.id)).map(p => p.id);
+}
 function renderForm() {
   const prov = $("providers"); prov.textContent = "";
   Object.entries(DATA.providers).filter(([k]) => DATA.models.some(m => m.p === k)).forEach(([k, pv]) => {
@@ -60,18 +66,32 @@ function renderForm() {
     prov.append(b);
   });
   const sel = $("model"); sel.textContent = "";
-  DATA.models.filter(m => m.p === state.model.p).forEach(m => sel.append(el("option", { value: m.id }, `${m.label}${m.needs_review ? "（要確認）" : ""}　$${m.tiers[0].input} / $${m.tiers[0].output}`)));
+  DATA.models.filter(m => m.p === state.model.p).forEach(m => {
+    const rate = m.kind === 'video' ? `$${m.video_prices.find(r => r.resolution === '720p').price} / 秒から` : m.kind === 'image' ? `$${m.image_prices.find(r => r.image_size === '1K' && r.mode === 'standard').price} / 枚から` : m.kind === 'speech' ? `$${m.tiers[0].output} / 100万音声トークン` : `$${m.tiers[0].input} / $${m.tiers[0].output}`;
+    sel.append(el("option", { value: m.id }, `${m.label}${m.needs_review ? "（要確認）" : ""}　${rate}`));
+  });
   sel.value = state.model.id;
   const m = state.model;
-  $("modelFtr").textContent = m.id + "・単価は入力 / 出力、USD / 100万トークン" + (m.image_prices?.length ? "・画像生成はサイズ別の1枚単価を加算" : "") + (m.tiers.length > 1 ? "・入力 " + m.tiers[0].upTo.toLocaleString() + " トークン超は高料金" : "") + (m.future ? "・" + m.future.from + " から料金変更予定" : "");
+  $("modelFtr").textContent = m.kind === 'video' ? `${m.id}・720p動画の生成秒数と入力文で概算` : m.kind === 'speech' ? `${m.id}・入力テキストと生成音声のトークン数から概算` : m.kind === 'image' ? `${m.id}・入力テキスト、画像の枚数とサイズで概算` : m.id + "・単価は入力 / 出力、USD / 100万トークン" + (m.tiers.length > 1 ? "・入力 " + m.tiers[0].upTo.toLocaleString() + " トークン超は高料金" : "") + (m.future ? "・" + m.future.from + " から料金変更予定" : "");
+  $("promptTitle").textContent = m.kind === 'video' ? '動画の説明' : m.kind === 'speech' ? '読み上げる文章' : m.kind === 'image' ? '画像の説明' : 'プロンプト';
+  $("p-prompt").setAttribute('aria-label', $("promptTitle").textContent);
   $("p-prompt").value = state.vals.prompt;
+  const visible = visibleParams(m);
   const basic = $("basic"); basic.textContent = "";
-  DATA.params.filter(p => p.group === "basic" && (!['image_count','image_size'].includes(p.id) || rowsFor(state.model).some(r => r.param === p.id))).forEach(p => basic.append(fieldFor(p), ...(p.help ? [el("div",{class:"ftr"},p.help)] : [])));
+  DATA.params.filter(p => visible.includes(p.id) && p.group === 'basic' && !(m.kind === 'image' && p.id === 'max_output')).forEach(p => basic.append(fieldFor(p), ...(p.help ? [el("div",{class:"ftr"},p.help)] : [])));
   const adv = $("advBody"); adv.textContent = "";
-  DATA.params.filter(p => p.group === "advanced" && (!['image_count','image_size'].includes(p.id) || rowsFor(state.model).some(r => r.param === p.id)) && !(state.model.image_prices?.length && p.id === 'cache')).forEach(p => adv.append(fieldFor(p), ...(p.help ? [el("div",{class:"ftr"},p.help)] : [])));
+  const advanced = DATA.params.filter(p => visible.includes(p.id) && (p.group === 'advanced' || m.kind === 'image' && p.id === 'max_output'));
+  advanced.forEach(p => adv.append(fieldFor(p), ...(p.help ? [el("div",{class:"ftr"},p.help)] : [])));
+  $("advSection").hidden = !advanced.length;
+  $("usageNote").hidden = m.kind !== 'text';
+  $("advNote").hidden = m.kind !== 'text';
+  const codeAvailable = m.kind === 'text';
+  $("genBtn").hidden = $("barGen").hidden = $("codeCard").hidden = !codeAvailable;
 }
 function selectModel(m) {
-  state.vals = normalizeValues(m, state.vals);
+  const previousDaily = state.vals.requests_per_day;
+  const dailyWasDefault = previousDaily === defaults(state.model).requests_per_day;
+  state.vals = m.kind === state.model.kind ? normalizeValues(m, state.vals) : normalizeValues(m, {...defaults(m), ...(dailyWasDefault ? {} : {requests_per_day:previousDaily})});
   state.model = m; renderForm(); update();
 }
 
@@ -82,19 +102,26 @@ function update() {
   $("monthlyJpy").textContent = yen(r.monthly);
   $("perReq").textContent = usd(r.perReq); $("perReqJpy").textContent = '約' + Math.round(r.perReq * DATA.meta.fx_usdjpy).toLocaleString('ja-JP') + '円 / 回';
   $("requestCount").textContent = r.monthReq.toLocaleString('ja-JP') + ' 回'; $("perK").textContent = usd(r.perReq * 1000);
-  const rows = [["入力", `$${r.t.input} / 100万`, r.cIn], ["キャッシュ読み出し", `$${r.t.cache} / 100万`, r.cCache], ["出力（思考込み）", `$${r.t.output} / 100万`, r.cOut],
+  let rows;
+  if (m.kind === 'video') rows = [["入力テキスト", `$${r.t.input} / 100万トークン`, r.cIn],[`動画生成（${r.videoSeconds}秒・720p）`, `$${r.videoRate.price} / 秒`, r.cVideo]];
+  else if (m.kind === 'speech') rows = [["入力テキスト", `$${r.t.input} / 100万トークン`, r.cIn], [`生成音声（${r.speechSeconds}秒）`, `$${r.t.output} / 100万音声トークン`, r.cOut]];
+  else if (m.kind === 'image') rows = [["入力テキスト", `$${r.t.input} / 100万トークン`, r.cIn], [`画像生成（${r.imageRate.image_size} × ${r.imageCount}枚）`, `$${r.imageRate.price} / 枚`, r.cImage]];
+  else rows = [["入力", `$${r.t.input} / 100万`, r.cIn], ["キャッシュ読み出し", `$${r.t.cache} / 100万`, r.cCache], ["出力（思考込み）", `$${r.t.output} / 100万`, r.cOut],
     ["Web検索", `$${pv.web_search_per_1k} / 1,000回` + (pv.web_search_free ? `・月${pv.web_search_free.toLocaleString()}回無料` : ""), r.cSearch]];
-  if (r.imageRate) rows.splice(3, 0, [`画像生成（${r.imageRate.image_size} × ${r.imageCount}枚）`, `$${r.imageRate.price} / 枚`, r.cImage]);
+  if (m.kind === 'image' && num(v.max_output)) rows.push(["追加テキスト・思考", `$${r.t.output} / 100万トークン`, r.cOut]);
   $("breakdown").replaceChildren(...rows.map(([k, rate, val]) => el("div", {}, el("span", {}, k + " ", el("small", {}, rate)), el("span", {}, usd(val)))));
   const showFuture = m.future && (!v.batch || m.future.batch_tiers.length);
   $("future").hidden = !showFuture;
   if (showFuture) { const r2 = calc(m, v, m.future.tiers, m.future.batch_tiers); $("future").textContent = `${m.future.from} 以降の公表価格では月額 ${usd(r2.monthly)}（${yen(r2.monthly)}）`; }
-  $("longNote").hidden = !r.long;
+  $("longNote").hidden = m.kind !== 'text' || !r.long;
   if (r.long) $("longNote").textContent = `入力が ${m.tiers[0].upTo.toLocaleString()} トークンを超えるため、長い入力向けの料金で計算しています。`;
   const source = el('a',{href:r.t.source_url || pv.pricing_url,target:'_blank',rel:'noopener noreferrer'},pv.vendor + ' 公式料金ページ');
   $('source').replaceChildren('出典: ', source, `（${m.checked_at || '確認日未登録'} 確認）` + (m.needs_review ? '・要確認（30日以上経過または確認日未登録）' : '') + (v.batch ? '・バッチ料金適用' : ''));
-  $("tokFtr").textContent = `入力トークン概算 / 回: プロンプト ${estTokens(v.prompt).toLocaleString()} + システム ${estTokens(v.system).toLocaleString()} + その他 ${num(v.extra_input).toLocaleString()} = ${r.inTok.toLocaleString()}（目安）` + (r.imageRate ? `。画像生成: ${r.imageCount}枚 / ${r.imageRate.image_size}` : "");
-  const bits = [v.effort]; if (String(v.system || "").trim()) bits.push("システム"); if (num(v.cache)) bits.push(`キャッシュ ${v.cache}%`); if (num(v.web_search)) bits.push(`検索 ×${Math.floor(num(v.web_search))}`); if (v.batch) bits.push("バッチ");
+  $("tokFtr").textContent = m.kind === 'video' ? `動画 ${r.videoSeconds}秒・${r.videoRate.resolution}を1回に1本生成。` : m.kind === 'speech' ? `音声出力 ${r.speechSeconds}秒 × ${m.audio_tokens_per_second}トークン/秒 = ${r.speechSeconds * m.audio_tokens_per_second}トークン / 回。入力文章は約${r.inTok}トークンとして概算。` : m.kind === 'image' ? `画像 ${r.imageCount}枚・${r.imageRate.image_size}。説明文は約${r.inTok}トークンとして概算。` : `入力トークン概算 / 回: プロンプト ${estTokens(v.prompt).toLocaleString()} + システム ${estTokens(v.system).toLocaleString()} + その他 ${num(v.extra_input).toLocaleString()} = ${r.inTok.toLocaleString()}（目安）`;
+  $("resultNote").textContent = m.kind === 'video' ? '公式料金の720p出力トークン換算値（$0.10136/秒）と入力文を含む目安です。実際のトークン使用量で請求額は変わります。' : m.kind === 'speech' ? '音声トークンは生成秒数からの概算です。実際の使用量で請求額は変わります。' : m.kind === 'image' ? '画像生成の単価に加え、説明文の入力トークンを概算しています。' : '';
+  $("resultNote").hidden = m.kind === 'text';
+  const bits = m.kind === 'video' ? [`${r.videoSeconds}秒`, '720p'] : m.kind === 'speech' ? [`${r.speechSeconds}秒`, ...(v.batch ? ['バッチ'] : [])] : m.kind === 'image' ? [`${r.imageCount}枚`,r.imageRate.image_size,...(num(v.max_output) ? ['追加出力あり'] : []),...(v.batch ? ['バッチ'] : [])] : [v.effort];
+  if (m.kind === 'text') { if (String(v.system || "").trim()) bits.push("システム"); if (num(v.cache)) bits.push(`キャッシュ ${v.cache}%`); if (num(v.web_search)) bits.push(`検索 ×${Math.floor(num(v.web_search))}`); if (v.batch) bits.push("バッチ"); }
   $("advSum").textContent = bits.join("・");
   $("shareUrl").textContent = shareUrl(m, v, state.withPrompt);
   $("shareNote").textContent = state.withPrompt ? "プロンプトもURLに入ります。社内情報や個人情報が含まれていないか確認してください。" : "URLには設定値だけが入ります。金額は開いた時点の料金で計算し直されます。";

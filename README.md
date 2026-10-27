@@ -15,7 +15,7 @@ npm run check
 
 ## 実装済み
 
-- 8枚の公開CSVの読み込み、厳密なCSV解析、参照・日付・数値・重複検証、一括フォールバック
+- 9枚の公開CSVの読み込み、厳密なCSV解析、参照・日付・数値・重複検証、一括フォールバック
 - 1回あたりの費用と1日のリクエスト数に応じた月額、通常／バッチ料金、長文料金、無料検索枠、将来料金、確認から30日経過したデータの表示
 - `param_map` のモデル優先、emit、template、変換規則によるコード生成
 - Claude・OpenAI・Gemini × 通常／バッチ × Python・curl・JS
@@ -29,7 +29,7 @@ npm run check
 
 Google Driveに作成した管理フォルダ・スプレッドシートの場所と役割は [`docs/drive-setup.md`](docs/drive-setup.md) に記録しています。
 
-1. `docs/sheets/` の8ファイルをGoogleスプレッドシートにインポートし、シート名をファイル名に合わせます。
+1. `docs/sheets/` の9ファイルをGoogleスプレッドシートにインポートし、シート名をファイル名に合わせます。
 2. 同梱データはモック由来の参考値です。価格・対応モデル・機能の組み合わせを公式情報と照合し、各行の `checked_at` / `verified_at` を更新します。`meta.data_note` はデータ品質に応じて更新してください。
 3. 各シートを「ファイル → 共有 → ウェブに公開」でCSVとして公開します。ファイル全体の編集URLや、ログインが必要なURLは使いません。
 4. GitHubリポジトリの **Settings → Secrets and variables → Actions → Variables** に `PUBLISHED_SHEETS_URL` を作成し、公開ページの `.../pubhtml` URLを設定します。これは公開URLなのでSecretではなくRepository variableを使います。デプロイ時に8タブのCSV URLへ変換し、公開用 `config.js` を生成します。

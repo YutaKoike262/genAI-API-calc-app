@@ -9,7 +9,7 @@ function rowsFor(m) { // param_map をモデル向けに解決
 const effortRow = m => rowsFor(m).find(r => r.param === "effort");
 function limits(m, p) {
   const r = rowsFor(m).find(r => r.param === p.id);
-  return { min: Math.max(p.min ?? 0, r?.min ?? 0), max: Math.min(p.max ?? 1000000, r?.max ?? Infinity, p.id === 'max_output' ? m.max_output : Infinity) };
+  return { min: p.id === 'max_output' && m.kind !== 'text' ? 0 : Math.max(p.min ?? 0, r?.min ?? 0), max: Math.min(p.max ?? 1000000, r?.max ?? Infinity, p.id === 'max_output' ? m.max_output : Infinity) };
 }
 function defaults(m) {
   const v = {};
@@ -21,7 +21,9 @@ function defaults(m) {
     if (p.ui === 'toggle') value = value === true || value === 'TRUE' || value === '1';
     v[p.id] = value;
   });
-  v.prompt = DATA.default_prompt;
+  v.prompt = m.kind === 'video' ? '夕暮れの海岸を歩く人物を映画のように撮影する。' : m.kind === 'speech' ? 'こんにちは。音声を生成します。' : m.kind === 'image' ? '夕暮れの海岸を描いてください。' : DATA.default_prompt;
+  if (m.kind !== 'text') Object.assign(v, { extra_input:0, cache:0, web_search:0, max_output:0, system:'', requests_per_day:1 });
+  if (m.kind === 'video') v.batch = false;
   return v;
 }
 function normalizeValues(m, values) {
@@ -33,7 +35,9 @@ function normalizeValues(m, values) {
     else if (p.ui === 'toggle') result[p.id] = value === true;
     else if (typeof value === 'string') result[p.id] = value;
   }
-  if (!m.batch_tiers.length) result.batch = false;
+  if (m.kind !== 'text') Object.assign(result, { extra_input:0, cache:0, web_search:0, system:'' });
+  if (m.kind === 'speech' || m.kind === 'video') result.max_output = 0;
+  if (m.kind === 'video' || !m.batch_tiers.length) result.batch = false;
   return result;
 }
 function estTokens(s) { let a = 0, o = 0; for (const ch of s || "") { if (ch.charCodeAt(0) < 128) a++; else o++; } return Math.round(a / 4 + o); }
@@ -47,23 +51,36 @@ const maxOut = (m, v) => Math.min(Math.max(Math.ceil(num(v.max_output) / 256) * 
    ====================================================================== */
 function calc(m, v, tiers = m.tiers, batchTiers = m.batch_tiers) {
   const pv = DATA.providers[m.p];
+  const monthReq = num(v.requests_per_day) * 30;
+  if (m.kind === 'video') {
+    const videoRate = m.video_prices.find(r => r.resolution === '720p');
+    if (!videoRate) throw Error('720pの動画料金がありません');
+    const videoSeconds = num(v.video_duration);
+    if (!Number.isInteger(videoSeconds) || videoSeconds < 3 || videoSeconds > 10) throw Error('動画の長さが不正です');
+    const inTok = estTokens(v.prompt);
+    const cIn = inTok * videoRate.input_text_per_million / 1e6 * monthReq;
+    const cVideo = videoRate.price * videoSeconds * monthReq;
+    const perReq = inTok * videoRate.input_text_per_million / 1e6 + videoRate.price * videoSeconds;
+    return { inTok, t:{input:videoRate.input_text_per_million,output:0,cache:0,source_url:videoRate.source_url}, cIn,cCache:0,cOut:0,cImage:0,cSearch:0,cVideo, videoRate,videoSeconds,monthly:cIn+cVideo,perReq,monthReq,long:false };
+  }
   const inTok = estTokens(v.prompt) + estTokens(v.system) + num(v.extra_input);
   const selected = v.batch ? batchTiers : tiers;
   if (!selected?.length) throw Error('この処理モードの料金がありません');
   const t = selected.find(x => inTok <= x.upTo) || selected.at(-1);
   const hit = Math.min(num(v.cache), 100) / 100, cached = inTok * hit;
-  const monthReq = num(v.requests_per_day) * 30;
   const cIn = (inTok - cached) * t.input / 1e6 * monthReq;
   const cCache = cached * t.cache / 1e6 * monthReq;
-  const cOut = num(v.max_output) * t.output / 1e6 * monthReq;
+  const speechSeconds = m.kind === 'speech' ? num(v.speech_seconds) : 0;
+  const outputTokens = m.kind === 'speech' ? speechSeconds * m.audio_tokens_per_second : num(v.max_output);
+  const cOut = outputTokens * t.output / 1e6 * monthReq;
   const imageRate = m.image_prices?.find(r => r.mode === (v.batch ? 'batch' : 'standard') && r.image_size === v.image_size);
   const imageCount = imageRate ? num(v.image_count) : 0;
   const imagePerReq = (imageRate?.price || 0) * imageCount;
   const cImage = imagePerReq * monthReq;
   const cSearch = Math.max(0, Math.floor(num(v.web_search)) * monthReq - pv.web_search_free) * pv.web_search_per_1k / 1000;
   const monthly = cIn + cCache + cOut + cImage + cSearch;
-  const perReq = ((inTok - cached) * t.input + cached * t.cache + num(v.max_output) * t.output) / 1e6 + imagePerReq + Math.floor(num(v.web_search)) * pv.web_search_per_1k / 1000;
-  return { inTok, t, cIn, cCache, cOut, cImage, imageCount, imageRate, cSearch, monthly, perReq, monthReq, long: t.tier === 'long' };
+  const perReq = ((inTok - cached) * t.input + cached * t.cache + outputTokens * t.output) / 1e6 + imagePerReq + Math.floor(num(v.web_search)) * pv.web_search_per_1k / 1000;
+  return { inTok, t, cIn, cCache, cOut, cImage, imageCount, imageRate, speechSeconds, cSearch, monthly, perReq, monthReq, long: t.tier === 'long' };
 }
 
 /* ======================================================================

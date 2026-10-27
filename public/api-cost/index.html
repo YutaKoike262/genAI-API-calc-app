@@ -3,21 +3,23 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>API料金メーター | Claude・OpenAI・Gemini・Nano Bananaの料金を試算</title>
+<title>API料金メーター | Claude・OpenAI・Geminiのテキスト・画像・動画・音声料金を試算</title>
 
 <link rel="stylesheet" href="assets/app.css">
-<meta name="description" content="Claude・OpenAI・GeminiのAPI料金とNano Bananaの画像生成費用を試算。入力・出力トークン、画像サイズ、生成枚数、リクエスト数をもとに1回あたりと月額を計算します。">
+<meta name="description" content="Claude・OpenAI・GeminiのAPI料金を試算。Nano Bananaの画像生成、Gemini Omni Flashの動画生成、Gemini TTSの音声生成にも対応します。">
 <meta name="referrer" content="no-referrer">
 <meta property="og:type" content="website"><meta property="og:locale" content="ja_JP">
 <meta property="og:title" content="API料金メーター"><meta property="og:description" content="APIの1回料金とリクエスト数に応じた月額を試算。">
 <meta property="og:image" content="https://zinsei-lab.com/api-cost/assets/og.png"><meta name="twitter:card" content="summary_large_image">
-<link rel="icon" href="assets/icon.svg" type="image/svg+xml"><link rel="canonical" href="https://zinsei-lab.com/api-cost/"><meta property="og:url" content="https://zinsei-lab.com/api-cost/"></head>
+<link rel="icon" href="assets/icon.svg" type="image/svg+xml"><script>window.dataLayer=window.dataLayer||[];window.gtag=window.gtag||function(){dataLayer.push(arguments)};gtag('consent','default',{analytics_storage:'denied',ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied'});window.adsbygoogle=window.adsbygoogle||[];try{window.adsbygoogle.requestNonPersonalizedAds=JSON.parse(localStorage.getItem('api-meter-consent-v1'))?.ads===true?0:1}catch{window.adsbygoogle.requestNonPersonalizedAds=1}</script>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8910196652932479"
+     crossorigin="anonymous"></script><link rel="canonical" href="https://zinsei-lab.com/api-cost/"><meta property="og:url" content="https://zinsei-lab.com/api-cost/"></head>
 <body>
 <main class="wrap">
   <header>
     <div>
       <h1>API料金メーター</h1>
-      <p class="sub">Claude・ChatGPT・Gemini の1回あたりの費用と、使う回数に応じた月額を試算。Nano Bananaの画像生成にも対応</p>
+      <p class="sub">Claude・ChatGPT・Gemini の1回あたりと月額の費用を試算。画像・動画・音声生成にも対応</p>
     </div>
     <span class="chip"><span class="dot"></span><span>料金データ確認日 <span id="checked"></span></span></span>
     <label class="appearance">外観 <select id="theme" aria-label="外観"><option value="auto">自動</option><option value="light">ライト</option><option value="dark">ダーク</option></select></label>
@@ -39,7 +41,7 @@
       </div>
 
       <div class="section">
-        <div class="hdr">プロンプト</div>
+        <div class="hdr" id="promptTitle">プロンプト</div>
         <div class="grp"><div class="area"><textarea id="p-prompt" aria-label="プロンプト"></textarea></div></div>
         <div class="ftr" id="tokFtr"></div>
       </div>
@@ -47,17 +49,17 @@
       <div class="section">
         <div class="hdr">使用量</div>
         <div class="grp" id="basic"></div>
-        <div class="ftr">出力には思考（推論）トークンも含まれます。出力の値はコードの上限値にも使います。</div>
+        <div class="ftr" id="usageNote">出力には思考（推論）トークンも含まれます。出力の値はコードの上限値にも使います。</div>
       </div>
 
-      <div class="section">
+      <div class="section" id="advSection">
         <div class="grp" id="adv">
           <button type="button" class="disc row" id="advBtn" aria-expanded="false" aria-controls="advBody">
             <span class="lbl">詳細設定</span><span class="val" id="advSum"></span><span class="chev" aria-hidden="true">›</span>
           </button>
           <div id="advBody" hidden></div>
         </div>
-        <div class="ftr">キャッシュと検索は 1 以上でコードに反映されます。</div>
+        <div class="ftr" id="advNote">キャッシュと検索は 1 以上でコードに反映されます。</div>
       </div>
 
       <button type="button" class="btn" id="genBtn" disabled>コードを生成</button>
@@ -74,7 +76,7 @@
           <div class="stat"><span>月間リクエスト数</span><b id="requestCount"></b></div>
           <div class="stat"><span>1,000回分</span><b id="perK"></b></div>
         </div>
-        <div class="fine">1回あたりは入力・出力・検索の通常単価の目安です。検索の月間無料枠は月額から差し引きます。</div>
+        <div class="fine" id="resultNote">1回あたりは入力・出力・検索の通常単価の目安です。検索の月間無料枠は月額から差し引きます。</div>
         <div class="bd" id="breakdown"></div>
         <div class="note warn" id="future" hidden></div>
         <div class="note warn" id="longNote" hidden></div>
@@ -96,7 +98,7 @@
 
       <div class="ad ad-rect" data-ad-slot="result">広告</div>
 
-      <div class="card" style="padding:16px;gap:12px">
+      <div class="card" id="codeCard" style="padding:16px;gap:12px">
         <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
           <span style="font-size:15px;font-weight:600">コード</span>
           <div class="seg" role="tablist" aria-label="言語" id="langs" style="min-width:240px"></div>

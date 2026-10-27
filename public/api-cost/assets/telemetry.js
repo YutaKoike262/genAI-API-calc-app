@@ -29,6 +29,8 @@ export function sendEvent(name, params) {
 }
 function script(src) { const node = document.createElement('script'); node.async=true; node.src=src; node.referrerPolicy='no-referrer'; document.head.append(node); }
 function applyConsent() {
+  window.adsbygoogle = window.adsbygoogle || [];
+  window.adsbygoogle.requestNonPersonalizedAds = consent.ads ? 0 : 1;
   window.gtag('consent','update',{
     analytics_storage:consent.analytics ? 'granted' : 'denied',
     ad_storage:consent.ads ? 'granted' : 'denied',
@@ -49,14 +51,12 @@ function applyConsent() {
     const slots = [...document.querySelectorAll('[data-ad-slot]')].filter(box => /^\d+$/.test(config.adsense.slots[box.dataset.adSlot] || ''));
     if (!slots.length) return;
     adsLoaded=true;
-    window.adsbygoogle = window.adsbygoogle || [];
-    window.adsbygoogle.requestNonPersonalizedAds = consent.ads ? 0 : 1;
     slots.forEach(box => {
       const ad = document.createElement('ins'); ad.className='adsbygoogle'; ad.style.display='block'; ad.style.width='100%';
       ad.dataset.adClient=config.adsense.client; ad.dataset.adSlot=config.adsense.slots[box.dataset.adSlot]; ad.dataset.adFormat='auto'; ad.dataset.fullWidthResponsive='true';
       box.replaceChildren(ad); window.adsbygoogle.push({});
     });
-    script('https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=' + config.adsense.client);
+    if (!document.querySelector(`script[src*="adsbygoogle.js?client=${config.adsense.client}"]`)) script('https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=' + config.adsense.client);
   }
 }
 export function initTelemetry(settings) {
@@ -82,7 +82,7 @@ export function initTelemetry(settings) {
     if (!dialog.open) dialog.showModal();
   };
   const save=(next)=>{
-    const reloadAds = adsLoaded && consent.ads !== next.ads;
+    const reloadAds = !!config.adsense?.client && consent.ads !== next.ads;
     consent=next;
     try { localStorage.setItem('api-meter-consent-v1',JSON.stringify({version:1,...consent})); } catch {}
     applyConsent(); dialog.close();

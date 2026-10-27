@@ -50,7 +50,9 @@
       "max_output": 128000,
       "long_threshold": "",
       "sort": 1,
-      "doc_url": ""
+      "doc_url": "",
+      "media_kind": "text",
+      "audio_tokens_per_second": ""
     },
     {
       "model_id": "claude-opus-5-5",
@@ -61,7 +63,9 @@
       "max_output": 128000,
       "long_threshold": "",
       "sort": 2,
-      "doc_url": ""
+      "doc_url": "",
+      "media_kind": "text",
+      "audio_tokens_per_second": ""
     },
     {
       "model_id": "claude-sonnet-5-5",
@@ -72,7 +76,9 @@
       "max_output": 128000,
       "long_threshold": "",
       "sort": 3,
-      "doc_url": ""
+      "doc_url": "",
+      "media_kind": "text",
+      "audio_tokens_per_second": ""
     },
     {
       "model_id": "claude-haiku-5-5",
@@ -83,7 +89,9 @@
       "max_output": 128000,
       "long_threshold": 100000,
       "sort": 4,
-      "doc_url": ""
+      "doc_url": "",
+      "media_kind": "text",
+      "audio_tokens_per_second": ""
     },
     {
       "model_id": "gpt-6-astra",
@@ -94,7 +102,9 @@
       "max_output": 128000,
       "long_threshold": 272000,
       "sort": 5,
-      "doc_url": ""
+      "doc_url": "",
+      "media_kind": "text",
+      "audio_tokens_per_second": ""
     },
     {
       "model_id": "gpt-6.1-sol",
@@ -105,7 +115,9 @@
       "max_output": 128000,
       "long_threshold": 272000,
       "sort": 6,
-      "doc_url": ""
+      "doc_url": "",
+      "media_kind": "text",
+      "audio_tokens_per_second": ""
     },
     {
       "model_id": "gpt-6-luna",
@@ -116,7 +128,9 @@
       "max_output": 128000,
       "long_threshold": 272000,
       "sort": 7,
-      "doc_url": ""
+      "doc_url": "",
+      "media_kind": "text",
+      "audio_tokens_per_second": ""
     },
     {
       "model_id": "gemini-4-argon",
@@ -127,7 +141,9 @@
       "max_output": 65536,
       "long_threshold": "",
       "sort": 8,
-      "doc_url": ""
+      "doc_url": "",
+      "media_kind": "text",
+      "audio_tokens_per_second": ""
     },
     {
       "model_id": "gemini-3.8-flash",
@@ -138,7 +154,9 @@
       "max_output": 65536,
       "long_threshold": "",
       "sort": 9,
-      "doc_url": ""
+      "doc_url": "",
+      "media_kind": "text",
+      "audio_tokens_per_second": ""
     },
     {
       "model_id": "gemini-3.5-flash-lite",
@@ -149,7 +167,9 @@
       "max_output": 65536,
       "long_threshold": "",
       "sort": 10,
-      "doc_url": ""
+      "doc_url": "",
+      "media_kind": "text",
+      "audio_tokens_per_second": ""
     },
     {
       "model_id": "gemini-3.1-pro-preview",
@@ -160,7 +180,9 @@
       "max_output": 65536,
       "long_threshold": 200000,
       "sort": 11,
-      "doc_url": ""
+      "doc_url": "",
+      "media_kind": "text",
+      "audio_tokens_per_second": ""
     },
     {
       "model_id": "gemini-nano-banana-2.1",
@@ -171,7 +193,61 @@
       "max_output": 32768,
       "long_threshold": "",
       "sort": 12,
-      "doc_url": "https://ai.google.dev/gemini-api/docs/models/gemini-nano-banana-2.1"
+      "doc_url": "https://ai.google.dev/gemini-api/docs/models/gemini-nano-banana-2.1",
+      "media_kind": "image",
+      "audio_tokens_per_second": ""
+    },
+    {
+      "model_id": "veo-3.1-generate-preview",
+      "provider_id": "google",
+      "label": "Veo 3.1 Standard",
+      "status": "hidden",
+      "context_window": "",
+      "max_output": "",
+      "long_threshold": "",
+      "sort": 13,
+      "doc_url": "https://ai.google.dev/gemini-api/docs/veo",
+      "media_kind": "video",
+      "audio_tokens_per_second": ""
+    },
+    {
+      "model_id": "veo-3.1-fast-generate-preview",
+      "provider_id": "google",
+      "label": "Veo 3.1 Fast",
+      "status": "hidden",
+      "context_window": "",
+      "max_output": "",
+      "long_threshold": "",
+      "sort": 14,
+      "doc_url": "https://ai.google.dev/gemini-api/docs/veo",
+      "media_kind": "video",
+      "audio_tokens_per_second": ""
+    },
+    {
+      "model_id": "gemini-3.8-flash-lite-tts",
+      "provider_id": "google",
+      "label": "Gemini 3.8 Flash-Lite TTS",
+      "status": "current",
+      "context_window": "",
+      "max_output": "",
+      "long_threshold": "",
+      "sort": 15,
+      "doc_url": "https://ai.google.dev/gemini-api/docs/speech-generation",
+      "media_kind": "speech",
+      "audio_tokens_per_second": 25
+    },
+    {
+      "model_id": "gemini-omni-1.1-flash",
+      "provider_id": "google",
+      "label": "Gemini Omni Flash",
+      "status": "current",
+      "context_window": "1048576",
+      "max_output": "",
+      "long_threshold": "",
+      "sort": 16,
+      "doc_url": "https://ai.google.dev/gemini-api/docs/models/gemini-omni-flash",
+      "media_kind": "video",
+      "audio_tokens_per_second": ""
     }
   ],
   "prices": [
@@ -668,6 +744,58 @@
       "effective_to": "",
       "checked_at": "2026-10-28",
       "source_url": "https://ai.google.dev/gemini-api/docs/pricing"
+    },
+    {
+      "model_id": "gemini-3.8-flash-lite-tts",
+      "tier": "base",
+      "mode": "standard",
+      "input": 0.5,
+      "output": 6,
+      "cache_read": 0,
+      "cache_write": "",
+      "effective_from": "",
+      "effective_to": "2026-12-31",
+      "checked_at": "2026-10-28",
+      "source_url": "https://ai.google.dev/gemini-api/docs/pricing"
+    },
+    {
+      "model_id": "gemini-3.8-flash-lite-tts",
+      "tier": "base",
+      "mode": "batch",
+      "input": 0.25,
+      "output": 3,
+      "cache_read": 0,
+      "cache_write": "",
+      "effective_from": "",
+      "effective_to": "2026-12-31",
+      "checked_at": "2026-10-28",
+      "source_url": "https://ai.google.dev/gemini-api/docs/pricing"
+    },
+    {
+      "model_id": "gemini-3.8-flash-lite-tts",
+      "tier": "base",
+      "mode": "standard",
+      "input": 1,
+      "output": 12,
+      "cache_read": 0,
+      "cache_write": "",
+      "effective_from": "2027-01-01",
+      "effective_to": "",
+      "checked_at": "2026-10-28",
+      "source_url": "https://ai.google.dev/gemini-api/docs/pricing"
+    },
+    {
+      "model_id": "gemini-3.8-flash-lite-tts",
+      "tier": "base",
+      "mode": "batch",
+      "input": 0.5,
+      "output": 6,
+      "cache_read": 0,
+      "cache_write": "",
+      "effective_from": "2027-01-01",
+      "effective_to": "",
+      "checked_at": "2026-10-28",
+      "source_url": "https://ai.google.dev/gemini-api/docs/pricing"
     }
   ],
   "features": [
@@ -836,6 +964,42 @@
       "affects_cost": "none",
       "help": "公式料金表に記載された画像サイズごとの単価を適用します。",
       "share_key": "imgsz",
+      "share_optin": "FALSE"
+    },
+    {
+      "param_id": "video_duration",
+      "label": "動画の長さ",
+      "ui_type": "select",
+      "group": "basic",
+      "sort": 12,
+      "unit": "秒",
+      "affects_cost": "none",
+      "help": "Gemini Omni Flashの生成動画は3〜10秒を指定できます。",
+      "share_key": "vdur",
+      "share_optin": "FALSE"
+    },
+    {
+      "param_id": "video_resolution",
+      "label": "動画の解像度",
+      "ui_type": "select",
+      "group": "basic",
+      "sort": 13,
+      "unit": "",
+      "affects_cost": "none",
+      "help": "Veo 3.1の解像度別の秒単価を使います。",
+      "share_key": "vres",
+      "share_optin": "FALSE"
+    },
+    {
+      "param_id": "speech_seconds",
+      "label": "生成音声の長さ",
+      "ui_type": "number",
+      "group": "basic",
+      "sort": 14,
+      "unit": "秒",
+      "affects_cost": "none",
+      "help": "音声出力は1秒あたり25トークンとして概算します。",
+      "share_key": "ssec",
       "share_optin": "FALSE"
     }
   ],
@@ -1244,12 +1408,42 @@
       "note": "",
       "verified_at": "2026-10-28",
       "doc_url": "https://ai.google.dev/gemini-api/docs/models/gemini-nano-banana-2.1"
+    },
+    {
+      "scope": "model:gemini-3.8-flash-lite-tts",
+      "param_id": "speech_seconds",
+      "path": "",
+      "values": "",
+      "default": "30",
+      "min": "1",
+      "max": "3600",
+      "emit": "never",
+      "template": "",
+      "transform": "none",
+      "note": "",
+      "verified_at": "2026-10-28",
+      "doc_url": "https://ai.google.dev/gemini-api/docs/speech-generation"
+    },
+    {
+      "scope": "model:gemini-omni-1.1-flash",
+      "param_id": "video_duration",
+      "path": "",
+      "values": "3|4|5|6|7|8|9|10",
+      "default": "8",
+      "min": "",
+      "max": "",
+      "emit": "never",
+      "template": "",
+      "transform": "none",
+      "note": "",
+      "verified_at": "2026-10-28",
+      "doc_url": "https://ai.google.dev/gemini-api/docs/models/gemini-omni-flash"
     }
   ],
   "meta": [
     {
       "key": "dataset_version",
-      "value": "2026-10-28-nanobanana"
+      "value": "2026-10-28-media"
     },
     {
       "key": "updated_at",
@@ -1338,6 +1532,20 @@
       "mode": "batch",
       "unit": "per_image",
       "price": 0.0567,
+      "effective_from": "",
+      "effective_to": "",
+      "checked_at": "2026-10-28",
+      "source_url": "https://ai.google.dev/gemini-api/docs/pricing"
+    }
+  ],
+  "video_prices": [
+    {
+      "model_id": "gemini-omni-1.1-flash",
+      "resolution": "720p",
+      "mode": "standard",
+      "unit": "per_second",
+      "price": 0.10136,
+      "input_text_per_million": 1.5,
       "effective_from": "",
       "effective_to": "",
       "checked_at": "2026-10-28",

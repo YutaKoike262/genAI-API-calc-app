@@ -21,9 +21,11 @@ if (process.env.PUBLISHED_SHEETS_URL) {
  const tables = Object.fromEntries(responses.map(([key, body]) => [key, parseCSV(body)]));
  const normalized = normalizeTables(tables, { day:todayJST(), siteUrl:appUrl });
  if (!normalized.models.some(model => model.id === 'gemini-nano-banana-2.1')) throw Error('公開シートにNano Banana 2.1が見つかりません');
+ if (!normalized.models.some(model => model.id === 'gemini-omni-1.1-flash')) throw Error('公開シートにGemini Omni Flashが見つかりません');
+ if (!normalized.models.some(model => model.id === 'gemini-3.8-flash-lite-tts')) throw Error('公開シートにGemini TTSが見つかりません');
  const dataDir = 'public/api-cost/data/live';
  await mkdir(dataDir, { recursive:true });
- await Promise.all(responses.map(([key, body]) => writeFile(`${dataDir}/${key}.csv`, body)));
+ await Promise.all(responses.map(([key, body]) => writeFile(`${dataDir}/${key}.csv`, body.replace(/\r\n/g,'\n'))));
  const localCsv = Object.fromEntries(SHEETS.map(key => [key, `data/live/${key}.csv`]));
  configText=configText.replace(/csv:\s*\{[^}]*\}/,`csv: ${JSON.stringify(localCsv)}`);
 } else if (process.env.CI) {
