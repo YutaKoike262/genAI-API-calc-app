@@ -80,7 +80,8 @@ function update() {
   $("mLabel").textContent = m.label;
   $("monthly").textContent = $("barMonthly").textContent = usd(r.monthly);
   $("monthlyJpy").textContent = yen(r.monthly);
-  $("perReq").textContent = usd(r.perReq); $("requestCount").textContent = r.monthReq.toLocaleString('ja-JP') + ' 回'; $("perK").textContent = usd(r.perReq * 1000);
+  $("perReq").textContent = usd(r.perReq); $("perReqJpy").textContent = '約' + Math.round(r.perReq * DATA.meta.fx_usdjpy).toLocaleString('ja-JP') + '円 / 回';
+  $("requestCount").textContent = r.monthReq.toLocaleString('ja-JP') + ' 回'; $("perK").textContent = usd(r.perReq * 1000);
   const rows = [["入力", `$${r.t.input} / 100万`, r.cIn], ["キャッシュ読み出し", `$${r.t.cache} / 100万`, r.cCache], ["出力（思考込み）", `$${r.t.output} / 100万`, r.cOut],
     ["Web検索", `$${pv.web_search_per_1k} / 1,000回` + (pv.web_search_free ? `・月${pv.web_search_free.toLocaleString()}回無料` : ""), r.cSearch]];
   $("breakdown").replaceChildren(...rows.map(([k, rate, val]) => el("div", {}, el("span", {}, k + " ", el("small", {}, rate)), el("span", {}, usd(val)))));

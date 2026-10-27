@@ -66,12 +66,12 @@
     <aside class="right" aria-label="結果">
       <div class="card" aria-live="polite">
         <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap">
-          <span style="font-size:15px;font-weight:600">月額目安（30日）</span><span class="fine" id="mLabel"></span>
+          <span style="font-size:15px;font-weight:600">1回あたりの料金目安</span><span class="fine" id="mLabel"></span>
         </div>
-        <div class="big"><span class="num" id="monthly"></span><span class="unit2" id="monthlyJpy"></span></div>
+        <div class="big"><span class="num" id="perReq"></span><span class="unit2" id="perReqJpy"></span></div>
         <div class="stats">
-          <div class="stat"><span>1回あたり</span><b id="perReq"></b></div>
-          <div class="stat"><span>月間リクエスト（30日）</span><b id="requestCount"></b></div>
+          <div class="stat"><span>月額目安（30日）</span><b id="monthly"></b><span id="monthlyJpy"></span></div>
+          <div class="stat"><span>月間リクエスト数</span><b id="requestCount"></b></div>
           <div class="stat"><span>1,000回分</span><b id="perK"></b></div>
         </div>
         <div class="fine">1回あたりは入力・出力・検索の通常単価の目安です。検索の月間無料枠は月額から差し引きます。</div>
