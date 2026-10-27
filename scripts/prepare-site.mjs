@@ -1,6 +1,7 @@
 import { readFile, writeFile } from 'node:fs/promises';
 import { CONFIG } from '../public/api-cost/config.js';
-const arg = process.argv[2] || CONFIG.siteRootUrl;
+import { csvUrlsFromPublishedSheetsUrl } from './published-sheets.js';
+const arg = process.argv[2] || process.env.SITE_ROOT_URL || CONFIG.siteRootUrl;
 if (!arg) { console.error('本番のsiteRootUrlを設定するか、npm run prepare:site -- https://your-domain/ を実行してください。'); process.exit(1); }
 const base=new URL(arg);
 if(base.protocol!=='https:' || base.search || base.hash || base.username || base.password) throw Error('本番URLはクエリや認証情報のないHTTPS URLにしてください');
@@ -9,6 +10,12 @@ const appUrl=new URL('api-cost/',base).href;
 const configPath='public/api-cost/config.js';
 let configText=await readFile(configPath,'utf8');
 configText=configText.replace(/(siteUrl:\s*')[^']*(')/,`$1${appUrl}$2`);
+if (process.env.PUBLISHED_SHEETS_URL) {
+ const csv = csvUrlsFromPublishedSheetsUrl(process.env.PUBLISHED_SHEETS_URL);
+ configText=configText.replace(/csv:\s*\{[^}]*\}/,`csv: ${JSON.stringify(csv)}`);
+} else if (process.env.CI) {
+ throw Error('GitHub ActionsのRepository variable PUBLISHED_SHEETS_URL を設定してください');
+}
 await writeFile(configPath,configText);
 const escape=s=>s.replaceAll('&','&amp;').replaceAll('"','&quot;').replaceAll('<','&lt;');
 const pages=[

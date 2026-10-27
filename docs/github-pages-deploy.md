@@ -12,6 +12,8 @@
 
 GitHub Pagesのサイトはインターネットで公開されます。リポジトリも現在Publicです。秘密情報をコミットしないでください。GA4などの計測IDは公開情報なので `public/api-cost/config.js` に設定できますが、APIキーは置きません。
 
+料金データは、リポジトリの **Settings → Secrets and variables → Actions → Variables** に作成した `PUBLISHED_SHEETS_URL` からデプロイ時に設定します。値はスプレッドシートの `.../pubhtml` URLです。公開URLなのでRepository variableを使い、Secretにはしません。デプロイ時に各タブのCSV URLへ変換して公開用 `config.js` を生成します。
+
 ## ローカル検証
 
 ```sh

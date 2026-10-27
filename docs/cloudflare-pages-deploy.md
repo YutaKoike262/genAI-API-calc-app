@@ -1,14 +1,15 @@
 # Cloudflare Pages 公開手順
 
-このサイトは静的サイトです。Cloudflare Pagesのプロジェクト名は `jinsei-lab`、公開フォルダは `public/` です。`/` に人生ラボのホーム、`/api-cost/` にAPI料金メーターを公開します。GitHub Actionsの `Deploy Cloudflare Pages` を手動実行すると、テストと静的チェックの後にデプロイします。
+このサイトは静的サイトです。Cloudflare Pagesのプロジェクト名は `jinsei-lab`、公開フォルダは `public/` です。`/` にツール一覧、`/api-cost/` にAPI料金メーターを公開します。GitHub Actionsの `Deploy Cloudflare Pages` を手動実行すると、テストと静的チェックの後にデプロイします。
 
 ## 初回設定
 
 1. Cloudflareアカウントのメール確認と支払い方法の登録を済ませます。Pagesの静的ファイル配信は無料枠で利用できますが、独自ドメインの登録料・更新料は別途かかります。
 2. CloudflareでPagesプロジェクト `jinsei-lab` を作り、直接アップロードを選びます。GitHub Actionsが初回デプロイします。
 3. CloudflareのAccount IDと、Pagesにデプロイできる権限のAPIトークンを用意します。
-4. GitHubリポジトリの **Settings → Secrets and variables → Actions** に `CLOUDFLARE_ACCOUNT_ID` と `CLOUDFLARE_API_TOKEN` を登録します。
-5. GitHubの **Actions → Deploy Cloudflare Pages → Run workflow** を実行します。初回実行でPagesプロジェクトを作成し、その後も同じ操作で手動デプロイできます。
+4. GitHubリポジトリの **Settings → Secrets and variables → Actions → Secrets** に `CLOUDFLARE_ACCOUNT_ID` と `CLOUDFLARE_API_TOKEN` を登録します。
+5. 同じ画面の **Variables** に `PUBLISHED_SHEETS_URL` を登録します。値はGoogle Sheetsの公開ページ (`https://docs.google.com/spreadsheets/d/e/.../pubhtml`) です。これは公開URLなのでSecretにはしません。デプロイ時に7タブ分のCSV URLへ変換して `config.js` に反映します。
+6. GitHubの **Actions → Deploy Cloudflare Pages → Run workflow** を実行します。初回実行でPagesプロジェクトを作成し、その後も同じ操作で手動デプロイできます。
 
 ## 独自ドメイン
 
@@ -23,7 +24,7 @@
 ```sh
 npm test
 npm run check
-npm run prepare:site -- https://your-domain/
+PUBLISHED_SHEETS_URL='https://docs.google.com/spreadsheets/d/e/.../pubhtml' npm run prepare:site -- https://your-domain/
 ```
 
 運営者情報と公開CSVが揃うまで `npm run check -- --production` は成功しません。料金表は公式情報を照合するまで参考値として扱ってください。

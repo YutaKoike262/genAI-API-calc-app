@@ -1,6 +1,6 @@
 # API料金メーター
 
-同梱の設計書・モックを基にした、ビルド不要の静的サイトです。ルートの `public/` に人生ラボのホーム、`public/api-cost/` にAPI料金メーターを置きます。フレームワーク、サーバー処理、実行時のnpm依存はありません。
+同梱の設計書・モックを基にした、ビルド不要の静的サイトです。ルートの `public/` にツール一覧ホーム、`public/api-cost/` にAPI料金メーターを置きます。フレームワーク、サーバー処理、実行時のnpm依存はありません。
 
 ## 起動・検証
 
@@ -32,7 +32,7 @@ Google Driveに作成した管理フォルダ・スプレッドシートの場�
 1. `docs/sheets/` の7ファイルをGoogleスプレッドシートにインポートし、シート名をファイル名に合わせます。
 2. 同梱データはモック由来の参考値です。価格・対応モデル・機能の組み合わせを公式情報と照合し、各行の `checked_at` / `verified_at` を更新します。`meta.data_note` はデータ品質に応じて更新してください。
 3. 各シートを「ファイル → 共有 → ウェブに公開」でCSVとして公開します。ファイル全体の編集URLや、ログインが必要なURLは使いません。
-4. `public/api-cost/config.js` の `csv` に7枚の公開CSV URLを設定します。
+4. GitHubリポジトリの **Settings → Secrets and variables → Actions → Variables** に `PUBLISHED_SHEETS_URL` を作成し、公開ページの `.../pubhtml` URLを設定します。これは公開URLなのでSecretではなくRepository variableを使います。デプロイ時に7タブのCSV URLへ変換し、公開用 `config.js` を生成します。
 5. サイトを再読み込みし、公開CSVから読み込んだ表示を確認します。料金または `param_map` を変更して再読み込みし、反映を確認してください。Google側の公開CSV反映には遅延が生じる場合があります。
 
 データの適用日は日本時間の当日、開始・終了日は両端を含みます。期限切れで通常料金のないモデルは選択肢に出しません。重複期間・長文料金の欠落・無効なデータは全シートを予備データに切り替え、混在する版で計算しません。
@@ -55,7 +55,7 @@ Google Driveに作成した管理フォルダ・スプレッドシートの場�
 
 GitHub Pagesへの現行公開手順は [`docs/github-pages-deploy.md`](docs/github-pages-deploy.md)、Cloudflare Pagesへの移行手順は [`docs/cloudflare-pages-deploy.md`](docs/cloudflare-pages-deploy.md) に記録しています。
 
-1. `public/api-cost/config.js` の `siteUrl` / `siteRootUrl`（末尾 `/`）と `operator.name` / `operator.contactUrl` を設定します。
+1. 公開CSVは `PUBLISHED_SHEETS_URL` Repository variableからデプロイ時に設定します。運営者情報 (`operator.name` / `operator.contactUrl`) は `public/api-cost/config.js` で設定します。
 2. 次を実行します。SEOのURLを書き込む準備であり、アプリのビルドはありません。
 
    ```sh
@@ -73,7 +73,7 @@ GitHub PagesはGitHub Actionsのカスタムワークフローから静的成果
 
 ## 構成
 
-- `public/index.html`, `public/assets/home.css`: 人生ラボのツール一覧ホーム
+- `public/index.html`, `public/assets/home.css`: ツール一覧ホーム
 - `public/api-cost/index.html`, `public/api-cost/assets/app.js`: API料金メーターの画面・操作
 - `public/api-cost/assets/data.js`: CSV・検証・期間選択・フォールバック
 - `public/api-cost/assets/core.js`: 計算・コード生成・共有URL（DOM非依存）
