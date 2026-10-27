@@ -1,5 +1,6 @@
-import { readFile, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { CONFIG } from '../public/api-cost/config.js';
+import { SHEETS, normalizeTables, parseCSV, todayJST } from '../public/api-cost/assets/data.js';
 import { csvUrlsFromPublishedSheetsUrl } from './published-sheets.js';
 const arg = process.argv[2] || process.env.SITE_ROOT_URL || CONFIG.siteRootUrl;
 if (!arg) { console.error('本番のsiteRootUrlを設定するか、npm run prepare:site -- https://your-domain/ を実行してください。'); process.exit(1); }
@@ -12,7 +13,19 @@ let configText=await readFile(configPath,'utf8');
 configText=configText.replace(/(siteUrl:\s*')[^']*(')/,`$1${appUrl}$2`);
 if (process.env.PUBLISHED_SHEETS_URL) {
  const csv = csvUrlsFromPublishedSheetsUrl(process.env.PUBLISHED_SHEETS_URL);
- configText=configText.replace(/csv:\s*\{[^}]*\}/,`csv: ${JSON.stringify(csv)}`);
+ const responses = await Promise.all(SHEETS.map(async key => {
+  const response = await fetch(csv[key], { redirect:'follow', signal:AbortSignal.timeout(15000) });
+  if (!response.ok) throw Error(`${key} CSVの取得に失敗しました: HTTP ${response.status}`);
+  return [key, await response.text()];
+ }));
+ const tables = Object.fromEntries(responses.map(([key, body]) => [key, parseCSV(body)]));
+ const normalized = normalizeTables(tables, { day:todayJST(), siteUrl:appUrl });
+ if (!normalized.models.some(model => model.id === 'gemini-nano-banana-2.1')) throw Error('公開シートにNano Banana 2.1が見つかりません');
+ const dataDir = 'public/api-cost/data/live';
+ await mkdir(dataDir, { recursive:true });
+ await Promise.all(responses.map(([key, body]) => writeFile(`${dataDir}/${key}.csv`, body)));
+ const localCsv = Object.fromEntries(SHEETS.map(key => [key, `data/live/${key}.csv`]));
+ configText=configText.replace(/csv:\s*\{[^}]*\}/,`csv: ${JSON.stringify(localCsv)}`);
 } else if (process.env.CI) {
  throw Error('GitHub ActionsのRepository variable PUBLISHED_SHEETS_URL を設定してください');
 }

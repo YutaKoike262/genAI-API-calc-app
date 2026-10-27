@@ -1,0 +1,8 @@
+"key","value"
+"dataset_version","2026-10-28-nanobanana"
+"updated_at","2026-10-28"
+"fx_usdjpy","150"
+"default_model","claude-sonnet-5-5"
+"default_prompt","この商品レビューを3行で要約してください。"
+"data_note","同梱の参考データです。全モデルの価格・仕様の再確認は行っていません。公開前に公式情報と照合してください。"
+"fx_updated_at","2026-10-17"
