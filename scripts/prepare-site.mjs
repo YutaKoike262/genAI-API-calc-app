@@ -35,7 +35,7 @@ const measurementId=process.env.GA4_MEASUREMENT_ID?.trim() || '';
 if (measurementId && !/^G-[A-Z0-9]+$/.test(measurementId)) throw Error('GA4_MEASUREMENT_ID は G- で始まる測定IDにしてください');
 const contactEmail=process.env.CONTACT_EMAIL?.trim() || '';
 if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(contactEmail)) throw Error('CONTACT_EMAIL に公開用の問い合わせメールアドレスを設定してください');
-configText=configText.replace(/(ga4MeasurementId:\s*)'[^']*'/,`$1${JSON.stringify(measurementId)}`);
+configText=configText.replace(/(ga4MeasurementId:\s*)(['"])[^'"]*\2/,`$1${JSON.stringify(measurementId)}`);
 await writeFile(configPath,configText);
 const escape=s=>s.replaceAll('&','&amp;').replaceAll('"','&quot;').replaceAll('<','&lt;');
 const pages=[
