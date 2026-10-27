@@ -45,14 +45,16 @@ function applyConsent() {
       script('https://www.googletagmanager.com/gtag/js?id=' + config.ga4MeasurementId);
     }
   }
-  if (consent.ads && !adsLoaded && /^ca-pub-\d+$/.test(config.adsense?.client)) {
+  if (!adsLoaded && /^ca-pub-\d+$/.test(config.adsense?.client)) {
     const slots = [...document.querySelectorAll('[data-ad-slot]')].filter(box => /^\d+$/.test(config.adsense.slots[box.dataset.adSlot] || ''));
     if (!slots.length) return;
     adsLoaded=true;
+    window.adsbygoogle = window.adsbygoogle || [];
+    window.adsbygoogle.requestNonPersonalizedAds = consent.ads ? 0 : 1;
     slots.forEach(box => {
       const ad = document.createElement('ins'); ad.className='adsbygoogle'; ad.style.display='block'; ad.style.width='100%';
       ad.dataset.adClient=config.adsense.client; ad.dataset.adSlot=config.adsense.slots[box.dataset.adSlot]; ad.dataset.adFormat='auto'; ad.dataset.fullWidthResponsive='true';
-      box.replaceChildren(ad); (window.adsbygoogle = window.adsbygoogle || []).push({});
+      box.replaceChildren(ad); window.adsbygoogle.push({});
     });
     script('https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=' + config.adsense.client);
   }
@@ -71,7 +73,7 @@ export function initTelemetry(settings) {
   applyConsent();
   if (debug() && document.getElementById('debugLog')) document.getElementById('debugLog').hidden=false;
   const dialog=document.createElement('dialog'); dialog.className='consent';
-  dialog.innerHTML='<form method="dialog"><h2>計測と広告の設定</h2><p>料金計算は同意なしで利用できます。選択はこのブラウザに保存され、いつでも変更できます。</p><label><input type="checkbox" name="analytics"> 利用状況の分析（Google Analytics）</label><label><input type="checkbox" name="ads"> 広告の表示（Google AdSense）</label><p><a href="privacy.html">送信される情報と利用目的</a></p><div class="consent-actions"><button type="button" class="btn tinted" id="consentDecline">すべて拒否</button><button type="submit" class="btn tinted">選択を保存</button></div></form>';
+  dialog.innerHTML='<form method="dialog"><h2>計測と広告の設定</h2><p>料金計算はそのまま利用できます。広告枠が設定されている場合、広告は表示されます。選択はこのブラウザに保存され、いつでも変更できます。</p><label><input type="checkbox" name="analytics"> 利用状況の分析（Google Analytics）</label><label><input type="checkbox" name="ads"> パーソナライズ広告を許可（Google AdSense）</label><p><a href="privacy.html">送信される情報と利用目的</a></p><div class="consent-actions"><button type="button" class="btn tinted" id="consentDecline">分析・パーソナライズを拒否</button><button type="submit" class="btn tinted">選択を保存</button></div></form>';
   document.body.append(dialog);
   const form=dialog.querySelector('form');
   const open=()=>{
@@ -80,11 +82,11 @@ export function initTelemetry(settings) {
     if (!dialog.open) dialog.showModal();
   };
   const save=(next)=>{
-    const revokeAds = adsLoaded && !next.ads;
+    const reloadAds = adsLoaded && consent.ads !== next.ads;
     consent=next;
     try { localStorage.setItem('api-meter-consent-v1',JSON.stringify({version:1,...consent})); } catch {}
     applyConsent(); dialog.close();
-    if (revokeAds) location.reload();
+    if (reloadAds) location.reload();
   };
   form.addEventListener('submit',event=>{event.preventDefault();save({analytics:form.elements.analytics.checked,ads:form.elements.ads.checked});});
   dialog.querySelector('#consentDecline').addEventListener('click',()=>save({analytics:false,ads:false}));
