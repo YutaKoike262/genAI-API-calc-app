@@ -80,7 +80,7 @@ function update() {
   $("mLabel").textContent = m.label;
   $("monthly").textContent = $("barMonthly").textContent = usd(r.monthly);
   $("monthlyJpy").textContent = yen(r.monthly);
-  $("perReq").textContent = usd(r.perReq); $("perDay").textContent = usd(r.monthly / 30); $("perK").textContent = usd(r.perReq * 1000);
+  $("perReq").textContent = usd(r.perReq); $("requestCount").textContent = r.monthReq.toLocaleString('ja-JP') + ' 回'; $("perK").textContent = usd(r.perReq * 1000);
   const rows = [["入力", `$${r.t.input} / 100万`, r.cIn], ["キャッシュ読み出し", `$${r.t.cache} / 100万`, r.cCache], ["出力（思考込み）", `$${r.t.output} / 100万`, r.cOut],
     ["Web検索", `$${pv.web_search_per_1k} / 1,000回` + (pv.web_search_free ? `・月${pv.web_search_free.toLocaleString()}回無料` : ""), r.cSearch]];
   $("breakdown").replaceChildren(...rows.map(([k, rate, val]) => el("div", {}, el("span", {}, k + " ", el("small", {}, rate)), el("span", {}, usd(val)))));
@@ -91,7 +91,7 @@ function update() {
   if (r.long) $("longNote").textContent = `入力が ${m.tiers[0].upTo.toLocaleString()} トークンを超えるため、長い入力向けの料金で計算しています。`;
   const source = el('a',{href:r.t.source_url || pv.pricing_url,target:'_blank',rel:'noopener noreferrer'},pv.vendor + ' 公式料金ページ');
   $('source').replaceChildren('出典: ', source, `（${m.checked_at || '確認日未登録'} 確認）` + (m.needs_review ? '・要確認（30日以上経過または確認日未登録）' : '') + (v.batch ? '・バッチ料金適用' : ''));
-  $("tokFtr").textContent = `入力は約 ${r.inTok.toLocaleString()} トークン / 回（プロンプト・システム・その他の合計、目安）`;
+  $("tokFtr").textContent = `入力トークン概算 / 回: プロンプト ${estTokens(v.prompt).toLocaleString()} + システム ${estTokens(v.system).toLocaleString()} + その他 ${num(v.extra_input).toLocaleString()} = ${r.inTok.toLocaleString()}（目安）`;
   const bits = [v.effort]; if (String(v.system || "").trim()) bits.push("システム"); if (num(v.cache)) bits.push(`キャッシュ ${v.cache}%`); if (num(v.web_search)) bits.push(`検索 ×${Math.floor(num(v.web_search))}`); if (v.batch) bits.push("バッチ");
   $("advSum").textContent = bits.join("・");
   $("shareUrl").textContent = shareUrl(m, v, state.withPrompt);

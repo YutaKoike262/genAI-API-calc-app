@@ -58,7 +58,8 @@ function calc(m, v, tiers = m.tiers, batchTiers = m.batch_tiers) {
   const cOut = num(v.max_output) * t.output / 1e6 * monthReq;
   const cSearch = Math.max(0, Math.floor(num(v.web_search)) * monthReq - pv.web_search_free) * pv.web_search_per_1k / 1000;
   const monthly = cIn + cCache + cOut + cSearch;
-  return { inTok, t, cIn, cCache, cOut, cSearch, monthly, perReq: monthReq ? monthly / monthReq : 0, long: t.tier === 'long' };
+  const perReq = ((inTok - cached) * t.input + cached * t.cache + num(v.max_output) * t.output) / 1e6 + Math.floor(num(v.web_search)) * pv.web_search_per_1k / 1000;
+  return { inTok, t, cIn, cCache, cOut, cSearch, monthly, perReq, monthReq, long: t.tier === 'long' };
 }
 
 /* ======================================================================
@@ -188,10 +189,11 @@ function parseShare(url) {
   if (m) ok++; else { if (sp.has('m')) bad++; m = modelById(DATA.default_model); }
   const vals = defaults(m);
   DATA.params.forEach(p => {
-    if (!p.share_key || !sp.has(p.share_key)) return;
-    const raw = sp.get(p.share_key), r = rowsFor(m).find(r => r.param === p.id);
+    const key = p.share_key;
+    if (!key || !sp.has(key)) return;
+    const raw = sp.get(key), r = rowsFor(m).find(r => r.param === p.id);
     let good = false, val;
-    if (sp.getAll(p.share_key).length !== 1) { bad++; return; }
+    if (sp.getAll(key).length !== 1) { bad++; return; }
     if (p.share_optin) { try { val = b64d(raw); good = Array.from(val).length <= 1000; } catch {} }
     else if (p.ui === 'toggle') { good = raw === '1' || raw === '0'; val = raw === '1'; if (p.id === 'batch' && val && !m.batch_tiers.length) good = false; }
     else if (p.ui === 'select') { good = !!r?.values.split('|').includes(raw); val = raw; }

@@ -107,7 +107,10 @@ export function normalizeTables(tables, { day = todayJST(), siteUrl = 'http://lo
     if (!['select','number','text','textarea','toggle'].includes(r.ui_type) || !['basic','advanced'].includes(r.group)) throw Error('params が不正です');
     if (r.share_key && !safeKey(r.share_key)) throw Error('share_key が不正です');
     const base = BASE[r.param_id] || {def: r.ui_type === 'toggle' ? false : r.ui_type === 'number' ? 0 : '', min:0, max:1000000};
-    return { ...base, ...r, id:r.param_id, ui:r.ui_type, group:r.param_id === 'prompt' ? 'prompt' : r.group, share_optin:String(r.share_optin).toLowerCase() === 'true' };
+    const p = { ...base, ...r, id:r.param_id, ui:r.ui_type, group:r.param_id === 'prompt' ? 'prompt' : r.group, share_optin:String(r.share_optin).toLowerCase() === 'true' };
+    if (p.id === 'requests_per_day') Object.assign(p, { label:'1日のリクエスト数', unit:'回/日', help:'月額目安はこの回数を30日分として計算します。' , share_key:'rpd' });
+    if (p.id === 'extra_input') Object.assign(p, { help:'プロンプト欄に含めていない会話履歴や追加テキストのトークン数です。初期値は2,000トークンで、料金計算に含まれます。' });
+    return p;
   });
   for (const id of Object.keys(BASE)) if (!params.some(p => p.id === id)) throw Error(`${id} パラメーターがありません`);
   const keys = params.map(p => p.share_key).filter(Boolean);

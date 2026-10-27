@@ -16,12 +16,14 @@ test('CSV: BOM, CRLF, escaped quotes, comma and multiline field',()=>{
  for(const text of ['x,x\n1,2','x,y\n1','x\n"unclosed','__proto__\nhello'])assert.throws(()=>parseCSV(text));
 });
 test('JST date boundary',()=>assert.equal(todayJST(new Date('2026-11-30T15:00:00Z')),'2026-12-01'));
-test('default monthly calculation follows documented equation',()=>{
- const r=engine.calc(model,engine.defaults(model));assert.equal(r.inTok,2020);approx(r.cIn,60.6);approx(r.cOut,120);approx(r.monthly,180.6);
+test('one-request cost stays stable while monthly estimate follows daily request count',()=>{
+ const base=engine.defaults(model), r=engine.calc(model,base), fewer=engine.calc(model,{...base,requests_per_day:250});
+ assert.equal(base.extra_input,2000);assert.equal(base.requests_per_day,500);assert.equal(r.inTok,2020);approx(r.cIn,60.6);approx(r.cOut,120);approx(r.monthly,180.6);approx(r.perReq,.01204);
+ approx(fewer.perReq,r.perReq);approx(fewer.monthly,r.monthly/2);assert.equal(r.monthReq,15000);
 });
 test('cache and search free allowance with zero requests',()=>{
  const m=data.models.find(m=>m.id==='gemini-4-argon');let v={...engine.defaults(m),prompt:'',extra_input:1000,cache:50,max_output:1000,requests_per_day:100,web_search:2};
- const r=engine.calc(m,v);approx(r.cIn,3);approx(r.cCache,.15);approx(r.cOut,30);approx(r.cSearch,14);approx(r.monthly,47.15);
+ const r=engine.calc(m,v);approx(r.cIn,3);approx(r.cCache,.15);approx(r.cOut,30);approx(r.cSearch,14);approx(r.monthly,47.15);approx(r.perReq,.03905);
  assert.equal(engine.calc(m,{...v,requests_per_day:0}).monthly,0);
 });
 test('long threshold is strictly greater and batch uses explicit rates',()=>{
@@ -66,6 +68,7 @@ test('share roundtrip, opt-in and empty prompt',()=>{
  assert.equal(engine.parseShare(engine.shareUrl(model,{...v,prompt:''},true)).vals.prompt,'');
  assert.ok(!new URL(engine.shareUrl(model,{...v,prompt:'あ'.repeat(1001)},true)).searchParams.has('p'));
  assert.ok(new URL(engine.shareUrl(model,{...v,prompt:'😀'.repeat(1000)},true)).searchParams.has('p'));
+ assert.equal(engine.parseShare('?rpd=5').vals.requests_per_day,5);
 });
 test('invalid shared numeric/enum/base64 values restore defaults',()=>{
  const r=engine.parseShare('?m=bad&out=-1&rpd=NaN&cache=101&ws=2.4&batch=yes&effort=invalid&p=%%%&ctx=&v=old');
