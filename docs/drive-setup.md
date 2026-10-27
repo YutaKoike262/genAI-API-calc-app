@@ -4,6 +4,7 @@
 
 ## フォルダ
 
+- [zinsei-lab](https://drive.google.com/drive/folders/1Kxl_r4emTF885kuTQq6Z8SzOUM7m3_pC) — 公開料金・API仕様マスターの現在の保存先（2026-10-28に移動）。
 - [API料金メーター](https://drive.google.com/drive/folders/1llyxPCHyDCgoD-118gu1CllVwXjApU_C)
 - [01_公開データ](https://drive.google.com/drive/folders/1EX5nmuYWeXTctbPbGIJ_DXnqIksJv6yl)
 - [02_運用設定](https://drive.google.com/drive/folders/1vbmec0cupaC3AB0xqAZjs2S6F_MqzOVO)
@@ -19,6 +20,24 @@
 
 ## 公開CSVを接続する
 
-公開データシートの各タブをGoogle Sheetsの「ファイル → 共有 → ウェブに公開」で個別にCSV公開し、URLを運用設定シートの「公開CSV」タブに記録してください。各URLをサイトの `public/config.js` の `csv` に転記すると、アプリが読み込みます。データを確認・更新してから公開してください。
+公開データシートの各タブをGoogle Sheetsの「ファイル → 共有 → ウェブに公開」で個別にCSV公開し、URLを運用設定シートの「公開CSV」タブに記録してください。各URLをサイトの `public/api-cost/config.js` の `csv` に転記すると、アプリが読み込みます。データを確認・更新してから公開してください。
 
-現在、Googleの本人確認が必要な画面になったため、CSVのウェブ公開URLは作成していません。運用設定シートのURL欄と `public/config.js` は空欄のままです。計測ID、広告ID、運営者情報も取得後に入力してください。秘密のAPIキーはこのシートにも `config.js` にも保存しないでください。
+2026-10-28に7タブをウェブ公開しました。公開リンクは閲覧専用で、編集用シートの権限は所有者のみです。変更時の自動再公開を有効にしています。日付列の表示形式はCSV読み込みに対応する `yyyy-mm-dd` に統一しました。Googleの公開CSVへの更新反映には遅延が生じる場合があります。
+
+[閲覧専用の公開ページ](https://docs.google.com/spreadsheets/d/e/2PACX-1vTOgbkzGX_NqGF2ibphUL-AcXxbRW3xmUNvzP3Etq7PfF1wj9BRH4rtUD3VGWh8kOc_zZoQhw8GfCBd/pubhtml)
+
+料金・仕様は未照合の参考データです。アプリの `public/api-cost/config.js` と運用設定シートのCSV URL欄は未設定です。計測ID、広告ID、運営者情報も取得後に入力してください。秘密のAPIキーはこのシートにも `config.js` にも保存しないでください。
+
+7本のCSVは認証なしで取得できることを確認済みです。日付書式の変更直後の取得では一部に旧形式が残っており、アプリ接続前に更新の反映と `normalizeTables` による検証を再確認してください。
+
+### 公開CSV URL
+
+| タブ | 閲覧専用CSV |
+| --- | --- |
+| providers | [CSV](https://docs.google.com/spreadsheets/d/e/2PACX-1vTOgbkzGX_NqGF2ibphUL-AcXxbRW3xmUNvzP3Etq7PfF1wj9BRH4rtUD3VGWh8kOc_zZoQhw8GfCBd/pub?gid=352290556&single=true&output=csv) |
+| models | [CSV](https://docs.google.com/spreadsheets/d/e/2PACX-1vTOgbkzGX_NqGF2ibphUL-AcXxbRW3xmUNvzP3Etq7PfF1wj9BRH4rtUD3VGWh8kOc_zZoQhw8GfCBd/pub?gid=310809832&single=true&output=csv) |
+| prices | [CSV](https://docs.google.com/spreadsheets/d/e/2PACX-1vTOgbkzGX_NqGF2ibphUL-AcXxbRW3xmUNvzP3Etq7PfF1wj9BRH4rtUD3VGWh8kOc_zZoQhw8GfCBd/pub?gid=1840063554&single=true&output=csv) |
+| features | [CSV](https://docs.google.com/spreadsheets/d/e/2PACX-1vTOgbkzGX_NqGF2ibphUL-AcXxbRW3xmUNvzP3Etq7PfF1wj9BRH4rtUD3VGWh8kOc_zZoQhw8GfCBd/pub?gid=249243574&single=true&output=csv) |
+| params | [CSV](https://docs.google.com/spreadsheets/d/e/2PACX-1vTOgbkzGX_NqGF2ibphUL-AcXxbRW3xmUNvzP3Etq7PfF1wj9BRH4rtUD3VGWh8kOc_zZoQhw8GfCBd/pub?gid=1380295079&single=true&output=csv) |
+| param_map | [CSV](https://docs.google.com/spreadsheets/d/e/2PACX-1vTOgbkzGX_NqGF2ibphUL-AcXxbRW3xmUNvzP3Etq7PfF1wj9BRH4rtUD3VGWh8kOc_zZoQhw8GfCBd/pub?gid=918052018&single=true&output=csv) |
+| meta | [CSV](https://docs.google.com/spreadsheets/d/e/2PACX-1vTOgbkzGX_NqGF2ibphUL-AcXxbRW3xmUNvzP3Etq7PfF1wj9BRH4rtUD3VGWh8kOc_zZoQhw8GfCBd/pub?gid=708055760&single=true&output=csv) |

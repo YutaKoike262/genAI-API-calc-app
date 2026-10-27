@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <rect width="1200" height="630" fill="#f6f7f9"/>
+  <rect x="64" y="64" width="1072" height="502" rx="22" fill="#fff" stroke="#e2e5e9" stroke-width="2"/>
+  <rect x="120" y="125" width="56" height="56" rx="14" fill="#2867c7"/>
+  <path d="M136 140h10v10h-10zm15 0h10v10h-10zm-15 15h10v10h-10zm15 0h10v10h-10z" fill="#fff"/>
+  <text x="120" y="300" fill="#202124" font-family="Hiragino Kaku Gothic ProN, Noto Sans JP, sans-serif" font-size="76" font-weight="700">ツール一覧</text>
+  <text x="124" y="366" fill="#666b73" font-family="Hiragino Kaku Gothic ProN, Noto Sans JP, sans-serif" font-size="28">利用できるWebツール</text>
+</svg>

@@ -25,7 +25,7 @@
 2. **ファイル分割**: `index.html` / `assets/app.css` / `assets/app.js` / `config.js` に分ける。関数の分け方はモックの章立て（1〜8）に従う
 3. **GA4**: `track()` を本物の gtag に接続する。`page_location` から `p` と `sys` を除く処理は残す。同意モードの初期値を gtag 読み込み前に設定する
 4. **AdSense**: `data-ad-slot` の3枠に広告ユニットを入れられる構造にする（承認前は空の枠のまま、高さは維持）
-5. **付随ページ**: `privacy.html`（設計書と構築手順書8章の外部送信の公表内容）、運営者情報、使い方の説明ページ
+5. **付随ページ**: `public/api-cost/privacy.html`（設計書と構築手順書8章の外部送信の公表内容）、運営者情報、使い方の説明ページ
 6. **SEO**: `robots.txt`、`sitemap.xml`、各ページの `<title>` と `description`、OGP の静的画像
 7. **開発用ログの削除**: 「GA4イベントログ」の欄は本番では出さない（`?debug=1` のときだけ表示）
 

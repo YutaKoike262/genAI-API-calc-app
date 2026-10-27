@@ -1,5 +1,5 @@
 import { readFile,mkdir,writeFile } from 'node:fs/promises';
-const tables=JSON.parse(await readFile('public/data/fallback.json','utf8'));
+const tables=JSON.parse(await readFile('public/api-cost/data/fallback.json','utf8'));
 await mkdir('docs/sheets',{recursive:true});
 const cell=v=>'"'+String(v??'').replaceAll('"','""')+'"';
 for(const [name,rows] of Object.entries(tables)) {

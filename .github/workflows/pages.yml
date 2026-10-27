@@ -32,7 +32,7 @@ jobs:
       - name: Check static site
         run: npm run check
       - name: Prepare site metadata
-        run: npm run prepare:site
+        run: npm run prepare:site -- https://yutakoike262.github.io/genAI-API-calc-app/
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
       - name: Upload site artifact

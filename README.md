@@ -1,6 +1,6 @@
 # API料金メーター
 
-同梱の設計書・モックを基にした、ビルド不要の静的アプリです。公開するファイルは `public/` だけです。フレームワーク、サーバー処理、実行時のnpm依存はありません。
+同梱の設計書・モックを基にした、ビルド不要の静的サイトです。ルートの `public/` に人生ラボのホーム、`public/api-cost/` にAPI料金メーターを置きます。フレームワーク、サーバー処理、実行時のnpm依存はありません。
 
 ## 起動・検証
 
@@ -32,7 +32,7 @@ Google Driveに作成した管理フォルダ・スプレッドシートの場�
 1. `docs/sheets/` の7ファイルをGoogleスプレッドシートにインポートし、シート名をファイル名に合わせます。
 2. 同梱データはモック由来の参考値です。価格・対応モデル・機能の組み合わせを公式情報と照合し、各行の `checked_at` / `verified_at` を更新します。`meta.data_note` はデータ品質に応じて更新してください。
 3. 各シートを「ファイル → 共有 → ウェブに公開」でCSVとして公開します。ファイル全体の編集URLや、ログインが必要なURLは使いません。
-4. `public/config.js` の `csv` に7枚の公開CSV URLを設定します。
+4. `public/api-cost/config.js` の `csv` に7枚の公開CSV URLを設定します。
 5. サイトを再読み込みし、公開CSVから読み込んだ表示を確認します。料金または `param_map` を変更して再読み込みし、反映を確認してください。Google側の公開CSV反映には遅延が生じる場合があります。
 
 データの適用日は日本時間の当日、開始・終了日は両端を含みます。期限切れで通常料金のないモデルは選択肢に出しません。重複期間・長文料金の欠落・無効なデータは全シートを予備データに切り替え、混在する版で計算しません。
@@ -43,7 +43,7 @@ Google Driveに作成した管理フォルダ・スプレッドシートの場�
 
 ## GA4・広告
 
-- `config.js` に `ga4MeasurementId` を設定します。空欄ではGA4へ通信しません。
+- `api-cost/config.js` に `ga4MeasurementId` を設定します。空欄ではGA4へ通信しません。
 - GA4管理画面の拡張計測機能をOFFにし、このアプリの手動イベントで計測します。Googleシグナルと広告パーソナライズはGA4側で無効にしています。
 - 利用者が分析に同意するまでGoogleタグは読み込みません。本文を含む `change_param.value` は送信しません。`p` / `sys` は復元後のアドレスと計測URLから除外し、参照元も同様に処理します。同意前の操作は後から送信しません。
 - `?debug=1` で開くと画面内ログが現れ、同意後のイベントには `debug_mode` が付きます。計測IDを設定し、同意した状態で設計書8章の10イベントをDebugViewで確認してください。コピー／共有イベントは成功時のみ送ります。
@@ -53,9 +53,9 @@ Google Driveに作成した管理フォルダ・スプレッドシートの場�
 
 ## 公開する
 
-GitHub PagesとGitHub Actionsの設定、公開URL、GA4測定IDの設定順は [`docs/github-pages-deploy.md`](docs/github-pages-deploy.md) に記録しています。
+GitHub Pagesへの現行公開手順は [`docs/github-pages-deploy.md`](docs/github-pages-deploy.md)、Cloudflare Pagesへの移行手順は [`docs/cloudflare-pages-deploy.md`](docs/cloudflare-pages-deploy.md) に記録しています。
 
-1. `public/config.js` の `siteUrl`（末尾 `/`）と `operator.name` / `operator.contactUrl` を設定します。
+1. `public/api-cost/config.js` の `siteUrl` / `siteRootUrl`（末尾 `/`）と `operator.name` / `operator.contactUrl` を設定します。
 2. 次を実行します。SEOのURLを書き込む準備であり、アプリのビルドはありません。
 
    ```sh
@@ -64,21 +64,22 @@ GitHub PagesとGitHub Actionsの設定、公開URL、GA4測定IDの設定順は 
    npm test
    ```
 
-3. GitHub Pages: リポジトリの Settings → Pages で Source を GitHub Actions にし、`main` に反映します。Actionsがテストを実行し `public` をデプロイします。
+3. GitHub Pagesの現行公開先、またはCloudflare Pagesの移行手順に従って `public` をデプロイします。
 4. 公開後、実際のCSV、GA4 DebugView、AdSense、共有URL、OGPを確認します。
 
 GitHub PagesはGitHub Actionsのカスタムワークフローから静的成果物を公開します。公式確認の記録は `docs/verification.md` を参照してください。
 
-公開URLは [GitHub Pages](https://yutakoike262.github.io/genAI-API-calc-app/) です。現在、公開CSV・計測ID・広告ID・運営者情報は未設定で、同梱の参考データを表示します。運営者名と連絡先が揃うまで `npm run check -- --production` は失敗します。
+現行公開URLは [GitHub Pages](https://yutakoike262.github.io/genAI-API-calc-app/) です。独自ドメインを取得後、Cloudflare Pagesを本番公開先に切り替える予定です。現在、公開CSV・計測ID・広告ID・運営者情報は未設定で、同梱の参考データを表示します。運営者名と連絡先が揃うまで `npm run check -- --production` は失敗します。
 
 ## 構成
 
-- `public/index.html`, `assets/app.css`, `assets/app.js`: モック準拠の画面・状態・操作
-- `assets/data.js`: CSV・検証・期間選択・フォールバック
-- `assets/core.js`: 計算・コード生成・共有URL（DOM非依存）
-- `assets/telemetry.js`: 同意・GA4・AdSense
-- `public/config.js`: サイトごとの公開設定
-- `public/data/fallback.json`: 予備データ
+- `public/index.html`, `public/assets/home.css`: 人生ラボのツール一覧ホーム
+- `public/api-cost/index.html`, `public/api-cost/assets/app.js`: API料金メーターの画面・操作
+- `public/api-cost/assets/data.js`: CSV・検証・期間選択・フォールバック
+- `public/api-cost/assets/core.js`: 計算・コード生成・共有URL（DOM非依存）
+- `public/api-cost/assets/telemetry.js`: 同意・GA4・AdSense
+- `public/api-cost/config.js`: API料金メーターの公開設定
+- `public/api-cost/data/fallback.json`: 予備データ
 - `tests/`: 金額・共有・外部データ・18種類のコード生成を検証
 
 生成コードのAPIへの実行は行っていません。APIキーはサイトに置かず、実行環境の環境変数へ設定してください。OpenAIのcurlバッチはアップロード結果のfile IDを手動で差し替える、モックと同じ手順です。モデルによる検索・バッチ・推論の組み合わせ制約は公式仕様を確認してください。

@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>API料金メーター | Claude・OpenAI・Geminiの料金比較</title>
+
+<link rel="stylesheet" href="assets/app.css">
+<meta name="description" content="Claude・OpenAI・GeminiのAPI月額料金を比較。キャッシュ・バッチ処理・検索を含めて見積もり、Python・curl・JavaScriptコードと共有URLを作成できます。">
+<meta name="referrer" content="no-referrer">
+<meta property="og:type" content="website"><meta property="og:locale" content="ja_JP">
+<meta property="og:title" content="API料金メーター"><meta property="og:description" content="APIの月額を見積もり、コードを生成。">
+<meta property="og:image" content="https://jinsei-lab.com/api-cost/assets/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="assets/icon.svg" type="image/svg+xml"><link rel="canonical" href="https://jinsei-lab.com/api-cost/"><meta property="og:url" content="https://jinsei-lab.com/api-cost/"></head>
+<body>
+<main class="wrap">
+  <header>
+    <div>
+      <h1>API料金メーター</h1>
+      <p class="sub">Claude・ChatGPT・Gemini の月額を見積もり、そのまま動くコードを生成</p>
+    </div>
+    <span class="chip"><span class="dot"></span><span>料金データ確認日 <span id="checked"></span></span></span>
+    <label class="appearance">外観 <select id="theme" aria-label="外観"><option value="auto">自動</option><option value="light">ライト</option><option value="dark">ダーク</option></select></label>
+  </header>
+
+  <p id="dataStatus" class="note info" role="status">料金データを読み込んでいます…</p>
+  <noscript>この計算機にはJavaScriptが必要です。</noscript>
+  <div class="ad ad-banner" data-ad-slot="top">広告</div>
+
+  <div class="cols">
+    <section class="left" aria-label="設定">
+      <div class="section">
+        <div class="hdr">モデル</div>
+        <div class="grp">
+          <div class="area"><div class="seg" role="tablist" aria-label="プロバイダー" id="providers"></div></div>
+          <div class="row"><label for="model">モデル</label><select id="model"></select></div>
+        </div>
+        <div class="ftr" id="modelFtr"></div>
+      </div>
+
+      <div class="section">
+        <div class="hdr">プロンプト</div>
+        <div class="grp"><div class="area"><textarea id="p-prompt" aria-label="プロンプト"></textarea></div></div>
+        <div class="ftr" id="tokFtr"></div>
+      </div>
+
+      <div class="section">
+        <div class="hdr">使用量</div>
+        <div class="grp" id="basic"></div>
+        <div class="ftr">出力には思考（推論）トークンも含まれます。出力の値はコードの上限値にも使います。</div>
+      </div>
+
+      <div class="section">
+        <div class="grp" id="adv">
+          <button type="button" class="disc row" id="advBtn" aria-expanded="false" aria-controls="advBody">
+            <span class="lbl">詳細設定</span><span class="val" id="advSum"></span><span class="chev" aria-hidden="true">›</span>
+          </button>
+          <div id="advBody" hidden></div>
+        </div>
+        <div class="ftr">キャッシュと検索は 1 以上でコードに反映されます。</div>
+      </div>
+
+      <button type="button" class="btn" id="genBtn" disabled>コードを生成</button>
+    </section>
+
+    <aside class="right" aria-label="結果">
+      <div class="card" aria-live="polite">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap">
+          <span style="font-size:15px;font-weight:600">予想料金（30日）</span><span class="fine" id="mLabel"></span>
+        </div>
+        <div class="big"><span class="num" id="monthly"></span><span class="unit2" id="monthlyJpy"></span></div>
+        <div class="stats">
+          <div class="stat"><span>1リクエスト</span><b id="perReq"></b></div>
+          <div class="stat"><span>1日</span><b id="perDay"></b></div>
+          <div class="stat"><span>1,000回</span><b id="perK"></b></div>
+        </div>
+        <div class="bd" id="breakdown"></div>
+        <div class="note warn" id="future" hidden></div>
+        <div class="note warn" id="longNote" hidden></div>
+        <span class="fine" id="source"></span>
+        <div style="border-top:.5px solid var(--sep);padding-top:14px;display:flex;flex-direction:column;gap:10px">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+            <div style="display:flex;align-items:center;gap:10px">
+              <button type="button" class="sw" role="switch" aria-checked="false" aria-labelledby="optinLbl" id="optin"></button>
+              <span id="optinLbl" style="font-size:15px">プロンプトも含める</span>
+            </div>
+            <button type="button" class="btn small tinted" id="shareBtn">この見積もりを共有</button>
+          </div>
+          <div class="fine" id="shareFields"></div><div class="url" id="shareUrl"></div>
+          <span class="fine" id="shareNote"></span>
+        </div>
+      </div>
+
+      <div class="note info" id="restoreNote" hidden></div>
+
+      <div class="ad ad-rect" data-ad-slot="result">広告</div>
+
+      <div class="card" style="padding:16px;gap:12px">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+          <span style="font-size:15px;font-weight:600">コード</span>
+          <div class="seg" role="tablist" aria-label="言語" id="langs" style="min-width:240px"></div>
+        </div>
+        <div class="note warn" id="stale" hidden style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap">
+          <span>設定が変わりました。コードは前の設定のままです。</span>
+          <button type="button" class="btn small tinted" id="regen">再生成</button>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px" id="included"></div>
+        <div class="codebox">
+          <div class="codebar"><span id="codeMeta">未生成</span><button type="button" id="copyBtn" disabled>コピー</button></div>
+          <pre id="code" tabindex="0">「コードを生成」を押すと、今の設定でコードが作られます。</pre>
+        </div>
+      </div>
+
+      <div class="card" style="padding:12px 16px;gap:8px">
+        <label for="pasteIn" style="font-size:13px;color:var(--label2)">共有URLから見積もりを復元</label>
+        <div class="paste">
+          <input id="pasteIn" type="url" placeholder="https://example.com/?m=…">
+          <button type="button" class="btn small tinted" id="pasteBtn">開く</button>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <details class="log" id="debugLog" hidden><summary>GA4イベントログ（デバッグ）</summary><div class="logbody" id="log"><div>操作するとイベントがここに出ます</div></div></details>
+
+  <div class="ad ad-banner" data-ad-slot="bottom">広告</div>
+
+  <footer>料金はデータ確認日・出典を参照してください。税、為替手数料、ボリューム割引、データ所在地オプション、キャッシュ書き込み料金、Gemini のキャッシュ保存料は含みません。為替は <span id="fxText"></span> 円/ドルで換算。<nav><a href="privacy.html">プライバシー・外部送信</a> · <a href="about.html">運営者情報</a> · <a href="guide.html">使い方</a> · <button type="button" id="privacySettings" class="text-btn">計測の設定</button></nav></footer>
+</main>
+
+<div class="bar" aria-hidden="false">
+  <div class="m"><span>予想料金（30日）</span><b id="barMonthly"></b></div>
+  <button type="button" class="btn" id="barGen" disabled>コードを生成</button>
+</div>
+
+<script type="module" src="assets/app.js"></script>
+</body>
+</html>
