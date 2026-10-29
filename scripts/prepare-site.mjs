@@ -53,5 +53,6 @@ for(const page of pages) {
  await writeFile('public/'+page.file,html);
 }
 await writeFile('public/robots.txt',`User-agent: *\nAllow: /\nSitemap: ${new URL('sitemap.xml',base).href}\n`);
-await writeFile('public/sitemap.xml','<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'+pages.map(p=>`  <url><loc>${escape(new URL(p.url,base).href)}</loc></url>`).join('\n')+'\n</urlset>\n');
+const sitemapPages=pages.filter(page=>page.file!=='api-cost/privacy.html');
+await writeFile('public/sitemap.xml','<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'+sitemapPages.map(p=>`  <url><loc>${escape(new URL(p.url,base).href)}</loc></url>`).join('\n')+'\n</urlset>\n');
 console.log('canonical・OGP・sitemap・robotsを更新しました: '+base.href);

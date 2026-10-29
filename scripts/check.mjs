@@ -4,9 +4,14 @@ import { normalizeTables } from '../public/api-cost/assets/data.js';
 import { CONFIG } from '../public/api-cost/config.js';
 import { SHEETS } from '../public/api-cost/assets/data.js';
 const pages=['index.html','api-cost/index.html','api-cost/privacy.html','api-cost/about.html','api-cost/guide.html'];
+const titles=[];
 for(const file of pages) {
  const html=await readFile('public/'+file,'utf8');
  for(const tag of [/<title>.+<\/title>/,/<meta name="description"/,/<meta property="og:image"/]) if(!tag.test(html))throw Error(file+' metadata missing');
+ const title=html.match(/<title>([^<]+)<\/title>/)?.[1];
+ if(!title||titles.includes(title))throw Error(file+' title missing or duplicated');
+ titles.push(title);
+ if(!/<link rel="canonical" href="https:\/\//.test(html))throw Error(file+' canonical URL missing');
  if((html.match(/pagead2\.googlesyndication\.com\/pagead\/js\/adsbygoogle\.js\?client=ca-pub-8910196652932479/g)||[]).length!==1)throw Error(file+' AdSense script missing or duplicated');
  for(const match of html.matchAll(/(?:href|src)="([^"#]+)"/g)) {
   const ref=match[1];if(/^(https?:|mailto:)/.test(ref))continue;
@@ -17,6 +22,10 @@ for(const file of ['api-cost/config.js',...(await readdir('public/api-cost/asset
  const result=spawnSync(process.execPath,['--check','public/'+file],{encoding:'utf8'});if(result.status)throw Error(result.stderr);
 }
 normalizeTables(JSON.parse(await readFile('public/api-cost/data/fallback.json','utf8')));
+const sitemap=await readFile('public/sitemap.xml','utf8');
+if(!sitemap.includes('<loc>https://zinsei-lab.com/</loc>')||!sitemap.includes('<loc>https://zinsei-lab.com/api-cost/</loc>'))throw Error('sitemap is missing primary pages');
+if(sitemap.includes('/api-cost/privacy.html'))throw Error('privacy page should not be listed in sitemap');
+if(!(await readFile('public/api-cost/index.html','utf8')).includes('class="seo-content '))throw Error('API calculator SEO copy missing');
 if(process.argv.includes('--production')) {
  if(!CONFIG.siteUrl.startsWith('https://'))throw Error('本番siteUrl未設定');
  for(const name of SHEETS) {

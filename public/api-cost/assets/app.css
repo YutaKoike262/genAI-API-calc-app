@@ -145,6 +145,7 @@ footer nav{margin-top:12px;line-height:2.4}
 .consent-actions{display:flex;gap:10px;flex-wrap:wrap}
 .article{max-width:800px;line-height:1.8}.article h1{font-size:30px}.article h2{font-size:21px;margin-top:32px}
 .article section{background:var(--cell);border-radius:12px;padding:24px}.article p{margin-block:12px}
+.seo-content{max-width:800px;margin:36px auto 0;line-height:1.8}.seo-content h2{margin:0 0 16px;font-size:22px}.seo-content h3{margin:28px 0 8px;font-size:17px}.seo-content p{color:var(--label2);line-height:1.8}.seo-content a{color:var(--tint);text-decoration:underline}
 .article table{border-collapse:collapse;width:100%;font-size:14px}.article th,.article td{border-bottom:1px solid var(--sep);padding:12px;text-align:left;vertical-align:top}
 .article .table-wrap{overflow:auto}.article code{overflow-wrap:anywhere}
 @media(max-width:450px){.row{gap:8px;padding-inline:12px}.row select{font-size:14px}.big .num{font-size:42px}.card{padding:16px}.bar .m b{font-size:20px}.bar .btn{padding-inline:14px;font-size:15px}.article section{padding:18px}}

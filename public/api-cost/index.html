@@ -3,13 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>API料金メーター | Claude・OpenAI・Geminiのテキスト・画像・動画・音声料金を試算</title>
+<title>生成AI API料金計算｜Claude・OpenAI・Geminiの1回・月額を試算</title>
 
 <link rel="stylesheet" href="assets/app.css">
-<meta name="description" content="Claude・OpenAI・GeminiのAPI料金を試算。Nano Bananaの画像生成、Gemini Omni Flashの動画生成、Gemini TTSの音声生成にも対応します。">
+<meta name="description" content="Claude・OpenAI・Gemini APIの費用を1回あたり・月額で試算。入力・出力トークン数、画像枚数、動画・音声の長さとリクエスト数を設定できます。">
 <meta name="referrer" content="no-referrer">
 <meta property="og:type" content="website"><meta property="og:locale" content="ja_JP">
-<meta property="og:title" content="API料金メーター"><meta property="og:description" content="APIの1回料金とリクエスト数に応じた月額を試算。">
+<meta property="og:title" content="生成AI API料金計算｜Claude・OpenAI・Gemini"><meta property="og:description" content="入力・出力トークン数や画像・動画・音声の使用量から、1回あたりと月額のAPI費用を試算。">
 <meta property="og:image" content="https://zinsei-lab.com/api-cost/assets/og.png"><meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="assets/icon.svg" type="image/svg+xml"><script>window.dataLayer=window.dataLayer||[];window.gtag=window.gtag||function(){dataLayer.push(arguments)};gtag('consent','default',{analytics_storage:'denied',ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied'});window.adsbygoogle=window.adsbygoogle||[];try{window.adsbygoogle.requestNonPersonalizedAds=JSON.parse(localStorage.getItem('api-meter-consent-v1'))?.ads===true?0:1}catch{window.adsbygoogle.requestNonPersonalizedAds=1}</script>
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8910196652932479"
@@ -18,7 +18,7 @@
 <main class="wrap">
   <header>
     <div>
-      <h1>API料金メーター</h1>
+      <h1>生成AI API料金メーター</h1>
       <p class="sub">Claude・ChatGPT・Gemini の1回あたりと月額の費用を試算。画像・動画・音声生成にも対応</p>
     </div>
     <span class="chip"><span class="dot"></span><span>料金データ確認日 <span id="checked"></span></span></span>
@@ -127,6 +127,20 @@
   <details class="log" id="debugLog" hidden><summary>GA4イベントログ（デバッグ）</summary><div class="logbody" id="log"><div>操作するとイベントがここに出ます</div></div></details>
 
   <div class="ad ad-banner" data-ad-slot="bottom">広告</div>
+
+  <section class="seo-content article" aria-labelledby="seo-heading">
+    <h2 id="seo-heading">生成AI APIの1回料金と月額を試算</h2>
+    <p>Claude、OpenAI、GeminiのAPIについて、モデルと使用量を選び、1回あたりの料金と月額の目安を確認できます。テキスト生成に加え、料金データに登録された画像生成・動画生成・音声生成のモデルにも対応しています。料金の計算はブラウザ内で行い、入力したプロンプトをAIサービスへ送信しません。</p>
+
+    <h3>月額の目安はリクエスト数から計算</h3>
+    <p>モデル、入力・出力トークン数、1日のリクエスト数を指定すると、1回あたりの費用と30日分の月額を表示します。基本の考え方は「1回あたりの費用 × 1日のリクエスト数 × 30日」です。Web検索など月間無料枠がある料金は、登録データに応じて月額へ反映します。</p>
+
+    <h3>画像・動画・音声の料金にも対応</h3>
+    <p>画像生成は画像の枚数とサイズ、動画生成は生成秒数、音声生成は読み上げ秒数を設定して試算します。単価と対象モデルは料金表に登録された内容を使い、結果には参照した公式料金ページと確認日を表示します。料金やモデルの仕様は変更されるため、実際に利用する前に各社の最新情報もご確認ください。</p>
+
+    <h3>試算結果について</h3>
+    <p>トークン数は入力文字からの概算で、実際のAPI使用量や請求額とは異なる場合があります。税、為替手数料、ボリューム割引、データ所在地オプション、キャッシュ保存料など、一部の料金は含みません。詳しい入力方法は<a href="guide.html">使い方</a>をご覧ください。</p>
+  </section>
 
   <footer>料金はデータ確認日・出典を参照してください。税、為替手数料、ボリューム割引、データ所在地オプション、キャッシュ書き込み料金、Gemini のキャッシュ保存料は含みません。為替は <span id="fxText"></span> 円/ドルで換算。<nav><a href="privacy.html">プライバシー・外部送信</a> · <a href="about.html">このツールについて</a> · <a href="guide.html">使い方</a> · <span data-contact></span> · <button type="button" id="privacySettings" class="text-btn">計測の設定</button></nav></footer>
 </main>
