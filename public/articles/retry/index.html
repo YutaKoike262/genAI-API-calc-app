@@ -1,0 +1,13 @@
+<!doctype html>
+<html lang="ja"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>再試行を含めてリクエスト数を見積もる | zinsei-lab</title><meta name="description" content="利用者の操作が1日500回あり、その5%で、最初の応答の後にもう一度生成するケースを考えます。ここでは両方の生成で同じトークン数を使うと仮定します。">
+<meta name="google-adsense-account" content="ca-pub-8910196652932479">
+<meta property="og:title" content="再試行を含めてリクエスト数を見積もる | zinsei-lab"><meta property="og:description" content="利用者の操作が1日500回あり、その5%で、最初の応答の後にもう一度生成するケースを考えます。ここでは両方の生成で同じトークン数を使うと仮定します。"><meta property="og:image" content="https://zinsei-lab.com/assets/tools-og.png">
+<link rel="icon" href="../../assets/tools.svg"><link rel="stylesheet" href="../../assets/home.css">
+<link rel="canonical" href="https://zinsei-lab.com/articles/retry/"><meta property="og:url" content="https://zinsei-lab.com/articles/retry/"></head><body>
+<header><a class="brand" href="../../">zinsei-lab</a><nav><a href="../../#tools">ツール一覧</a><a href="../../articles/">解説記事</a></nav></header>
+<main><h1>再試行を含めてリクエスト数を見積もる</h1>
+<p class="lead">利用者の操作が1日500回あり、その5%で、最初の応答の後にもう一度生成するケースを考えます。ここでは両方の生成で同じトークン数を使うと仮定します。</p><section><h2>操作数から生成回数へ</h2><p>毎日25回の追加生成があるため、30日分は525 × 30で15,750回です。1回0.006ドルなら94.50ドル。操作数だけで計算した90ドルとの差は4.50ドルになります。</p></section><section><h2>ログで数える単位</h2><p>リクエストの試行数と、実際に使用量が記録された回数を分けます。再生成で長い履歴を送る場合は、通常分500回と追加分25回を別条件にして集計すると見積もりを調整できます。</p></section><aside><a href="../../api-cost/">API料金メーターで試す →</a><p>関連記事　<a href="../monthly-chat/">月1万回のチャットにいくらかかる？</a></p></aside>
+</main><footer><a class="brand" href="../../">zinsei-lab</a><nav><a href="../../about/">運営者情報</a><a href="../../privacy/">プライバシー</a><a href="../../contact/">お問い合わせ</a></nav></footer>
+</body></html>

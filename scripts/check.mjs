@@ -1,9 +1,10 @@
+import { sitePages } from './site-pages.mjs';
 import { readFile, access, readdir } from 'node:fs/promises';
 import { spawnSync } from 'node:child_process';
 import { normalizeTables } from '../public/api-cost/assets/data.js';
 import { CONFIG } from '../public/api-cost/config.js';
 import { SHEETS } from '../public/api-cost/assets/data.js';
-const pages=['index.html','api-cost/index.html','api-cost/privacy.html','api-cost/about.html','api-cost/guide.html'];
+const pages=(await sitePages()).map(page => page.file);
 const titles=[];
 for(const file of pages) {
  const html=await readFile('public/'+file,'utf8');
@@ -12,13 +13,13 @@ for(const file of pages) {
  if(!title||titles.includes(title))throw Error(file+' title missing or duplicated');
  titles.push(title);
  if(!/<link rel="canonical" href="https:\/\//.test(html))throw Error(file+' canonical URL missing');
- if((html.match(/pagead2\.googlesyndication\.com\/pagead\/js\/adsbygoogle\.js\?client=ca-pub-8910196652932479/g)||[]).length!==1)throw Error(file+' AdSense script missing or duplicated');
+ if (/adsbygoogle\.js|data-ad-slot/.test(html)) throw Error(file+' contains advertising');
  for(const match of html.matchAll(/(?:href|src)="([^"#]+)"/g)) {
   const ref=match[1];if(/^(https?:|mailto:)/.test(ref))continue;
   await access(new URL(ref,'file://' + process.cwd() + '/public/' + file).pathname);
  }
 }
-for(const file of ['api-cost/config.js',...(await readdir('public/api-cost/assets')).filter(x=>x.endsWith('.js')).map(x=>'api-cost/assets/'+x)]) {
+for(const file of ['token-counter/counter.js','api-cost/config.js',...(await readdir('public/api-cost/assets')).filter(x=>x.endsWith('.js')).map(x=>'api-cost/assets/'+x)]) {
  const result=spawnSync(process.execPath,['--check','public/'+file],{encoding:'utf8'});if(result.status)throw Error(result.stderr);
 }
 normalizeTables(JSON.parse(await readFile('public/api-cost/data/fallback.json','utf8')));

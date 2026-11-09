@@ -1,7 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://zinsei-lab.com/</loc></url>
-  <url><loc>https://zinsei-lab.com/api-cost/</loc></url>
+  <url><loc>https://zinsei-lab.com/about/</loc></url>
   <url><loc>https://zinsei-lab.com/api-cost/about.html</loc></url>
   <url><loc>https://zinsei-lab.com/api-cost/guide.html</loc></url>
+  <url><loc>https://zinsei-lab.com/api-cost/</loc></url>
+  <url><loc>https://zinsei-lab.com/articles/batch/</loc></url>
+  <url><loc>https://zinsei-lab.com/articles/break-even/</loc></url>
+  <url><loc>https://zinsei-lab.com/articles/budget/</loc></url>
+  <url><loc>https://zinsei-lab.com/articles/cache/</loc></url>
+  <url><loc>https://zinsei-lab.com/articles/exchange/</loc></url>
+  <url><loc>https://zinsei-lab.com/articles/history/</loc></url>
+  <url><loc>https://zinsei-lab.com/articles/</loc></url>
+  <url><loc>https://zinsei-lab.com/articles/monthly-chat/</loc></url>
+  <url><loc>https://zinsei-lab.com/articles/output/</loc></url>
+  <url><loc>https://zinsei-lab.com/articles/retry/</loc></url>
+  <url><loc>https://zinsei-lab.com/articles/token-count/</loc></url>
+  <url><loc>https://zinsei-lab.com/contact/</loc></url>
+  <url><loc>https://zinsei-lab.com/</loc></url>
+  <url><loc>https://zinsei-lab.com/privacy/</loc></url>
+  <url><loc>https://zinsei-lab.com/token-counter/</loc></url>
 </urlset>

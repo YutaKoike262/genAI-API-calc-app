@@ -1,3 +1,5 @@
+export function estTokens(s) { let a = 0, o = 0; for (const ch of s || "") { if (ch.charCodeAt(0) < 128) a++; else o++; } return Math.round(a / 4 + o); }
+
 export function createEngine(DATA) {
 const modelById = id => DATA.models.find(m => m.id === id);
 function rowsFor(m) { // param_map をモデル向けに解決
@@ -40,7 +42,6 @@ function normalizeValues(m, values) {
   if (m.kind === 'video' || !m.batch_tiers.length) result.batch = false;
   return result;
 }
-function estTokens(s) { let a = 0, o = 0; for (const ch of s || "") { if (ch.charCodeAt(0) < 128) a++; else o++; } return Math.round(a / 4 + o); }
 const num = v => { const n = Number(v); return isFinite(n) && n > 0 ? n : 0; };
 const usd = v => v === 0 ? "$0" : v < 0.01 ? "$" + v.toPrecision(2) : v < 100 ? "$" + v.toFixed(2) : "$" + Math.round(v).toLocaleString("en-US");
 const yen = v => "約" + Math.round(v * DATA.meta.fx_usdjpy).toLocaleString("ja-JP") + "円 / 月";

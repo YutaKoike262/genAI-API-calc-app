@@ -11,9 +11,7 @@
 <meta property="og:type" content="website"><meta property="og:locale" content="ja_JP">
 <meta property="og:title" content="生成AI API料金計算｜Claude・OpenAI・Gemini"><meta property="og:description" content="入力・出力トークン数や画像・動画・音声の使用量から、1回あたりと月額のAPI費用を試算。">
 <meta property="og:image" content="https://zinsei-lab.com/api-cost/assets/og.png"><meta name="twitter:card" content="summary_large_image">
-<link rel="icon" href="assets/icon.svg" type="image/svg+xml"><script>window.dataLayer=window.dataLayer||[];window.gtag=window.gtag||function(){dataLayer.push(arguments)};gtag('consent','default',{analytics_storage:'denied',ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied'});window.adsbygoogle=window.adsbygoogle||[];try{window.adsbygoogle.requestNonPersonalizedAds=JSON.parse(localStorage.getItem('api-meter-consent-v1'))?.ads===true?0:1}catch{window.adsbygoogle.requestNonPersonalizedAds=1}</script>
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8910196652932479"
-     crossorigin="anonymous"></script><link rel="canonical" href="https://zinsei-lab.com/api-cost/"><meta property="og:url" content="https://zinsei-lab.com/api-cost/"></head>
+<link rel="icon" href="assets/icon.svg" type="image/svg+xml"><meta name="google-adsense-account" content="ca-pub-8910196652932479"><link rel="canonical" href="https://zinsei-lab.com/api-cost/"><meta property="og:url" content="https://zinsei-lab.com/api-cost/"></head>
 <body>
 <main class="wrap">
   <header>
@@ -27,7 +25,6 @@
 
   <p id="dataStatus" class="note info" role="status">料金データを読み込んでいます…</p>
   <noscript>この計算機にはJavaScriptが必要です。</noscript>
-  <div class="ad ad-banner" data-ad-slot="top">広告</div>
 
   <div class="cols">
     <section class="left" aria-label="設定">
@@ -96,7 +93,6 @@
 
       <div class="note info" id="restoreNote" hidden></div>
 
-      <div class="ad ad-rect" data-ad-slot="result">広告</div>
 
       <div class="card" id="codeCard" style="padding:16px;gap:12px">
         <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
@@ -126,7 +122,6 @@
 
   <details class="log" id="debugLog" hidden><summary>GA4イベントログ（デバッグ）</summary><div class="logbody" id="log"><div>操作するとイベントがここに出ます</div></div></details>
 
-  <div class="ad ad-banner" data-ad-slot="bottom">広告</div>
 
   <section class="seo-content article" aria-labelledby="seo-heading">
     <h2 id="seo-heading">生成AI APIの1回料金と月額を試算</h2>
@@ -142,7 +137,21 @@
     <p>トークン数は入力文字からの概算で、実際のAPI使用量や請求額とは異なる場合があります。税、為替手数料、ボリューム割引、データ所在地オプション、キャッシュ保存料など、一部の料金は含みません。詳しい入力方法は<a href="guide.html">使い方</a>をご覧ください。</p>
   </section>
 
-  <footer>料金はデータ確認日・出典を参照してください。税、為替手数料、ボリューム割引、データ所在地オプション、キャッシュ書き込み料金、Gemini のキャッシュ保存料は含みません。為替は <span id="fxText"></span> 円/ドルで換算。<nav><a href="privacy.html">プライバシー・外部送信</a> · <a href="about.html">このツールについて</a> · <a href="guide.html">使い方</a> · <span data-contact></span> · <button type="button" id="privacySettings" class="text-btn">計測の設定</button></nav></footer>
+  <section class="seo-content article"><h2>テキストモデルの料金比較</h2><p>標準処理の基本単価（100万トークンあたりの米ドル）。長文・キャッシュ・バッチなどの条件は上の料金メーターで比較できます。</p><div class="table-wrap"><table><thead><tr><th>モデル</th><th>入力</th><th>出力</th><th>確認日・出典</th></tr></thead><tbody><!-- rates:start -->
+<tr><th scope="row">Claude Fable 5.1</th><td>10</td><td>50</td><td><a href="https://platform.claude.com/docs/en/about-claude/pricing">2026-10-17 公式料金表</a></td></tr>
+<tr><th scope="row">Claude Opus 5.5</th><td>4</td><td>20</td><td><a href="https://platform.claude.com/docs/en/about-claude/pricing">2026-10-17 公式料金表</a></td></tr>
+<tr><th scope="row">Claude Sonnet 5.5</th><td>2</td><td>10</td><td><a href="https://platform.claude.com/docs/en/about-claude/pricing">2026-10-17 公式料金表</a></td></tr>
+<tr><th scope="row">Claude Haiku 5.5</th><td>0.1</td><td>0.5</td><td><a href="https://platform.claude.com/docs/en/about-claude/pricing">2026-10-17 公式料金表</a></td></tr>
+<tr><th scope="row">GPT-6 Astra</th><td>10</td><td>50</td><td><a href="https://developers.openai.com/api/docs/pricing">2026-10-17 公式料金表</a></td></tr>
+<tr><th scope="row">GPT-6.1 Sol</th><td>2</td><td>10</td><td><a href="https://developers.openai.com/api/docs/pricing">2026-10-17 公式料金表</a></td></tr>
+<tr><th scope="row">GPT-6 Luna</th><td>0.1</td><td>0.5</td><td><a href="https://developers.openai.com/api/docs/pricing">2026-10-17 公式料金表</a></td></tr>
+<tr><th scope="row">Gemini 4 Argon</th><td>2</td><td>10</td><td><a href="https://ai.google.dev/gemini-api/docs/pricing">2026-10-17 公式料金表</a></td></tr>
+<tr><th scope="row">Gemini 3.8 Flash</th><td>0.75</td><td>3.75</td><td><a href="https://ai.google.dev/gemini-api/docs/pricing">2026-10-17 公式料金表</a></td></tr>
+<tr><th scope="row">Gemini 3.5 Flash-Lite</th><td>0.3</td><td>2.5</td><td><a href="https://ai.google.dev/gemini-api/docs/pricing">2026-10-17 公式料金表</a></td></tr>
+<tr><th scope="row">Gemini 3.1 Pro Preview</th><td>2</td><td>12</td><td><a href="https://ai.google.dev/gemini-api/docs/pricing">2026-10-17 公式料金表</a></td></tr>
+<!-- rates:end --></tbody></table></div></section>
+  <section class="seo-content article"><h2>試算例</h2><p><a href="../articles/monthly-chat/">月1万回のチャットにいくらかかる？</a> · <a href="../articles/cache/">キャッシュの試算</a> · <a href="../articles/">解説記事一覧</a></p></section>
+  <footer>料金はデータ確認日・出典を参照してください。税、為替手数料、ボリューム割引、データ所在地オプション、キャッシュ書き込み料金、Gemini のキャッシュ保存料は含みません。為替は <span id="fxText"></span> 円/ドルで換算。<nav><a href="../privacy/">プライバシー・外部送信</a> · <a href="about.html">このツールについて</a> · <a href="guide.html">使い方</a> · <a href="../about/">運営者情報</a> · <a href="../contact/">お問い合わせ</a> · <button type="button" id="privacySettings" class="text-btn">計測の設定</button></nav></footer>
 </main>
 
 <div class="bar" aria-hidden="false">

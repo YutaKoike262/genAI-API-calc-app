@@ -1,0 +1,13 @@
+<!doctype html>
+<html lang="ja"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>同じ指示を繰り返すときのキャッシュ試算 | zinsei-lab</title><meta name="description" content="固定の指示が8,000トークン、毎回変わる質問が2,000トークンのケースです。入力単価を100万あたり2ドル、キャッシュ読み出しを0.2ドルと仮定します。">
+<meta name="google-adsense-account" content="ca-pub-8910196652932479">
+<meta property="og:title" content="同じ指示を繰り返すときのキャッシュ試算 | zinsei-lab"><meta property="og:description" content="固定の指示が8,000トークン、毎回変わる質問が2,000トークンのケースです。入力単価を100万あたり2ドル、キャッシュ読み出しを0.2ドルと仮定します。"><meta property="og:image" content="https://zinsei-lab.com/assets/tools-og.png">
+<link rel="icon" href="../../assets/tools.svg"><link rel="stylesheet" href="../../assets/home.css">
+<link rel="canonical" href="https://zinsei-lab.com/articles/cache/"><meta property="og:url" content="https://zinsei-lab.com/articles/cache/"></head><body>
+<header><a class="brand" href="../../">zinsei-lab</a><nav><a href="../../#tools">ツール一覧</a><a href="../../articles/">解説記事</a></nav></header>
+<main><h1>同じ指示を繰り返すときのキャッシュ試算</h1>
+<p class="lead">固定の指示が8,000トークン、毎回変わる質問が2,000トークンのケースです。入力単価を100万あたり2ドル、キャッシュ読み出しを0.2ドルと仮定します。</p><section><h2>読み出せた回だけ数える</h2><p>100回のうち固定部分が75回ヒットした場合、割引対象は8,000 × 75で60万トークン。全入力100万のうち通常入力は40万です。入力費は0.8 ＋ 0.12で0.92ドル、通常入力だけなら2ドルです。</p></section><section><h2>ヒット率の分母をそろえる</h2><p>料金メーターには入力全体に対する割合の60%を入れます。75%を入れると毎回変わる質問まで割引対象に含めてしまいます。実請求との差を確認するときは、書き込みや保存にかかった費用を別に集計します。</p></section><aside><a href="../../api-cost/">API料金メーターで試す →</a><p>関連記事　<a href="../monthly-chat/">月1万回のチャットにいくらかかる？</a></p></aside>
+</main><footer><a class="brand" href="../../">zinsei-lab</a><nav><a href="../../about/">運営者情報</a><a href="../../privacy/">プライバシー</a><a href="../../contact/">お問い合わせ</a></nav></footer>
+</body></html>

@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="ja"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>トークン数カウンター | zinsei-lab</title><meta name="description" content="入力した文章の文字数と概算トークン数をブラウザ内で計算します。">
+<meta name="google-adsense-account" content="ca-pub-8910196652932479">
+<meta property="og:title" content="トークン数カウンター | zinsei-lab"><meta property="og:description" content="入力した文章の文字数と概算トークン数をブラウザ内で計算します。"><meta property="og:image" content="https://zinsei-lab.com/assets/tools-og.png">
+<link rel="icon" href="../assets/tools.svg"><link rel="stylesheet" href="../assets/home.css">
+<link rel="canonical" href="https://zinsei-lab.com/token-counter/"><meta property="og:url" content="https://zinsei-lab.com/token-counter/"></head><body>
+<header><a class="brand" href="../">zinsei-lab</a><nav><a href="../#tools">ツール一覧</a><a href="../articles/">解説記事</a></nav></header>
+<main><h1>トークン数カウンター</h1>
+<p>APIに渡す文章を貼り付けると、料金メーターと同じ方法で長さを概算します。入力はこのブラウザ内で処理します。</p>
+<label for="sample">計測する文章</label><textarea id="sample" rows="7" placeholder="例：API料金"></textarea>
+<noscript>計測するにはJavaScriptを有効にしてください。</noscript>
+<output for="sample" id="counts" aria-live="polite">0 文字 ／ 約 0 トークン</output>
+<section><h2>計算方法</h2><p>空白や改行を含め、ASCII文字を4文字で1トークン、それ以外を1文字で1トークンとして換算し、合計を四捨五入します。文字数はUnicodeコードポイント単位です。モデル固有の分割や会話履歴は含まないため、正確な使用量はAPIの応答で確認してください。</p><a href="../articles/token-count/">日本語と英語が混じる文章の計算例 →</a></section><aside><a href="../api-cost/">API料金メーターで費用を試算する →</a></aside>
+<script type="module" src="counter.js"></script>
+</main><footer><a class="brand" href="../">zinsei-lab</a><nav><a href="../about/">運営者情報</a><a href="../privacy/">プライバシー</a><a href="../contact/">お問い合わせ</a></nav></footer>
+</body></html>

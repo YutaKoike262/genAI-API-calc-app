@@ -22,7 +22,7 @@ npm run check
 - 共有URLのオプトイン、UTF-8 base64url、1,000文字制限、範囲検証、データ版の比較
 - 明示的な生成と、設定変更時の再生成案内。言語切替は最後に生成した設定を維持
 - GA4イベント、同意の既定拒否、入力本文の除去、デバッグ表示
-- AdSenseの3枠、プライバシー・ツール概要・使い方、ライト／ダーク、390pxの固定サマリーバー
+- プライバシー・ツール概要・使い方、ライト／ダーク、390pxの固定サマリーバー
 - OGP画像、robots、sitemapとcanonicalの準備スクリプト
 
 ## データを接続する
@@ -32,7 +32,7 @@ Google Driveに作成した管理フォルダ・スプレッドシートの場�
 1. `docs/sheets/` の9ファイルをGoogleスプレッドシートにインポートし、シート名をファイル名に合わせます。
 2. 同梱データはモック由来の参考値です。価格・対応モデル・機能の組み合わせを公式情報と照合し、各行の `checked_at` / `verified_at` を更新します。`meta.data_note` はデータ品質に応じて更新してください。
 3. 各シートを「ファイル → 共有 → ウェブに公開」でCSVとして公開します。ファイル全体の編集URLや、ログインが必要なURLは使いません。
-4. GitHubリポジトリの **Settings → Secrets and variables → Actions → Variables** に `PUBLISHED_SHEETS_URL` を作成し、公開ページの `.../pubhtml` URLを設定します。これは公開URLなのでSecretではなくRepository variableを使います。`CONTACT_EMAIL` は問い合わせ先として各ページに表示します。デプロイ時に9タブのCSV URLと問い合わせリンクを公開サイトへ反映します。
+4. GitHubリポジトリの **Settings → Secrets and variables → Actions → Variables** に `PUBLISHED_SHEETS_URL` を作成し、公開ページの `.../pubhtml` URLを設定します。これは公開URLなのでSecretではなくRepository variableを使います。`CONTACT_EMAIL` はサイト共通のお問い合わせページに表示します。デプロイ時に9タブのCSV URLと問い合わせリンクを公開サイトへ反映します。
 5. サイトを再読み込みし、公開CSVから読み込んだ表示を確認します。料金または `param_map` を変更して再読み込みし、反映を確認してください。Google側の公開CSV反映には遅延が生じる場合があります。
 
 データの適用日は日本時間の当日、開始・終了日は両端を含みます。期限切れで通常料金のないモデルは選択肢に出しません。重複期間・長文料金の欠落・無効なデータは全シートを予備データに切り替え、混在する版で計算しません。
@@ -47,9 +47,7 @@ Google Driveに作成した管理フォルダ・スプレッドシートの場�
 - GA4管理画面の拡張計測機能をOFFにし、このアプリの手動イベントで計測します。Googleシグナルと広告パーソナライズはGA4側で無効にしています。
 - 利用者が分析に同意するまでGoogleタグは読み込みません。本文を含む `change_param.value` は送信しません。`p` / `sys` は復元後のアドレスと計測URLから除外し、参照元も同様に処理します。同意前の操作は後から送信しません。
 - `?debug=1` で開くと画面内ログが現れ、同意後のイベントには `debug_mode` が付きます。計測IDを設定し、同意した状態で設計書8章の10イベントをDebugViewで確認してください。コピー／共有イベントは成功時のみ送ります。
-- AdSense承認後に `adsense.client` と3つの `slots` を設定します。設定済みの枠は広告配信を常時リクエストし、パーソナライズを許可しない利用者には非パーソナライズ広告を要求します。広告在庫や広告ブロッカー等により配信されないことがあります。
-- 広告配信地域によってGoogle認定CMPが必要な場合は公開前に導入してください。本実装の設定ダイアログは認定CMPではありません。
-- 実際の送信先、配信事業者、運営者の情報に合わせて `privacy.html` を確認してください。参照されていた別の「構築手順書」はリポジトリにありませんでした。
+- 審査中は広告配信を停止し、所有者確認用のメタタグを掲載します。外部送信の説明はサイト共通の `/privacy/` にあります。
 
 ## 公開する
 
@@ -65,11 +63,11 @@ Cloudflare Pagesへの公開手順は [`docs/cloudflare-pages-deploy.md`](docs/c
    ```
 
 3. Cloudflare Pagesの手順に従って `public` をデプロイします。
-4. 公開後、実際のCSV、GA4 DebugView、AdSense、共有URL、OGPを確認します。
+4. 公開後、実際のCSV、GA4 DebugView、共有URL、OGPを確認します。
 
 Cloudflare PagesへのデプロイはGitHub Actionsから行います。
 
-本番公開先は [https://zinsei-lab.com/](https://zinsei-lab.com/) です。計測ID・広告IDは未設定の場合、各機能は読み込まれません。
+本番公開先は [https://zinsei-lab.com/](https://zinsei-lab.com/) です。計測IDが未設定の場合、GA4は読み込みません。
 
 ## 構成
 
@@ -77,7 +75,7 @@ Cloudflare PagesへのデプロイはGitHub Actionsから行います。
 - `public/api-cost/index.html`, `public/api-cost/assets/app.js`: API料金メーターの画面・操作
 - `public/api-cost/assets/data.js`: CSV・検証・期間選択・フォールバック
 - `public/api-cost/assets/core.js`: 計算・コード生成・共有URL（DOM非依存）
-- `public/api-cost/assets/telemetry.js`: 同意・GA4・AdSense
+- `public/api-cost/assets/telemetry.js`: 同意・GA4
 - `public/api-cost/config.js`: API料金メーターの公開設定
 - `public/api-cost/data/fallback.json`: 予備データ
 - `tests/`: 金額・共有・外部データ・18種類のコード生成を検証

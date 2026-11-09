@@ -1,0 +1,13 @@
+<!doctype html>
+<html lang="ja"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>会話履歴を毎回送ると入力はどれだけ増える？ | zinsei-lab</title><meta name="description" content="1往復を質問100・回答300トークンとし、過去のやり取りをすべて次の質問に添える場合を考えます。固定のシステム指示はここでは省きます。">
+<meta name="google-adsense-account" content="ca-pub-8910196652932479">
+<meta property="og:title" content="会話履歴を毎回送ると入力はどれだけ増える？ | zinsei-lab"><meta property="og:description" content="1往復を質問100・回答300トークンとし、過去のやり取りをすべて次の質問に添える場合を考えます。固定のシステム指示はここでは省きます。"><meta property="og:image" content="https://zinsei-lab.com/assets/tools-og.png">
+<link rel="icon" href="../../assets/tools.svg"><link rel="stylesheet" href="../../assets/home.css">
+<link rel="canonical" href="https://zinsei-lab.com/articles/history/"><meta property="og:url" content="https://zinsei-lab.com/articles/history/"></head><body>
+<header><a class="brand" href="../../">zinsei-lab</a><nav><a href="../../#tools">ツール一覧</a><a href="../../articles/">解説記事</a></nav></header>
+<main><h1>会話履歴を毎回送ると入力はどれだけ増える？</h1>
+<p class="lead">1往復を質問100・回答300トークンとし、過去のやり取りをすべて次の質問に添える場合を考えます。固定のシステム指示はここでは省きます。</p><section><h2>5回の質問を足し合わせる</h2><p>各回の入力は100、500、900、1,300、1,700トークンで、合計4,500です。最後の回だけを代表にして5倍すると8,500になり、会話全体の費用を過大に見積もります。</p></section><section><h2>代表値を入力する</h2><p>この例では平均入力900のうち、新しい質問が100、履歴が800です。料金メーターの「その他の入力」に平均履歴を設定します。短い会話と長い会話が混在する運用では、それぞれの件数で重み付けします。</p></section><aside><a href="../../api-cost/">API料金メーターで試す →</a><p>関連記事　<a href="../token-count/">日本語と英語が混じる文章のトークンを見積もる</a></p></aside>
+</main><footer><a class="brand" href="../../">zinsei-lab</a><nav><a href="../../about/">運営者情報</a><a href="../../privacy/">プライバシー</a><a href="../../contact/">お問い合わせ</a></nav></footer>
+</body></html>

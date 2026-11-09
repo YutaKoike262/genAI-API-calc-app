@@ -1,3 +1,4 @@
+import { sitePages } from './site-pages.mjs';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { CONFIG } from '../public/api-cost/config.js';
 import { SHEETS, normalizeTables, parseCSV, todayJST } from '../public/api-cost/assets/data.js';
@@ -33,26 +34,32 @@ if (process.env.PUBLISHED_SHEETS_URL) {
 }
 const measurementId=process.env.GA4_MEASUREMENT_ID?.trim() || '';
 if (measurementId && !/^G-[A-Z0-9]+$/.test(measurementId)) throw Error('GA4_MEASUREMENT_ID は G- で始まる測定IDにしてください');
-const contactEmail=process.env.CONTACT_EMAIL?.trim() || '';
+const contactEmail=process.env.CONTACT_EMAIL?.trim() || 'contact@zinsei-lab.com';
 if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(contactEmail)) throw Error('CONTACT_EMAIL に公開用の問い合わせメールアドレスを設定してください');
 configText=configText.replace(/(ga4MeasurementId:\s*)(['"])[^'"]*\2/,`$1${JSON.stringify(measurementId)}`);
 await writeFile(configPath,configText);
 const escape=s=>s.replaceAll('&','&amp;').replaceAll('"','&quot;').replaceAll('<','&lt;');
-const pages=[
- {file:'index.html',url:'./',image:'assets/tools-og.png'},
- {file:'api-cost/index.html',url:'api-cost/',image:'api-cost/assets/og.png'},
- ...['privacy.html','about.html','guide.html'].map(page=>({file:'api-cost/'+page,url:'api-cost/'+page,image:'api-cost/assets/og.png'})),
-];
+const tables = Object.fromEntries(await Promise.all(SHEETS.map(async key => [
+  key, parseCSV(await readFile(`public/api-cost/data/live/${key}.csv`, 'utf8')),
+])));
+const data = normalizeTables(tables, { day: todayJST(), siteUrl: appUrl });
+const rateRows = data.models.filter(model => model.kind === 'text').map(model => {
+  const rate = model.tiers[0];
+  return `<tr><th scope="row">${escape(model.label)}</th><td>${rate.input}</td><td>${rate.output}</td><td><a href="${escape(rate.source_url)}">${escape(rate.checked_at)} 公式料金表</a></td></tr>`;
+}).join('\n');
+const pages = await sitePages();
 for(const page of pages) {
  const canonical=new URL(page.url,base).href;
  let html=await readFile('public/'+page.file,'utf8');
- html=html.replaceAll('<span data-contact></span>',`<a href="mailto:${escape(contactEmail)}">${escape(contactEmail)}</a>`);
+ if (page.file === 'contact/index.html') html=html.replace(/<a href="mailto:[^"]*">[^<]*<\/a>/, () => `<a href="mailto:${escape(contactEmail)}">${escape(contactEmail)}</a>`);
+ if (page.file === 'api-cost/index.html') html=html.replace(/<!-- rates:start -->[\s\S]*?<!-- rates:end -->/, () => `<!-- rates:start -->\n${rateRows}\n<!-- rates:end -->`);
  html=html.replace(/\s*<link rel="canonical"[^>]*>/g,'').replace(/\s*<meta property="og:url"[^>]*>/g,'');
  html=html.replace(/<meta property="og:image"[^>]*>/,`<meta property="og:image" content="${escape(new URL(page.image,base).href)}">`);
  html=html.replace('</head>',`<link rel="canonical" href="${escape(canonical)}"><meta property="og:url" content="${escape(canonical)}"></head>`);
  await writeFile('public/'+page.file,html);
 }
 await writeFile('public/robots.txt',`User-agent: *\nAllow: /\nSitemap: ${new URL('sitemap.xml',base).href}\n`);
-const sitemapPages=pages.filter(page=>page.file!=='api-cost/privacy.html');
-await writeFile('public/sitemap.xml','<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'+sitemapPages.map(p=>`  <url><loc>${escape(new URL(p.url,base).href)}</loc></url>`).join('\n')+'\n</urlset>\n');
+const legacyPrivacy = 'public/api-cost/privacy.html';
+await writeFile(legacyPrivacy, (await readFile(legacyPrivacy,'utf8')).replace(/<link rel="canonical"[^>]*>/, `<link rel="canonical" href="${escape(new URL('privacy/',base).href)}">`));
+await writeFile('public/sitemap.xml','<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'+pages.map(p=>`  <url><loc>${escape(new URL(p.url,base).href)}</loc></url>`).join('\n')+'\n</urlset>\n');
 console.log('canonical・OGP・sitemap・robotsを更新しました: '+base.href);

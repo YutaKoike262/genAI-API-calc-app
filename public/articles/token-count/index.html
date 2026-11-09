@@ -1,0 +1,13 @@
+<!doctype html>
+<html lang="ja"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>日本語と英語が混じる文章のトークンを見積もる | zinsei-lab</title><meta name="description" content="AIの入力は、文章をトークンという単位に分割して数えます。下書きの長さを比べる段階では、APIを呼び出さずに文字の種類から概算できます。">
+<meta name="google-adsense-account" content="ca-pub-8910196652932479">
+<meta property="og:title" content="日本語と英語が混じる文章のトークンを見積もる | zinsei-lab"><meta property="og:description" content="AIの入力は、文章をトークンという単位に分割して数えます。下書きの長さを比べる段階では、APIを呼び出さずに文字の種類から概算できます。"><meta property="og:image" content="https://zinsei-lab.com/assets/tools-og.png">
+<link rel="icon" href="../../assets/tools.svg"><link rel="stylesheet" href="../../assets/home.css">
+<link rel="canonical" href="https://zinsei-lab.com/articles/token-count/"><meta property="og:url" content="https://zinsei-lab.com/articles/token-count/"></head><body>
+<header><a class="brand" href="../../">zinsei-lab</a><nav><a href="../../#tools">ツール一覧</a><a href="../../articles/">解説記事</a></nav></header>
+<main><h1>日本語と英語が混じる文章のトークンを見積もる</h1>
+<p class="lead">AIの入力は、文章をトークンという単位に分割して数えます。下書きの長さを比べる段階では、APIを呼び出さずに文字の種類から概算できます。</p><section><h2>「API料金」で計算する</h2><p>このサイトではASCII文字を4文字で1、日本語などは1文字で1と換算し、合計を四捨五入します。「API料金」は3 ÷ 4 ＋ 2で約3トークン。「API料金API料金」は6 ÷ 4 ＋ 4で約6トークンです。</p></section><section><h2>請求とのずれを調べる</h2><p>実際の分割はモデルの語彙や記号の並びで変わります。試験リクエストの入力使用量と比べるときは、ユーザーの本文だけでなく、固定の指示・会話履歴・ツール定義も同じ条件にそろえてください。</p></section><aside><a href="../../token-counter/">トークン数カウンターで試す →</a><p>関連記事　<a href="../history/">会話履歴を毎回送ると入力はどれだけ増える？</a></p></aside>
+</main><footer><a class="brand" href="../../">zinsei-lab</a><nav><a href="../../about/">運営者情報</a><a href="../../privacy/">プライバシー</a><a href="../../contact/">お問い合わせ</a></nav></footer>
+</body></html>
