@@ -1,0 +1,4 @@
+interface:
+  display_name: "zinsei-lab API料金更新"
+  short_description: "公式モデル情報を料金マスターへ反映し、検証からサイト公開まで進める"
+  default_prompt: "$zinsei-api-pricing-update を使って、各社の新モデルと料金をスプレッドシートに反映し、本番サイトまで更新してください。"
