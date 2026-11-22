@@ -1,0 +1,10 @@
+.lab { max-width: 940px; }
+.lab h1 { font-family: Georgia, "Hiragino Mincho ProN", serif; font-size: clamp(3rem, 8vw, 5.5rem); line-height: 1.12; margin: 15px 0 22px; }
+.eyebrow { color: var(--accent); font-weight: 700; letter-spacing: .12em; }
+.experiment { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: clamp(20px, 4vw, 36px); margin-top: 42px; box-shadow: 0 12px 35px #173b2910; }
+.experiment-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: start; gap: 16px; border-bottom: 1px solid var(--line); }
+.experiment h2 { margin: 0; }.experiment-head p { margin: 0 0 16px; color: var(--muted); }
+.score { display: flex; gap: 22px; }.score span { color: var(--muted); }.score b { display: block; color: var(--ink); font-size: 2rem; line-height: 1.2; }
+.setup { display: grid; grid-template-columns: minmax(120px, 1fr) minmax(180px, 2fr); gap: 8px 16px; align-items: center; margin: 25px 0; }.setup label { margin: 0; }.setup p { grid-column: 2; margin: 0 0 10px; color: var(--muted); font-size: .9rem; }
+select, button { font: inherit; } select { padding: 10px; border: 1px solid #9caeaa; border-radius: 6px; background: white; color: var(--ink); } .choice-title { font-weight: 700; }.actions { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; } button { padding: 15px; border: 0; border-radius: 7px; cursor: pointer; font-weight: 700; } #cooperate { background: #00695f; color: white; } #defect { background: #de7a4f; color: #221a16; } button:disabled { opacity: .5; cursor: default; }.secondary { background: #edf3ef; color: var(--ink); padding: 9px 15px; } #feedback { min-height: 3em; } details { margin-top: 25px; } summary { cursor: pointer; font-weight: 700; } .experiment table { width: 100%; min-width: 450px; } .experiment h3 { margin-top: 28px; }
+@media(max-width: 540px) { .setup { display: block; }.setup select { width: 100%; }.setup p { margin: 5px 0 20px; }.score { gap: 15px; } }
