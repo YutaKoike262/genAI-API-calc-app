@@ -1,13 +1,25 @@
 <!doctype html>
 <html lang="ja"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>月1万回のチャットにいくらかかる？ | zinsei-lab</title><meta name="description" content="問い合わせへの返信を想定し、入力1,000・出力300トークンを1回の条件にします。説明用の単価を100万トークンあたり入力2ドル、出力10ドルと置きます。">
+<title>月1万回のチャットにいくらかかる？ | zinsei-lab</title><meta name="description" content="問い合わせへの返信を想定し、入力1,000・出力300トークンを1回の条件にします。実在モデルのAPI単価と利用条件を使って月額を試算します。">
 <meta name="google-adsense-account" content="ca-pub-8910196652932479">
-<meta property="og:title" content="月1万回のチャットにいくらかかる？ | zinsei-lab"><meta property="og:description" content="問い合わせへの返信を想定し、入力1,000・出力300トークンを1回の条件にします。説明用の単価を100万トークンあたり入力2ドル、出力10ドルと置きます。"><meta property="og:image" content="https://zinsei-lab.com/assets/tools-og.png">
-<link rel="icon" href="../../assets/tools.svg"><link rel="stylesheet" href="../../assets/home.css">
-<link rel="canonical" href="https://zinsei-lab.com/articles/monthly-chat/"><meta property="og:url" content="https://zinsei-lab.com/articles/monthly-chat/"></head><body>
+<meta property="og:title" content="月1万回のチャットにいくらかかる？ | zinsei-lab"><meta property="og:description" content="問い合わせへの返信を想定し、入力1,000・出力300トークンを1回の条件にします。実在モデルのAPI単価と利用条件を使って月額を試算します。"><meta property="og:image" content="https://zinsei-lab.com/assets/tools-og.png">
+<link rel="icon" href="../../assets/tools.svg"><link rel="stylesheet" href="../../assets/home.css"><link rel="canonical" href="https://zinsei-lab.com/articles/monthly-chat/"><meta property="og:url" content="https://zinsei-lab.com/articles/monthly-chat/"></head><body>
 <header><a class="brand" href="../../">zinsei-lab</a><nav><a href="../../#tools">ツール一覧</a><a href="../../articles/">解説記事</a></nav></header>
 <main><h1>月1万回のチャットにいくらかかる？</h1>
-<p class="lead">問い合わせへの返信を想定し、入力1,000・出力300トークンを1回の条件にします。説明用の単価を100万トークンあたり入力2ドル、出力10ドルと置きます。</p><section><h2>1回と1か月の内訳</h2><p>入力は1,000 × 2 ÷ 100万で0.002ドル、出力は300 × 10 ÷ 100万で0.003ドル。合わせて0.005ドルです。1万回なら入力20ドルと出力30ドルで、合計50ドルになります。</p></section><section><h2>計算画面で同じ条件を試す</h2><p>料金メーターの月額は30日換算です。1日333回なら9,990回なので、月1万回ちょうどの見積もりには、表示された1回分の金額を丸める前に1万倍します。履歴を送る場合は、その分も入力に足します。</p></section><aside><a href="../../api-cost/">API料金メーターで試す →</a><p>関連記事　<a href="../history/">会話履歴を毎回送ると入力はどれだけ増える？</a></p></aside>
+<p class="lead">問い合わせ対応のチャットを月1万回動かす場合を、実在モデルのAPI単価で試算します。会話の長さとモデルを変えると、同じ回数でも予算は大きく変わります。</p>
+<p>料金の確認日 <time datetime="2026-11-22">2026年11月22日</time></p>
+<section><h2>まず結論</h2><p>1回あたり入力1,000・出力300トークンなら、月1万回でClaude Sonnet 5.5は約50ドル、GPT-6 Astraは約250ドルです。米ドル建ての標準テキスト料金で、キャッシュ・検索・税・為替手数料は含めません。1回はAPIリクエスト1件で、同じ会話で3回APIを呼べば3回と数えます。</p>
+<div class="scroll"><table><thead><tr><th>モデル</th><th>入力単価</th><th>出力単価</th><th>月額</th></tr></thead><tbody>
+<tr><th>Claude Sonnet 5.5</th><td>2ドル</td><td>10ドル</td><td>50ドル</td></tr>
+<tr><th>GPT-6.1 Sol</th><td>2ドル</td><td>10ドル</td><td>50ドル</td></tr>
+<tr><th>GPT-6 Astra</th><td>10ドル</td><td>50ドル</td><td>250ドル</td></tr>
+<tr><th>Gemini 4 Argon</th><td>2ドル</td><td>10ドル</td><td>50ドル</td></tr>
+</tbody></table></div><p>単価は100万トークンあたり。Gemini 4 Argonの上記は2026年11月30日までの料金で、12月1日から入力4ドル・出力20ドルとなり、同条件で100ドルです。各社のAPI直販料金を用いています。<a href="https://platform.claude.com/docs/en/about-claude/pricing">Claude公式料金表</a>、<a href="https://developers.openai.com/api/docs/pricing">OpenAI公式料金表</a>、<a href="https://aistudio.google.com/docs/pricing">Gemini公式料金表</a></p></section>
+<section><h2>計算の手順</h2><p>Sonnetの入力費は1,000 × 2 ÷ 1,000,000 = 0.002ドル、出力費は300 × 10 ÷ 1,000,000 = 0.003ドルです。1回0.005ドルに1万回を掛けると50ドル。1ドル150円という仮のレートなら7,500円です。円換算額は決済時のレートや手数料で変わります。</p><p>実際のトークン数は文章、モデル、会話履歴、ツール定義によって変わります。出力数には課金対象の思考トークンも含めて考えます。ここでの1,000と300は試算用の仮定で、実測値ではありません。</p></section>
+<section><h2>会話が長くなると</h2><p>以下は月1万回、キャッシュなしで試算した例です。履歴付きの入力5,000トークンには、固定指示と会話履歴を含めた全入力を想定しています。</p>
+<div class="scroll"><table><thead><tr><th>1回の入力・出力</th><th>Sonnet 5.5</th><th>GPT-6 Astra</th></tr></thead><tbody><tr><th>短い返信 1,000・100</th><td>30ドル</td><td>150ドル</td></tr><tr><th>標準の返信 1,000・300</th><td>50ドル</td><td>250ドル</td></tr><tr><th>履歴付き 5,000・1,000</th><td>200ドル</td><td>1,000ドル</td></tr></tbody></table></div><p>たとえばSonnetの履歴付きケースは、入力0.01ドルと出力0.01ドルの合計0.02ドルです。履歴が増える会話では、最終回の長さを全リクエストに当てはめず、各回の使用量か平均を使います。</p></section>
+<section><h2>自分の条件で計算する</h2><ol><li>料金メーターでモデルを選び、平均出力トークンと1日のAPIリクエスト数を入力します。</li><li>固定指示や履歴を含む平均入力に合わせて、「その他の入力」を調整します。プロンプト欄の概算分も合計されます。</li><li>月1万回は30日換算で1日約333.33回です。画面では整数の333回を入力すると月9,990回になるため、厳密には1回あたりの未丸めの費用を1万倍してください。</li></ol><p>まずキャッシュや検索をゼロにした基本額を作り、その後でそれぞれ追加します。料金メーターはキャッシュ書き込み料金を含まず、為替は設定済みの固定レートを使います。<a href="../../api-cost/">API料金メーターを開く</a></p></section>
+<section><h2>本番予算に近づけるには</h2><p>少量のテストでAPIが返す入力・出力の使用量を記録し、短い質問と長い質問を分けて平均します。再試行や自動処理も呼び出し回数に含め、検索、キャッシュ書き込み、税、決済手数料など計算対象外の費用を別途足します。実際の使用量は利用者と時期によって変わるため、月初の試算と実請求を定期的に比べてください。</p></section><aside><p><a href="../history/">会話履歴の入力増加を試算する</a>　<a href="../cache/">キャッシュで入力費を見積もる</a></p></aside>
 </main><footer><a class="brand" href="../../">zinsei-lab</a><nav><a href="../../about/">運営者情報</a><a href="../../privacy/">プライバシー</a><a href="../../contact/">お問い合わせ</a></nav></footer>
 </body></html>
