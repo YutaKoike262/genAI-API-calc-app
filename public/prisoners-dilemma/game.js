@@ -31,7 +31,11 @@ function play(selection) {
   const row = document.createElement('tr');
   for (const value of [history.length, labels[player], labels[opponent], `${mine} / ${theirs}`]) { const cell = document.createElement('td'); cell.textContent = value; row.append(cell); }
   $('history').append(row);
-  if (history.length === 10) { $('cooperate').disabled = true; $('defect').disabled = true; }
+  if (history.length === 10) {
+    $('cooperate').disabled = true;
+    $('defect').disabled = true;
+    $('restart').focus();
+  }
 }
 function reset() {
   history.length = 0; playerScore = 0; opponentScore = 0;

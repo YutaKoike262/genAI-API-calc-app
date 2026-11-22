@@ -1,15 +1,16 @@
 <!doctype html>
 <html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>囚人のジレンマから繰り返しゲーム・進化ゲームへ | zinsei-lab</title><meta name="description" content="利得表から最適応答、支配戦略、ナッシュ均衡、パレート最適、繰り返しゲームと進化論的安定戦略まで解説。">
-<meta property="og:title" content="囚人のジレンマから繰り返しゲーム・進化ゲームへ"><meta property="og:image" content="https://zinsei-lab.com/assets/tools-og.png"><link rel="stylesheet" href="../../assets/home.css"><link rel="icon" href="../../assets/tools.svg"><link rel="canonical" href="https://zinsei-lab.com/articles/prisoners-dilemma/"><meta property="og:url" content="https://zinsei-lab.com/articles/prisoners-dilemma/"></head>
+<meta name="google-adsense-account" content="ca-pub-8910196652932479">
+<meta property="og:title" content="囚人のジレンマから繰り返しゲーム・進化ゲームへ"><meta property="og:description" content="利得表から最適応答、ナッシュ均衡、パレート最適、繰り返しゲームと進化論的安定戦略まで解説。"><meta property="og:image" content="https://zinsei-lab.com/assets/tools-og.png"><link rel="stylesheet" href="../../assets/home.css"><link rel="icon" href="../../assets/tools.svg"><link rel="canonical" href="https://zinsei-lab.com/articles/prisoners-dilemma/"><meta property="og:url" content="https://zinsei-lab.com/articles/prisoners-dilemma/"></head>
 <body><header><a class="brand" href="../../">zinsei-lab</a><nav><a href="../../#tools">ツール一覧</a><a href="../">解説記事</a></nav></header><main>
-<p>ゲーム理論の解説</p><h1>囚人のジレンマから、協力が続く条件を考える</h1>
+<p>ゲーム理論の解説</p><h1>囚人のジレンマから繰り返しゲーム・進化ゲームへ</h1>
 <p class="lead">それぞれが自分の利益を考えて選ぶと、全員にとってより良い結果を逃すことがあります。利得表を使って一度限りのゲームを解き、繰り返しと進化のモデルへ広げます。</p>
 <p><a href="../../prisoners-dilemma/">囚人のジレンマ実験を遊ぶ</a></p>
 <nav aria-label="記事の目次"><a href="#one-shot">基本のゲーム</a><a href="#repeated">繰り返しゲーム</a><a href="#evolution">進化ゲーム</a><a href="#sources">参考資料</a></nav>
 <section id="one-shot"><h2>囚人のジレンマゲームとは</h2><h3>ゲームの設定</h3><p>二人が相手の選択を知らずに「協力」か「裏切り」を同時に選びます。表の各セルは「自分の得点、相手の得点」です。高い得点を各自が望み、表と合理性が共通に知られているとします。</p>
 <div class="scroll"><table><thead><tr><th scope="col">自分 ＼ 相手</th><th scope="col">協力</th><th scope="col">裏切り</th></tr></thead><tbody><tr><th scope="row">協力</th><td>3, 3</td><td>0, 5</td></tr><tr><th scope="row">裏切り</th><td>5, 0</td><td>1, 1</td></tr></tbody></table></div>
-<p>協力同士なら両者3点。自分だけ裏切れば5点、裏切られた側は0点です。互いに裏切ると1点ずつになります。この数値は実験で使う設定です。囚人のジレンマは、裏切りの誘惑が相互協力より高く、相互裏切りが協力した側の一方的な損失より高い関係でも成立します。</p>
+<p>協力同士なら両者3点。自分だけ裏切れば5点、裏切られた側は0点です。互いに裏切ると1点ずつになります。この数値は実験で使う設定です。一般に、裏切りの誘惑 T、相互協力 R、相互裏切り P、一方的に裏切られたときの損失 S が T &gt; R &gt; P &gt; S を満たすと、囚人のジレンマになります。繰り返しゲームでは、交互に裏切る平均が相互協力を上回らないよう、追加条件 2R &gt; T＋S を置くこともあります。この表は両方を満たします。</p>
 <h3>最適応答戦略</h3><p>最適応答は、相手の行動を所与として自分の得点が最大になる行動です。相手が協力なら、自分は協力の3点より裏切りの5点を選びます。相手が裏切りなら、協力の0点より裏切りの1点を選びます。相手側も対称に考えます。</p>
 <h3>支配戦略</h3><p>裏切りは、相手が協力でも裏切りでも、協力より自分の得点が高くなります。そのため裏切りは協力を<strong>厳密に支配</strong>し、双方にとって支配戦略です。</p>
 <h3>ナッシュ均衡と個人合理性</h3><p>ナッシュ均衡は、相手の戦略を固定したとき、どのプレイヤーも自分だけ行動を変えて得点を上げられない組み合わせです。互いに裏切る場合、片方だけ協力に変えると1点から0点へ下がります。したがって「裏切り・裏切り」がこのゲームの唯一のナッシュ均衡です。ここでいう個人合理性は、相手の行動を所与として自分の利得を最大化する、というモデル上の意味です。</p>
