@@ -25,6 +25,7 @@ for(const file of ['token-counter/counter.js','api-cost/config.js',...(await rea
 normalizeTables(JSON.parse(await readFile('public/api-cost/data/fallback.json','utf8')));
 const sitemap=await readFile('public/sitemap.xml','utf8');
 if(!sitemap.includes('<loc>https://zinsei-lab.com/</loc>')||!sitemap.includes('<loc>https://zinsei-lab.com/api-cost/</loc>'))throw Error('sitemap is missing primary pages');
+if(/<loc>[^<]*\.html<\/loc>/.test(sitemap))throw Error('sitemap must not list .html URLs (Cloudflare Pages redirects them)');
 if(sitemap.includes('/api-cost/privacy.html'))throw Error('privacy page should not be listed in sitemap');
 if(!(await readFile('public/api-cost/index.html','utf8')).includes('class="seo-content '))throw Error('API calculator SEO copy missing');
 if(process.argv.includes('--production')) {
