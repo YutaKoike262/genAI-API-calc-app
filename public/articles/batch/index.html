@@ -7,7 +7,26 @@
 <link rel="icon" href="../../assets/tools.svg"><link rel="stylesheet" href="../../assets/home.css">
 <link rel="canonical" href="https://zinsei-lab.com/articles/batch/"><meta property="og:url" content="https://zinsei-lab.com/articles/batch/"></head><body>
 <header><a class="brand" href="../../">zinsei-lab</a><nav><a href="../../#tools">ツール一覧</a><a href="../../articles/">解説記事</a></nav></header>
-<main><h1>夜間処理だけをバッチにした場合の月額</h1>
-<p class="lead">毎日1,000件の分類のうち、利用者が待つ200件は即時処理、翌朝まででよい800件はまとめて処理する想定です。</p><section><h2>同じ件数を二重に数えない</h2><p>通常処理を1件0.004ドル、バッチを0.002ドルと仮定すると、1日は200 × 0.004 ＋ 800 × 0.002で2.40ドル。30日で72ドルです。すべて即時処理する場合の120ドルとの差は48ドルになります。</p></section><section><h2>二つの見積もりに分ける</h2><p>料金メーターで通常の200件とバッチの800件を別々に設定し、月額を合計します。バッチの単価があるモデルを選び、翌朝までに必要な件数と完了待ちに使える時間も記録しておきます。</p></section><aside><a href="../../api-cost/">API料金メーターで試す →</a><p>関連記事　<a href="../budget/">月の予算から1日の利用回数を逆算する</a></p></aside>
+<main class="article-body"><h1>夜間処理だけをバッチにした場合の月額</h1>
+<p class="lead">毎日1,000件の分類のうち、画面で返答を待つ200件はすぐに処理し、翌朝の集計に使う800件はまとめて処理します。バッチの単価を通常の半額と仮定すると、30日で120ドルかかっていた処理が72ドルになります。</p>
+<section>
+<h2>どの800件を翌朝に回せるか</h2>
+<p>たとえば、問い合わせを担当窓口に振り分ける分類には、その場で結果が要ります。一方、受け付けた問い合わせに月報用のタグを付ける作業は、集計に間に合えば十分です。まず、分類結果を誰がいつ使うかで件数を分けます。</p>
+</section>
+<section>
+<h2>1件の差額を、移せる件数に掛ける</h2>
+<p>通常処理を1件0.004ドル、バッチを0.002ドルと置きます。1件移すたびに浮くのは0.002ドル。800件を30日間移せるなら、差額は <strong>0.002 × 800 × 30 ＝ 48ドル</strong>です。</p>
+<div class="scroll"><table><thead><tr><th scope="col">処理方法</th><th scope="col">1日の件数</th><th scope="col">30日の費用</th></tr></thead><tbody>
+<tr><th scope="row">その場で返す</th><td>200件</td><td>24ドル</td></tr>
+<tr><th scope="row">まとめて返す</th><td>800件</td><td>48ドル</td></tr>
+</tbody></table></div>
+<p>料金メーターでも通常とバッチを別々に試算し、二つの月額を足します。振り分け後の件数の合計が元の1,000件と一致することを確認します。</p>
+</section>
+<section>
+<h2>締め切りが早まった日はどうなる？</h2>
+<p>月に5日だけ、集計の都合で300件を最初から通常処理に戻すとします。その5日間は通常500件、バッチ500件です。追加費用は 300 × 5 × 0.002 ＝ 3ドルで、月額は75ドルになります。</p>
+<p>実際に移せる件数は、データがそろう時刻から集計開始までに処理を終えられるかで決まります。候補のモデルにバッチ単価があるかを確認し、少量で投入から結果取得までの時間を測ると、見積もりに使う件数を絞れます。</p>
+</section>
+<aside><a href="../../api-cost/">API料金メーターで試す →</a><p>関連記事　<a href="../budget/">月の予算から1日の利用回数を逆算する</a></p></aside>
 </main><footer><a class="brand" href="../../">zinsei-lab</a><nav><a href="../../about/">運営者情報</a><a href="../../privacy/">プライバシー</a><a href="../../contact/">お問い合わせ</a></nav></footer>
 </body></html>

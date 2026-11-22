@@ -7,7 +7,24 @@
 <link rel="icon" href="../../assets/tools.svg"><link rel="stylesheet" href="../../assets/home.css">
 <link rel="canonical" href="https://zinsei-lab.com/articles/exchange/"><meta property="og:url" content="https://zinsei-lab.com/articles/exchange/"></head><body>
 <header><a class="brand" href="../../">zinsei-lab</a><nav><a href="../../#tools">ツール一覧</a><a href="../../articles/">解説記事</a></nav></header>
-<main><h1>ドル建ての見積もりを円予算に直す</h1>
-<p class="lead">月額40ドルと見積もったサービスに6,000円の予算を割り当てる例です。チームで金額を共有する際は、換算に使った円／ドルも一緒に残します。</p><section><h2>同じ利用量を三つのレートで比較</h2><p>1ドル140円なら5,600円、150円なら6,000円、160円なら6,400円です。この例では1円の変動につき月額が40円動き、予算いっぱいになる境目は6,000 ÷ 40で150円です。</p></section><section><h2>差額の原因を切り分ける</h2><p>まず請求のドル額と試算のドル額を比べ、次に換算レートを比べます。利用回数による増加と為替による増加を別々に説明できます。税や決済手数料を予算に含める場合は別項目で足します。</p></section><aside><a href="../../api-cost/">API料金メーターで試す →</a><p>関連記事　<a href="../budget/">月の予算から1日の利用回数を逆算する</a></p></aside>
+<main class="article-body"><h1>ドル建ての見積もりを円予算に直す</h1>
+<p class="lead">月40ドルの利用を6,000円に収めたいとき、予算をちょうど使い切るのは1ドル150円です。想定レートを変えておくと、超過しそうなときに利用量をどこまで減らすかも逆算できます。</p>
+<section>
+<h2>円予算から許容できるドル額を読む</h2>
+<p>次のレートは計算用の仮定です。左から読むと月40ドルの円換算、右端を見ると6,000円で使えるドル額が分かります。税や決済手数料は別枠とします。</p>
+<div class="scroll"><table><thead><tr><th scope="col">1ドルのレート</th><th scope="col">40ドルの円換算</th><th scope="col">6,000円で使える額</th></tr></thead><tbody>
+<tr><th scope="row">140円</th><td>5,600円</td><td>約42.86ドル</td></tr>
+<tr><th scope="row">150円</th><td>6,000円</td><td>40ドル</td></tr>
+<tr><th scope="row">160円</th><td>6,400円</td><td>37.50ドル</td></tr>
+</tbody></table></div>
+<p>160円を想定する月は、ドル建ての目安を40ドルから37.50ドルへ下げると円予算に収まります。1回0.005ドルなら、差の2.50ドルは月500回分です。</p>
+</section>
+<section>
+<h2>請求が1,040円増えた理由を説明する</h2>
+<p>見積もりが40ドル・150円で6,000円、実績が44ドル・160円で7,040円だったとします。まずレートを150円に固定し、次に実績の44ドルを固定すると、差額を二つに分けられます。</p>
+<ul><li>ドル建て利用額の増加分は（44 − 40）× 150 ＝ 600円。</li><li>換算レートの変動分は 44 ×（160 − 150）＝ 440円。</li></ul>
+<p>この順番で合計すると1,040円です。チームで見積もりを共有する際は、元のドル額と想定レートを並べて残すと、翌月も同じ手順で説明できます。</p>
+</section>
+<aside><a href="../../api-cost/">API料金メーターで試す →</a><p>関連記事　<a href="../budget/">月の予算から1日の利用回数を逆算する</a></p></aside>
 </main><footer><a class="brand" href="../../">zinsei-lab</a><nav><a href="../../about/">運営者情報</a><a href="../../privacy/">プライバシー</a><a href="../../contact/">お問い合わせ</a></nav></footer>
 </body></html>

@@ -6,12 +6,17 @@
 <meta property="og:title" content="同じ指示を繰り返すときのキャッシュ試算 | zinsei-lab"><meta property="og:description" content="固定指示と質問を繰り返す例で、読み出しと書き込みを分けて入力費を試算します。"><meta property="og:image" content="https://zinsei-lab.com/assets/tools-og.png">
 <link rel="icon" href="../../assets/tools.svg"><link rel="stylesheet" href="../../assets/home.css"><link rel="canonical" href="https://zinsei-lab.com/articles/cache/"><meta property="og:url" content="https://zinsei-lab.com/articles/cache/"></head><body>
 <header><a class="brand" href="../../">zinsei-lab</a><nav><a href="../../#tools">ツール一覧</a><a href="../../articles/">解説記事</a></nav></header>
-<main><h1>同じ指示を繰り返すときのキャッシュ試算</h1>
+<main class="article-body"><h1>同じ指示を繰り返すときのキャッシュ試算</h1>
 <p class="lead">長い共通指示を毎回送る場合、キャッシュを読み出せると入力費を抑えられます。Claude Sonnet 5.5の料金を使い、ヒット率と書き込み費を分けて計算します。</p>
 <p>料金の確認日 <time datetime="2026-11-22">2026年11月22日</time></p>
 <section><h2>何を再利用する？</h2><p>問い合わせ対応のアプリで、冒頭の固定指示や資料を8,000トークン、毎回異なる質問を2,000トークン送るとします。1回の入力は合計1万トークンです。固定部分が同じで、提供者の条件を満たす場合、その一部をキャッシュから読み出せることがあります。対応条件や保持時間は提供者・モデルによって異なります。</p><p>Claude Sonnet 5.5の通常料金は100万トークンあたり、入力2ドル、5分キャッシュ書き込み2.50ドル、読み出し0.10ドルです。出力料金10ドルは以下の入力費の比較には含めません。<a href="https://platform.claude.com/docs/en/about-claude/pricing">Claude公式料金表</a></p></section>
 <section><h2>100回送るときの計算例</h2><p>100回のうち75回は固定部分8,000トークンを読み出し、残り25回は5分キャッシュとして書き込むと仮定します。毎回の質問2,000トークンは通常入力です。この内訳は説明用の条件で、ヒット率や書き込み回数は実測ではありません。</p>
 <div class="scroll"><table><thead><tr><th>内訳</th><th>トークン</th><th>単価／100万</th><th>費用</th></tr></thead><tbody><tr><th>毎回変わる質問</th><td>20万</td><td>2ドル</td><td>0.40ドル</td></tr><tr><th>固定部分の読み出し</th><td>60万</td><td>0.10ドル</td><td>0.06ドル</td></tr><tr><th>固定部分の書き込み</th><td>20万</td><td>2.50ドル</td><td>0.50ドル</td></tr><tr><th>合計</th><td>100万</td><td>—</td><td>0.96ドル</td></tr></tbody></table></div><p>同じ100万トークンをすべて通常入力とした場合は2ドルです。この条件では差額は1.04ドル。実際は保持時間切れや異なる接頭部分などで読み出しと書き込みの割合が変わり、削減額も変動します。</p></section>
+<section>
+<h2>何回読み出せれば、書き込み費を回収できる？</h2>
+<p>上と同じ単価で、固定部分8,000トークンだけを追います。すべて通常入力なら1回0.016ドル。書き込むと0.020ドルなので、最初の1回で0.004ドル余分に使います。次に同じ部分を読み出せれば0.0008ドルで済み、通常入力より0.0152ドル浮きます。</p>
+<p><strong>この例では、書き込み1回の後に読み出しが1回あれば元が取れます。</strong> 一方、毎回書き直す資料なら、100回で書き込みの割増分が0.40ドル積み上がります。共通指示が長いかどうかに加え、書き込んだ同じ内容が保持時間内に何度使われたかが判断材料になります。</p>
+</section>
 <section><h2>料金メーターでの近似</h2><p>読み出した60万トークンは入力全体100万の60%なので、メーターの「キャッシュヒット率」には60%を入力します。75%は固定部分だけを分母にした回数の割合です。残り40%を通常入力として扱うメーターの計算では、100回分の入力費は0.40 × 2 ＋ 0.60 × 0.10 = 0.86ドルになります。</p><p>この0.86ドルには書き込みの追加費用が含まれていません。上の例では20万トークン分の書き込みについて、通常入力との差0.20 × (2.50 − 2) = 0.10ドルを足すと0.96ドルになります。月額表示は30日換算のため、100回分を確認するときは1,000回分の表示を10で割るなど、回数を合わせてください。</p><p><a href="../../api-cost/">API料金メーターを開く</a></p></section>
 <section><h2>実際の運用で確認すること</h2><p>同じ文章でも、固定部分より前の指示やツール定義が変われば再利用に影響します。変わらない内容を先に置き、利用するAPIのキャッシュ指定、最低長、保持時間、書き込み料金を公式資料で確認します。OpenAIとClaudeでは指定方法や料金が異なります。<a href="https://developers.openai.com/api/docs/guides/prompt-caching">OpenAIのキャッシュ説明</a>、<a href="https://platform.claude.com/docs/en/build-with-claude/prompt-caching">Claudeのキャッシュ説明</a></p><p>実際のレスポンスに含まれる使用量から通常入力・読み出し・書き込みを記録し、メーターの概算と請求額を比較します。出力、検索など他の料金も本番予算には加えてください。</p></section>
 <aside><a href="../monthly-chat/">月1万回のチャットの料金試算</a></aside>

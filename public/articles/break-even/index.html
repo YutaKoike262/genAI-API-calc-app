@@ -7,7 +7,26 @@
 <link rel="icon" href="../../assets/tools.svg"><link rel="stylesheet" href="../../assets/home.css">
 <link rel="canonical" href="https://zinsei-lab.com/articles/break-even/"><meta property="og:url" content="https://zinsei-lab.com/articles/break-even/"></head><body>
 <header><a class="brand" href="../../">zinsei-lab</a><nav><a href="../../#tools">ツール一覧</a><a href="../../articles/">解説記事</a></nav></header>
-<main><h1>短い回答と長い回答でモデルの費用を比較する</h1>
-<p class="lead">説明用にモデルAを入力2・出力10ドル、モデルBを入力4・出力5ドルと置きます。単価はすべて100万トークンあたりで、両者の入力は1回1,000トークンです。</p><section><h2>費用が逆転する回答長</h2><p>出力200ならAは0.004ドル、Bは0.005ドル。出力800ならAは0.010ドル、Bは0.008ドルです。入力費の差0.002ドルを出力の単価差で割ると、等しくなるのは400トークンです。</p></section><section><h2>自分の回答長で比べる</h2><p>同じ質問でもモデルごとに回答の長さが変わります。まず同じ長さで単価を比べ、次に実測した各モデルの平均出力で再計算すると、料金表の差と利用量の差を分けて検討できます。</p></section><aside><a href="../../api-cost/">API料金メーターで試す →</a><p>関連記事　<a href="../output/">出力上限と平均回答長で予算はどう変わる？</a></p></aside>
+<main class="article-body"><h1>短い回答と長い回答でモデルの費用を比較する</h1>
+<p class="lead">入力が毎回1,000トークンなら、この記事のモデルAとBは出力400トークンで同額です。回答が短い仕事と長い仕事では、同じ料金表を見ても選ぶモデルが変わります。</p>
+<section>
+<h2>回答を書く前に、入力費に差がつく</h2>
+<p>説明用の単価として、100万トークンあたりモデルAは入力2ドル・出力10ドル、Bは入力4ドル・出力5ドルとします。1,000トークンを読む段階で、Aは0.002ドル、Bは0.004ドルかかります。</p>
+<p>一方、100トークン書くたびに増える費用はAが0.001ドル、Bが0.0005ドルです。最初の差0.002ドルは100トークンごとに0.0005ドルずつ縮まり、400トークンで埋まります。</p>
+<div class="scroll"><table><thead><tr><th scope="col">出力の長さ</th><th scope="col">Aの合計</th><th scope="col">Bの合計</th></tr></thead><tbody>
+<tr><th scope="row">200トークン</th><td>0.004ドル</td><td>0.005ドル</td></tr>
+<tr><th scope="row">400トークン</th><td>0.006ドル</td><td>0.006ドル</td></tr>
+<tr><th scope="row">800トークン</th><td>0.010ドル</td><td>0.008ドル</td></tr>
+</tbody></table></div>
+</section>
+<section>
+<h2>資料が2倍なら、分岐点も動く</h2>
+<p>入力を2,000トークンに増やすと、AとBの入力費の差は0.004ドルに広がります。出力側の単価差は同じなので、差が埋まるのは<strong>出力800トークン</strong>です。たとえば出力600なら、入力1,000ではB、入力2,000ではAのほうが安くなります。</p>
+</section>
+<section>
+<h2>自分の用途では、同じ依頼を両方に渡す</h2>
+<p>分類ラベルを一つ返す仕事と、理由まで説明する仕事を分けて試します。目的を満たした回答について、各モデルが実際に使った入力と出力で1件あたりの費用を計算します。書き直しが必要なら、その呼び出し分も加えると、使える回答を1件得るまでの費用で比べられます。</p>
+</section>
+<aside><a href="../../api-cost/">API料金メーターで試す →</a><p>関連記事　<a href="../output/">出力上限と平均回答長で予算はどう変わる？</a></p></aside>
 </main><footer><a class="brand" href="../../">zinsei-lab</a><nav><a href="../../about/">運営者情報</a><a href="../../privacy/">プライバシー</a><a href="../../contact/">お問い合わせ</a></nav></footer>
 </body></html>

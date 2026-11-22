@@ -7,7 +7,29 @@
 <link rel="icon" href="../../assets/tools.svg"><link rel="stylesheet" href="../../assets/home.css">
 <link rel="canonical" href="https://zinsei-lab.com/articles/history/"><meta property="og:url" content="https://zinsei-lab.com/articles/history/"></head><body>
 <header><a class="brand" href="../../">zinsei-lab</a><nav><a href="../../#tools">ツール一覧</a><a href="../../articles/">解説記事</a></nav></header>
-<main><h1>会話履歴を毎回送ると入力はどれだけ増える？</h1>
-<p class="lead">1往復を質問100・回答300トークンとし、過去のやり取りをすべて次の質問に添える場合を考えます。固定のシステム指示はここでは省きます。</p><section><h2>5回の質問を足し合わせる</h2><p>各回の入力は100、500、900、1,300、1,700トークンで、合計4,500です。最後の回だけを代表にして5倍すると8,500になり、会話全体の費用を過大に見積もります。</p></section><section><h2>代表値を入力する</h2><p>この例では平均入力900のうち、新しい質問が100、履歴が800です。料金メーターの「その他の入力」に平均履歴を設定します。短い会話と長い会話が混在する運用では、それぞれの件数で重み付けします。</p></section><aside><a href="../../api-cost/">API料金メーターで試す →</a><p>関連記事　<a href="../token-count/">日本語と英語が混じる文章のトークンを見積もる</a></p></aside>
+<main class="article-body"><h1>会話履歴を毎回送ると入力はどれだけ増える？</h1>
+<p class="lead">質問が毎回100トークンでも、過去の質問と回答をすべて添えると、5回の入力は合計4,500トークンになります。どの発言が何度送られるかを追うと、履歴を短くしたときの効果も計算できます。</p>
+<section>
+<h2>最初の回答は、あと4回入力になる</h2>
+<p>質問100・回答300トークンで1往復とします。2回目の入力には、前回の質問と回答（400）に今回の質問（100）を足した500トークンが入ります。固定指示は省き、毎回同じ長さと仮定します。</p>
+<div class="scroll"><table><thead><tr><th scope="col">質問の順番</th><th scope="col">再送する履歴</th><th scope="col">今回の入力合計</th></tr></thead><tbody>
+<tr><th scope="row">1回目</th><td>0</td><td>100</td></tr>
+<tr><th scope="row">2回目</th><td>400</td><td>500</td></tr>
+<tr><th scope="row">3回目</th><td>800</td><td>900</td></tr>
+<tr><th scope="row">4回目</th><td>1,200</td><td>1,300</td></tr>
+<tr><th scope="row">5回目</th><td>1,600</td><td>1,700</td></tr>
+</tbody></table></div>
+<p>右列を足すと4,500です。最初の回答は2〜5回目の入力に毎回含まれ、最後の回答はこの会話中に再送されません。最終回の1,700を5倍すると、前半の短い入力まで長く数えてしまいます。</p>
+</section>
+<section>
+<h2>直近2往復だけを残すと、何が減る？</h2>
+<p>4回目と5回目の入力がともに900になり、5回の合計は3,300です。<strong>省ける入力は1会話あたり1,200トークン</strong>。その代わり、5回目には最初の質問で伝えた条件が届きません。</p>
+<p>たとえば初回に伝えた納品日を最終回答にも使うなら、納品日だけを別に保持して添える方法があります。比較するときは、その追加分も入力に含め、最後の回答が日付を正しく使えるかを確認します。</p>
+</section>
+<section>
+<h2>料金メーターには1回分の平均を入れる</h2>
+<p>全履歴を送る例なら、平均入力は4,500 ÷ 5 ＝ 900です。質問欄で100トークン相当を計上したら、「その他の入力」には平均履歴の800を入れます。直近2往復なら平均入力は660で、履歴分は560です。</p>
+</section>
+<aside><a href="../../api-cost/">API料金メーターで試す →</a><p>関連記事　<a href="../token-count/">日本語と英語が混じる文章のトークンを見積もる</a></p></aside>
 </main><footer><a class="brand" href="../../">zinsei-lab</a><nav><a href="../../about/">運営者情報</a><a href="../../privacy/">プライバシー</a><a href="../../contact/">お問い合わせ</a></nav></footer>
 </body></html>
